@@ -1,4 +1,4 @@
-﻿﻿:root {
+﻿:root {
   --nav-violet: #9a6cff;
   --nav-cyan: #3fe9df;
   --nav-pink: #ff6fcf;
@@ -108,9 +108,9 @@
   .planet-nav--collapsed.is-expanded { right: -62px; transform: translateY(-50%) scale(.66); }
 }
 @media (max-width: 700px) {
-  .planet-nav { top: 78%; right: -150px; transform: translateY(-50%) scale(.55); }
-  .planet-nav--collapsed { top: 50%; right: -205px; transform: translateY(-50%) scale(.3); }
-  .planet-nav--collapsed.is-expanded { right: -108px; transform: translateY(-50%) scale(.52); }
+  .planet-nav { top: 79%; right: -178px; transform: translateY(-50%) scale(.44); }
+  .planet-nav--collapsed { top: 50%; right: -218px; transform: translateY(-50%) scale(.25); }
+  .planet-nav--collapsed.is-expanded { right: -130px; transform: translateY(-50%) scale(.43); }
   .planet-nav__link strong { font-size: 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .planet-nav__orbit, .planet-nav__halo { animation: none; } }

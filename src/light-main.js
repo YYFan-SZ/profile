@@ -1,4 +1,4 @@
-﻿import * as THREE from 'three';
+import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './light-styles.css';
@@ -350,7 +350,7 @@ function createIridescentPlanet() {
     const wide = innerWidth > 1100;
     const narrow = innerWidth < 700;
     const targetX = narrow
-      ? (isHome ? .58 : isHovering ? 1.05 : 1.5)
+      ? (isHome ? 1.42 : isHovering ? 1.5 : 1.85)
       : isHome ? (wide ? 2.78 : 2.02) : isHovering ? (wide ? 3.55 : 2.58) : (wide ? 4.45 : 3.22);
     const sectionY = {
       projects: 1.35,
@@ -359,8 +359,12 @@ function createIridescentPlanet() {
       content: -.72,
       contact: -1.42,
     }[activeMarkerSection] ?? 0;
-    const targetY = isHome ? (narrow ? -1.82 : -.22) : sectionY;
-    const targetScale = isHome ? 1.15 : isHovering ? .82 : .48;
+    const targetY = isHome ? (narrow ? -1.55 : -.22) : sectionY;
+    // Keep the decoration secondary on phones: the desktop scale overwhelms the
+    // hero copy and leaves too little breathing room in a narrow viewport.
+    const targetScale = narrow
+      ? (isHome ? .68 : isHovering ? .5 : .34)
+      : (isHome ? 1.15 : isHovering ? .82 : .48);
     installation.position.x += (targetX - installation.position.x) * .055;
     installation.position.y += (targetY + Math.sin(elapsed * .45) * .045 - installation.position.y) * .055;
     const dimensionalScale = targetScale * (1 + jumpImpulse * .16);
