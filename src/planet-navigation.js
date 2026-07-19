@@ -1,4 +1,4 @@
-﻿﻿import './planet-navigation.css';
+﻿import './planet-navigation.css';
 
 const items = [
   ['hero', '01', '首页'],
@@ -80,10 +80,15 @@ items.forEach(([id]) => {
 });
 
 const syncHomeState = () => {
-  const hero = document.getElementById('hero');
-  if (!hero) return;
-  const rect = hero.getBoundingClientRect();
-  if (rect.top < innerHeight * 0.28 && rect.bottom > innerHeight * 0.42) updateNavState('hero');
+  const anchorY = innerHeight * 0.38;
+  const nearest = items
+    .map(([id]) => document.getElementById(id))
+    .filter(Boolean)
+    .reduce((current, section) => {
+      if (!current) return section;
+      return Math.abs(section.getBoundingClientRect().top - anchorY) < Math.abs(current.getBoundingClientRect().top - anchorY) ? section : current;
+    }, null);
+  if (nearest) updateNavState(nearest.id);
 };
 
 const expandFromHover = () => {

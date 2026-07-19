@@ -22,8 +22,8 @@ html = html
   .replace('</head>', '    <link rel="stylesheet" href="./site/app.css" />\n  </head>')
   .replace('<body class="relative">', `<body class="relative">
     <canvas id="planet-stage" aria-hidden="true"></canvas>
-    <div class="gallery-vignette" aria-hidden="true"></div>
-    <div class="exhibition-hud" aria-hidden="true"><strong>CURATED DIGITAL EXHIBITION</strong>SHENZHEN / 2026<br>SPACE 22°32′N · 114°03′E</div>`)
+    <div class="gallery-vignette" aria-hidden="true"></div>`)
+  .replace('</footer>', '</footer>\n    <div class="exhibition-hud" aria-hidden="true"><strong>CURATED DIGITAL EXHIBITION</strong>SHENZHEN / 2026<br>SPACE 22°32′N · 114°03′E</div>')
   .replaceAll(' autoplay', '')
   .replace('</body>', '    <script defer src="./site/app.js"></script>\n</body>');
 

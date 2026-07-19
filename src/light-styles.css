@@ -1,4 +1,4 @@
-﻿﻿:root {
+:root {
   --paper: #faf8fc;
   --paper-warm: #f7f4fa;
   --ink: #1f1a24;
@@ -45,19 +45,17 @@ body {
     linear-gradient(90deg, rgba(168,143,219,.02) 0%, transparent 48%, rgba(108,197,184,.015) 100%);
 }
 
-.exhibition-hud {
-  position: fixed;
-  left: 28px;
-  bottom: 25px;
-  z-index: 82;
-  padding-left: 12px;
+footer + .exhibition-hud {
+  max-width: 1120px;
+  margin: 0 auto 28px;
+  padding: 12px 28px;
   border-left: 1px solid rgba(168,143,219,.25);
   color: rgba(168,143,219,.45);
   font: 600 8px/1.65 var(--mono);
   letter-spacing: .13em;
   pointer-events: none;
 }
-.exhibition-hud strong { display: block; color: var(--ink); font-weight: 700; }
+footer + .exhibition-hud strong { display: block; color: var(--ink); font-weight: 700; }
 
 .page-coordinate {
   position: fixed;

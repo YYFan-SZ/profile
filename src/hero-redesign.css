@@ -1,4 +1,4 @@
-﻿body.planet-view-home {
+body.planet-view-home {
   background:
     linear-gradient(90deg, rgba(150,112,214,.035) 1px, transparent 1px),
     linear-gradient(rgba(150,112,214,.035) 1px, transparent 1px),
@@ -198,4 +198,3 @@ main:has(#hero) {
   .sac-portrait { width: min(72vw, 270px); }
   .sac-hero__story { max-width: 360px; padding-top: 6px; }
 }
-
