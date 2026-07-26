@@ -1,12 +1,11 @@
-﻿﻿import './planet-navigation.css';
+﻿import './planet-navigation.css';
 
 const items = [
   ['hero', '01', '首页'],
   ['projects', '02', '作品'],
-  ['experience', '03', '校园'],
-  ['practice', '04', '实践'],
-  ['content', '05', '内容'],
-  ['contact', '06', '联系'],
+  ['experience', '03', '实践'],
+  ['content', '04', '内容'],
+  ['contact', '05', '联系'],
 ];
 
 const nav = document.createElement('nav');
@@ -80,10 +79,15 @@ items.forEach(([id]) => {
 });
 
 const syncHomeState = () => {
-  const hero = document.getElementById('hero');
-  if (!hero) return;
-  const rect = hero.getBoundingClientRect();
-  if (rect.top < innerHeight * 0.28 && rect.bottom > innerHeight * 0.42) updateNavState('hero');
+  const anchorY = innerHeight * 0.38;
+  const nearest = items
+    .map(([id]) => document.getElementById(id))
+    .filter(Boolean)
+    .reduce((current, section) => {
+      if (!current) return section;
+      return Math.abs(section.getBoundingClientRect().top - anchorY) < Math.abs(current.getBoundingClientRect().top - anchorY) ? section : current;
+    }, null);
+  if (nearest) updateNavState(nearest.id);
 };
 
 const expandFromHover = () => {
@@ -109,6 +113,7 @@ document.addEventListener('click', (event) => {
 document.addEventListener('scroll', syncHomeState, { passive: true });
 
 updateNavState('hero');
+
 
 
 

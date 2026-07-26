@@ -1,4 +1,4 @@
-﻿import './hero-redesign.css';
+import './hero-redesign.css';
 
 const hero = document.querySelector('#hero > .reveal');
 
@@ -21,7 +21,7 @@ if (hero) {
         </figure>
 
         <div class="sac-hero__story">
-          <p>始终保持对新技术的好奇，兼具执行力、创造力与商业落地思维，期待与志同道合的伙伴交流合作、共同成长。</p>
+          <p>产品设计 × AI 应用 × Vibe Coding × 内容增长与电商实践。既把模糊想法做成可验证的产品、网站与工作流，也在内容运营、用户需求与商业转化中持续验证它们的价值。</p>
           <dl>
             <div><dt>年龄</dt><dd>20 岁</dd></div>
             <div><dt>城市</dt><dd>深圳</dd></div>
