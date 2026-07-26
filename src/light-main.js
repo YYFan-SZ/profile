@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+﻿import * as THREE from 'three';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './light-styles.css';
@@ -37,7 +37,8 @@ function createIridescentPlanet() {
   renderer.setPixelRatio(Math.min(devicePixelRatio, coarsePointer ? 1.1 : 1.7));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.22;
+  // Preserve the iridescent finish without pushing the pale centre into white.
+  renderer.toneMappingExposure = 1.26;
 
   const installation = new THREE.Group();
   installation.position.set(innerWidth > 1100 ? 3.35 : 2.45, 1.0, -0.8);
@@ -48,12 +49,12 @@ function createIridescentPlanet() {
   const planet = new THREE.Mesh(
     new THREE.SphereGeometry(1.56, 96, 96),
     new THREE.MeshPhysicalMaterial({
-      color: 0xe8dcff,
-      emissive: 0x9d58ff,
-      emissiveIntensity: 0.14,
-      metalness: 0.12,
-      roughness: 0.12,
-      transmission: 0.25,
+      color: 0xeee8f7,
+      emissive: 0x8063ab,
+      emissiveIntensity: 0.16,
+      metalness: 0.18,
+      roughness: 0.2,
+      transmission: 0.16,
       thickness: 1.4,
       clearcoat: 1,
       clearcoatRoughness: 0.12,
@@ -89,14 +90,16 @@ function createIridescentPlanet() {
           float fresnel = pow(1.0 - max(dot(normalize(vNormal), viewDir), 0.0), 2.4);
           float wave = sin(vWorld.y * 6.8 + vWorld.x * 2.8 + uTime * 0.55) * 0.5 + 0.5;
           float ribbons = sin(vWorld.x * 8.0 - vWorld.z * 5.0 - uTime * 0.38) * 0.5 + 0.5;
-          vec3 violet = vec3(0.56, 0.24, 1.0);
-          vec3 cyan = vec3(0.12, 0.94, 0.88);
-          vec3 magenta = vec3(1.0, 0.22, 0.68);
-          vec3 gold = vec3(1.0, 0.73, 0.22);
+          // Pearl tones retain the sense of luxury, while the added grey keeps
+          // overlapping transparent layers comfortable to look at.
+          vec3 violet = vec3(0.43, 0.31, 0.66);
+          vec3 cyan = vec3(0.24, 0.72, 0.68);
+          vec3 magenta = vec3(0.73, 0.38, 0.61);
+          vec3 gold = vec3(0.78, 0.62, 0.38);
           vec3 color = mix(violet, cyan, wave);
           color = mix(color, magenta, ribbons * 0.52);
           color = mix(color, gold, pow(max(vNormal.y, 0.0), 3.0) * 0.34);
-          float alpha = 0.12 + fresnel * 0.58 + wave * 0.055;
+          float alpha = 0.14 + fresnel * 0.56 + wave * 0.06;
           gl_FragColor = vec4(color, alpha);
         }`,
     }),
@@ -141,7 +144,7 @@ function createIridescentPlanet() {
   installation.add(orbitGroup);
 
   const satelliteGroup = new THREE.Group();
-  const colors = [0x8f54ff, 0x31e7da, 0xff5fbd, 0xffc94d, 0xffffff];
+  const colors = [0x8269ad, 0x5eb6aa, 0xd780ab, 0xd6ad62, 0xf4eff7];
   for (let index = 0; index < 42; index += 1) {
     const angle = (index / 42) * Math.PI * 2;
     const radius = 2.3 + (index % 4) * 0.27;
@@ -155,8 +158,8 @@ function createIridescentPlanet() {
   }
   installation.add(satelliteGroup);
 
-  const sectionIds = ['hero', 'projects', 'experience', 'practice', 'content', 'contact'];
-  const sectionLatitudes = [.12, -.24, .3, -.18, .22, -.08];
+  const sectionIds = ['hero', 'projects', 'experience', 'content', 'contact'];
+  const sectionLatitudes = [.12, -.24, .3, .22, -.08];
   const navigationSurface = new THREE.Group();
   const surfaceMarkers = [];
   const markerPalette = [0xffffff, 0x8f54ff, 0x31e7da, 0xff5fbd, 0xffc94d, 0x8f54ff];
@@ -208,7 +211,7 @@ function createIridescentPlanet() {
   const auraCount = coarsePointer ? 520 : 1400;
   const auraPositions = new Float32Array(auraCount * 3);
   const auraColors = new Float32Array(auraCount * 3);
-  const auraPalette = [0x8f54ff, 0x31e7da, 0xff5fbd, 0xffc94d, 0xffffff].map((value) => new THREE.Color(value));
+  const auraPalette = [0x8064aa, 0x5eb7aa, 0xd982ad, 0xd4ad62, 0xf1ecf3].map((value) => new THREE.Color(value));
   for (let index = 0; index < auraCount; index += 1) {
     const direction = new THREE.Vector3(Math.random() - .5, Math.random() - .5, Math.random() - .5).normalize();
     const radius = 1.7 + Math.pow(Math.random(), 1.9) * 1.65;
@@ -221,7 +224,7 @@ function createIridescentPlanet() {
   auraGeometry.setAttribute('position', new THREE.BufferAttribute(auraPositions, 3));
   auraGeometry.setAttribute('color', new THREE.BufferAttribute(auraColors, 3));
   const aura = new THREE.Points(auraGeometry, new THREE.PointsMaterial({
-    size: coarsePointer ? .026 : .021, vertexColors: true, transparent: true, opacity: .74,
+    size: coarsePointer ? .026 : .021, vertexColors: true, transparent: true, opacity: .64,
     depthWrite: false, blending: THREE.AdditiveBlending, sizeAttenuation: true,
   }));
   installation.add(aura);
@@ -238,14 +241,14 @@ function createIridescentPlanet() {
   const dust = new THREE.Points(dustGeometry, new THREE.PointsMaterial({ color: 0x8c799e, size: 0.014, transparent: true, opacity: 0.28 }));
   scene.add(dust);
 
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xd8cdea, 2.8));
-  const key = new THREE.DirectionalLight(0xffffff, 4.5);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xddd1eb, 3.05));
+  const key = new THREE.DirectionalLight(0xffffff, 4.8);
   key.position.set(-4, 5, 7);
   scene.add(key);
-  const rim = new THREE.PointLight(0x8ee2d0, 18, 16, 2);
+  const rim = new THREE.PointLight(0xa3e7db, 17, 16, 2);
   rim.position.set(4, -2, 4);
   scene.add(rim);
-  const warm = new THREE.PointLight(0xffb294, 10, 12, 2);
+  const warm = new THREE.PointLight(0xf4c9b8, 10, 12, 2);
   warm.position.set(-3, -2, 3);
   scene.add(warm);
 
@@ -341,9 +344,9 @@ function createIridescentPlanet() {
       marker.material.opacity = active ? 1 : .62;
     });
     aura.scale.setScalar(1 + jumpImpulse * .2);
-    key.intensity = 4.5 + jumpImpulse * 2.8;
-    rim.intensity = 18 + jumpImpulse * 14;
-    warm.intensity = 10 + jumpImpulse * 7;
+    key.intensity = 4.8 + jumpImpulse * 2.5;
+    rim.intensity = 17 + jumpImpulse * 10;
+    warm.intensity = 10 + jumpImpulse * 6;
     satelliteGroup.children.forEach((dot) => dot.scale.setScalar(0.8 + Math.sin(elapsed * 1.6 + dot.userData.phase) * 0.25));
     const isHome = document.body.classList.contains('planet-view-home');
     const isHovering = document.body.classList.contains('planet-nav-hover');
@@ -355,7 +358,6 @@ function createIridescentPlanet() {
     const sectionY = {
       projects: 1.35,
       experience: .72,
-      practice: 0,
       content: -.72,
       contact: -1.42,
     }[activeMarkerSection] ?? 0;
@@ -443,11 +445,77 @@ function manageVideos() {
   document.querySelectorAll('video').forEach((video) => observer.observe(video));
 }
 
+function createExperienceArchiveModal() {
+  const modal = document.querySelector('#experience-modal');
+  const cards = [...document.querySelectorAll('[data-experience-detail]')];
+  const cardCaptions = {
+    startup: '负责视觉物料、公众号内容与活动传播落地。',
+    youth: '协助赛事资料、团队与专家的多方对接。',
+    honors: '奖学金、提案与演讲比赛的阶段积累。',
+    volunteer: '赛事新媒体现场的转播与媒体支持。',
+    sailing: '陪伴 30+ 成员推进任务、解决执行卡点。',
+  };
+  cards.forEach((card) => {
+    const caption = cardCaptions[card.dataset.experienceDetail];
+    if (!caption || card.querySelector('.archive-card__caption')) return;
+    const node = document.createElement('span');
+    node.className = 'archive-card__caption';
+    node.textContent = caption;
+    card.appendChild(node);
+  });
+  if (!modal || !cards.length) return;
+  const details = {
+    startup: ['01 / CAMPUS ARCHIVE', 'SZPU &#x521B;&#x4E1A;&#x534F;&#x4F1A;', '&#x5BA3;&#x4F20;&#x90E8;&#x90E8;&#x957F; / &#x6838;&#x5FC3;&#x9AA8;&#x5E72;', ['image/%E6%B5%B7%E6%8A%A5%E6%AD%A3%E9%9D%A2.jpg', 'image/%E6%B5%B7%E6%8A%A5%E8%83%8C%E9%9D%A2.jpg', 'image/KT%E6%9D%BF.jpg', 'image/%E6%8E%A8%E6%96%871.jpg', 'image/%E6%8E%A8%E6%96%872.jpg'], '&#x6211;&#x7684;&#x5DE5;&#x4F5C;', '&#x4E3B;&#x5BFC;&#x521B;&#x4E1A;&#x534F;&#x4F1A;&#x516C;&#x4F17;&#x53F7;&#x8FD0;&#x8425;&#xFF0C;&#x5E76;&#x72EC;&#x7ACB;&#x5B8C;&#x6210;&#x6D3B;&#x52A8;&#x6D77;&#x62A5;&#x3001;KT&#x677F;&#x7B49;&#x89C6;&#x89C9;&#x7269;&#x6599;&#x4E0E;&#x63A8;&#x6587;&#x3002;', '&#x4EE3;&#x8868;&#x9879;&#x76EE;', '&#x53C2;&#x4E0E;&#x300C;&#x79D1;&#x7814;&#x65B0;&#x661F;&#x300D;&#x6D3B;&#x52A8;&#x5BF9;&#x63A5;&#x4E0E;&#x6267;&#x884C;&#xFF0C;&#x642D;&#x5EFA;&#x5B66;&#x672F;&#x4E0E;&#x5B9E;&#x8DF5;&#x4EA4;&#x6D41;&#x5E73;&#x53F0;&#x3002;', ['&#x89C6;&#x89C9;&#x8BBE;&#x8BA1;', '&#x5185;&#x5BB9;&#x8FD0;&#x8425;', '&#x6D3B;&#x52A8;&#x6267;&#x884C;']],
+    youth: ['02 / CAMPUS ARCHIVE', '&#x6821;&#x56E2;&#x59D4;&#x79D1;&#x521B;&#x90E8;', '&#x5B66;&#x751F;&#x9AA8;&#x5E72;', ['image/%E6%A0%A1%E5%9B%A2%E5%A7%94%E7%A7%91%E5%88%9B%E9%83%A8.jpg'], '&#x5173;&#x952E;&#x7ECF;&#x5386;', '&#x5386;&#x7ECF; 5 &#x8F6E;&#x9762;&#x8BD5;&#x8FDB;&#x5165;&#x56E2;&#x961F;&#xFF0C;&#x534F;&#x52A9;&#x300C;&#x6311;&#x6218;&#x676F;&#x300D;&#x3001;&#x521B;&#x65B0;&#x5DE5;&#x7A0B;&#x7B49;&#x91CD;&#x70B9;&#x8D5B;&#x4E8B;&#x7EC4;&#x7EC7;&#x5DE5;&#x4F5C;&#x3002;', '&#x80FD;&#x529B;&#x6C89;&#x6DC0;', '&#x8D44;&#x6599;&#x5BA1;&#x6838;&#x3001;&#x56E2;&#x961F;&#x4E0E;&#x4E13;&#x5BB6;&#x5BF9;&#x63A5;&#xFF0C;&#x5728;&#x591A;&#x7EBF;&#x7A0B;&#x4EFB;&#x52A1;&#x4E2D;&#x63A8;&#x8FDB;&#x6C9F;&#x901A;&#x534F;&#x4F5C;&#x3002;', ['&#x8D5B;&#x4E8B;&#x6D41;&#x7A0B;', '&#x591A;&#x65B9;&#x6C9F;&#x901A;', '&#x4EFB;&#x52A1;&#x7BA1;&#x7406;']],
+    honors: ['03 / CAMPUS HIGHLIGHTS', '&#x95EA;&#x5149;&#x788E;&#x7247;&#x96C6;&#x9526;', '&#x6301;&#x7EED;&#x6295;&#x5165;&#xFF0C;&#x4E5F;&#x6301;&#x7EED;&#x7559;&#x4E0B;&#x7ED3;&#x679C;', ['image/%E6%BC%94%E8%AE%B2.jpg'], '&#x5B66;&#x4E1A;&#x4E0E;&#x601D;&#x60F3;&#x5EFA;&#x8BBE;', '&#x8363;&#x83B7; 3 &#x6B21;&#x6821;&#x7EA7;&#x5956;&#x5B66;&#x91D1;&#xFF1B;&#x83B7;&#x300C;&#x4F18;&#x79C0;&#x5171;&#x9752;&#x56E2;&#x5458;&#x300D;&#x3002;', '&#x7EC4;&#x7EC7;&#x4E0E;&#x8868;&#x8FBE;', '&#x7B56;&#x5212;&#x4E66;&#x5927;&#x8D5B;&#x4E09;&#x7B49;&#x5956;&#x3001;&#x63D0;&#x6848;&#x5F81;&#x96C6;&#x4E8C;&#x7B49;&#x5956;&#x3001;&#x6F14;&#x8BB2;&#x6BD4;&#x8D5B;&#x4E09;&#x7B49;&#x5956;&#x7B49;&#x3002;', ['CET-4&#xFF1A;527 &#x5206;', 'CET-6&#xFF1A;471 &#x5206;', '&#x519B;&#x8BAD;&#x5148;&#x8FDB;&#x4E2A;&#x4EBA;']],
+    volunteer: ['01 / PRACTICE ARCHIVE', '&#x5927;&#x578B;&#x8D5B;&#x4E8B;&#x5FD7;&#x613F;&#x670D;&#x52A1;', '&#x7B2C;&#x5341;&#x4E94;&#x5C4A;&#x5168;&#x56FD;&#x8FD0;&#x52A8;&#x4F1A;&#x5FD7;&#x613F;&#x8005;', ['image/%E5%BF%97%E6%84%BF%E8%80%85%E8%AF%81%E4%B9%A6.jpg'], '&#x670D;&#x52A1;&#x573A;&#x666F;', '&#x5728;&#x62F3;&#x51FB;&#x8D5B;&#x4E8B;&#x65B0;&#x5A92;&#x4F53;&#x5904;&#x8FDB;&#x884C;&#x7535;&#x89C6;&#x8F6C;&#x64AD;&#x8F85;&#x52A9;&#xFF0C;&#x534F;&#x52A9;&#x5A92;&#x4F53;&#x7B7E;&#x5230;&#x3001;&#x65B0;&#x95FB;&#x53D1;&#x5E03;&#x5385;&#x7B49;&#x5DE5;&#x4F5C;&#x3002;', '&#x80FD;&#x529B;&#x6C89;&#x6DC0;', '&#x5728;&#x9AD8;&#x8282;&#x594F;&#x73B0;&#x573A;&#x5B8C;&#x6210;&#x591A;&#x70B9;&#x534F;&#x540C;&#xFF0C;&#x5F3A;&#x5316;&#x4E86;&#x5E94;&#x53D8;&#x4E0E;&#x6297;&#x538B;&#x80FD;&#x529B;&#x3002;', ['&#x8F6C;&#x64AD;&#x8F85;&#x52A9;', '&#x5A92;&#x4F53;&#x63A5;&#x5F85;', '&#x73B0;&#x573A;&#x534F;&#x8C03;']],
+    sailing: ['02 / PRACTICE ARCHIVE', '&#x751F;&#x8D22;&#x6709;&#x672F;&#x822A;&#x6D77;', '&#x6210;&#x957F;&#x966A;&#x4F34;&#x6559;&#x7EC3;', ['image/%E7%94%9F%E8%B4%A2%E6%9C%89%E6%9C%AF.jpg'], '&#x966A;&#x4F34;&#x4E0E;&#x534F;&#x4F5C;', '&#x6BCF;&#x671F;&#x966A;&#x4F34; 30+ &#x4F4D;&#x5708;&#x53CB;&#xFF0C;&#x6C9F;&#x901A;&#x89E3;&#x51B3;&#x5361;&#x70B9;&#xFF0C;&#x534F;&#x540C;&#x9886;&#x961F;&#x4E0E;&#x5FD7;&#x613F;&#x8005;&#x63A8;&#x8FDB;&#x8425;&#x5730;&#x5DE5;&#x4F5C;&#x3002;', '&#x9A8C;&#x8BC1;&#x7ED3;&#x679C;', '&#x53D6;&#x5F97;&#x4E00;&#x6B21; A &#x8BC4;&#x7EA7;&#xFF0C;&#x5E76;&#x5B8C;&#x6210;&#x4E00;&#x6B21;&#x5168;&#x5458;&#x4E0A;&#x5CB8;&#x3002;', ['30+ &#x4EBA;&#x5C0F;&#x7EC4;', 'A &#x8BC4;&#x7EA7;', '&#x5168;&#x5458;&#x4E0A;&#x5CB8;']],
+  };
+  const expandedCopy = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob('eyJzdGFydHVwIjoiPGg0PuW3peS9nOWxleW8gDwvaDQ+PHA+5Zu057uV5rS75Yqo5Lyg5pKt6ZyA5rGC5qKz55CG5L+h5oGv5bGC57qn77yM6YWN5ZCI5a6M5oiQ5rW35oql44CBS1Qg5p2/5ZKM5o6o5paH562J5LiN5ZCM6L295L2T55qE5YaF5a656KGU5o6l77yb5LuO6KeG6KeJ5ZGI546w5Yiw5Y+R5biD6IqC5aWP5L+d5oyB5LiA6Ie077yM5pa55L6/5ZCM5a2m5b+r6YCf5LqG6Kej5rS75Yqo6YeN54K544CCPC9wPjxoND7ljY/kvZzmlLbojrc8L2g0PjxwPuWcqOekvuWbouaXpeW4uOayn+mAmuS4reaMgee7rei/reS7o+eJqeaWmeS4juihqOi+vuaWueW8j++8jOW9ouaIkOS6huWwhuWIm+aEj+aLhuaIkOWPr+aJp+ihjOa4heWNleOAgeWGjeiQveWIsOWFt+S9k+S6pOS7mOeJqeeahOW3peS9nOS5oOaDr+OAgjwvcD4iLCJ5b3V0aCI6IjxoND7lt6XkvZzlsZXlvIA8L2g0PjxwPuWPguS4juaMkeaImOadr+OAgeWIm+aWsOW3peeoi+etiei1m+S6i+eahOi1hOaWmeaVtOeQhuS4jua1geeoi+WNj+S9nO+8jOi3n+i/m+S4jeWQjOeOr+iKgueahOaXtumXtOiKgueCue+8jOW5tuWcqOWboumYn+OAgeWPgui1m+WQjOWtpuWSjOebuOWFs+iAgeW4iOS5i+mXtOS/neaMgeS/oeaBr+WQjOatpeOAgjwvcD48aDQ+5Y2P5L2c5pS26I63PC9oND48cD7ov5nmrrXnu4/ljoborqnmiJHmm7Tnhp/mgonlpJrnur/nqIvku7vliqHnmoTmi4bliIbmlrnlvI/vvJrlhYjmmI7noa7mr4/kuKrnjq/oioLnmoTkuqTku5jmoIflh4bvvIzlho3pgJrov4fmuIXljZXlkozmsp/pgJrlh4/lsJHpgZfmvI/vvIzkv53or4Hkuovpobnog73mjInoioLlpY/mjqjov5vjgII8L3A+IiwiaG9ub3JzIjoiPGg0PuaIkOmVv+iEiee7nDwvaDQ+PHA+5aWW6aG55LiO6I2j6KqJ6K6w5b2V55qE5piv5LiA5q615oyB57ut5oqV5YWl55qE6L+H56iL77ya5pei5YyF5ous5a2m5Lia5LiO6KGo6L6+6IO95Yqb55qE56ev57Sv77yM5Lmf5p2l6Ieq5LiA5qyh5qyh562W5YiS44CB5o+Q5qGI5ZKM5YWs5byA5bGV56S65Lit55qE5aSN55uY44CCPC9wPjxoND7lrp7ot7XmlLbojrc8L2g0PjxwPumAmui/h+aKiumYtuauteebruagh+aLhuino+S4uuWPr+WujOaIkOeahOWwj+S7u+WKoe+8jOmAkOatpeW7uueri+S6huabtOeos+WumueahOaJp+ihjOiKguWlj++8jOW5tuaKiumYheivu+OAgeWGmeS9nOOAgeihqOi+vuWSjOmhueebruWNj+S9nOayiea3gOS4uuWPr+i/geenu+eahOiDveWKm+OAgjwvcD4iLCJ2b2x1bnRlZXIiOiI8aDQ+546w5Zy65bel5L2cPC9oND48cD7lnKjotZvkuovmlrDlqpLkvZPkuI7nlLXop4bovazmkq3ovoXliqnlnLrmma/kuK3vvIzphY3lkIjlqpLkvZPnrb7liLDjgIHmlrDpl7vlj5HluIPljoXnrYnnjrDlnLrkuovliqHvvJvpnaLlr7nlpJrkurrljY/lkIzlkozpq5jpopHlj5jljJbvvIzkvJjlhYjnoa7orqTkv6Hmga/jgIHliIbmuIXovbvph43nvJPmgKXlkI7lho3pgJDpobnlpITnkIbjgII8L3A+PGg0PuWunui3teaUtuiOtzwvaDQ+PHA+5aSn5Z6L6LWb5LqL6K6p5oiR5pu055u06KeC5Zyw55CG6Kej5LqG546w5Zy65rWB56iL55qE6YeN6KaB5oCn44CC5L+d5oyB5Y+K5pe25ZON5bqU44CB5YeG56Gu5Lyg6L6+5ZKM56iz5a6a6YWN5ZCI77yM5piv56Gu5L+d5q+P5LiA5Liq546v6IqC6aG655WF6L+Q6L2s55qE5Z+656GA44CCPC9wPiIsInNhaWxpbmciOiI8aDQ+6Zmq5Ly05pa55byPPC9oND48cD7lnKjoiKrmtbfpobnnm67kuK3lm7Tnu5XlsI/nu4TmiJDlkZjnmoTlrp7pmYXljaHngrnov5vooYzmsp/pgJrvvIznu5PlkIjpmLbmrrXku7vliqHjgIHlpI3nm5jorrDlvZXlkozml6XluLjlj43ppojvvIzluK7liqnlpKflrrbmiornm67moIfmi4bmiJDmm7TlrrnmmJPlvIDlp4vlkozmjIHnu63lrozmiJDnmoTlsI/mraXpqqTjgII8L3A+PGg0PuWunui3teaUtuiOtzwvaDQ+PHA+5LiOIDMwIOWkmuS9jeWciOWPi+WFseWQjOaOqOi/m+eahOi/h+eoi++8jOiuqeaIkeaMgee7ree7g+S5oOWAvuWQrOOAgeaPkOmXruS4jui3n+i/m++8muS4jeWPque7meWHuuW7uuiuru+8jOS5n+WFs+azqOavj+S4quS6uueahOaJp+ihjOiKguWlj+WSjOWQjue7reWPjemmiOOAgjwvcD4ifQ=='), (char) => char.charCodeAt(0))));
+  const compactCopy = Object.fromEntries(Object.entries(expandedCopy).map(([key, html]) => [key, (html.match(/<p>([\s\S]*?)<\/p>/) || ['', ''])[1]]));
+  let opener;
+  const close = () => { modal.classList.remove('is-open'); modal.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; opener?.focus(); };
+  const open = (id, trigger) => {
+    const d = details[id]; if (!d) return; opener = trigger;
+    const archiveMedia = id === 'startup'
+      ? '<div class="archive-media-grid"><button class="archive-media-card archive-media-card--flip" type="button" data-flip-poster aria-label="&#x70B9;&#x51FB;&#x67E5;&#x770B;&#x6D77;&#x62A5;&#x80CC;&#x9762;"><span class="archive-media-card__flip-inner"><span class="archive-media-card__front"><img src="image/%E6%B5%B7%E6%8A%A5%E6%AD%A3%E9%9D%A2.jpg" alt="&#x6D77;&#x62A5;&#x6B63;&#x9762;"></span><span class="archive-media-card__back"><img src="image/%E6%B5%B7%E6%8A%A5%E8%83%8C%E9%9D%A2.jpg" alt="&#x6D77;&#x62A5;&#x80CC;&#x9762;"></span></span><small>&#x70B9;&#x51FB;&#x7FFB;&#x8F6C;</small></button><div class="archive-media-card"><img src="image/KT%E6%9D%BF.jpg" alt="KT &#x677F;"></div><div class="archive-media-card archive-media-card--scroll"><img src="image/%E6%8E%A8%E6%96%871.jpg" alt="&#x516C;&#x4F17;&#x53F7;&#x957F;&#x56FE; 1"><small>&#x6ED1;&#x52A8;&#x67E5;&#x770B; &darr;</small></div><div class="archive-media-card archive-media-card--scroll"><img src="image/%E6%8E%A8%E6%96%872.jpg" alt="&#x516C;&#x4F17;&#x53F7;&#x957F;&#x56FE; 2"><small>&#x6ED1;&#x52A8;&#x67E5;&#x770B; &darr;</small></div></div>'
+      : id === 'sailing'
+        ? '<div class="experience-detail__media experience-detail__media--single experience-detail__media--sailing-full"><img class="experience-detail__sailing-image" src="' + d[3][0] + '" alt="' + d[1] + '&#x76F8;&#x5173;&#x56FE;&#x7247;" style="width:100% !important;height:auto !important;max-height:none !important;object-fit:contain !important;"></div>'
+        : '<div class="experience-detail__media ' + (d[3].length === 1 ? 'experience-detail__media--single' : '') + '">' + d[3].map((src) => '<img src="' + src + '" alt="' + d[1] + '&#x76F8;&#x5173;&#x56FE;&#x7247;">').join('') + '</div>';
+    const tags = d[8].map((tag) => '<li>' + tag + '</li>').join('');
+    modal.innerHTML = '<div class="experience-modal__backdrop" data-modal-close></div><div class="experience-modal__dialog" tabindex="-1"><button class="experience-modal__close" type="button" data-modal-close aria-label="&#x5173;&#x95ED;&#x6863;&#x6848;"><i class="ph-bold ph-x"></i></button><article class="experience-detail experience-detail--' + id + (id === 'startup' ? ' experience-detail--archive' : '') + '">' + archiveMedia + '<div class="experience-detail__copy"><p>' + d[0] + '</p><h3 id="experience-modal-title">' + d[1] + '</h3><strong>' + d[2] + '</strong><div><h4>&#x5DE5;&#x4F5C;&#x6982;&#x8FF0;</h4><p>' + d[5] + ' ' + d[7] + ' ' + (compactCopy[id] || '') + '</p></div><ul>' + tags + '</ul></div></article></div>';
+    modal.querySelector('[data-flip-poster]')?.addEventListener('click', (event) => event.currentTarget.classList.toggle('is-flipped'));
+    modal.classList.add('is-open'); modal.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; modal.querySelector('.experience-modal__dialog').focus();
+  };
+  cards.forEach((card) => card.addEventListener('click', () => open(card.dataset.experienceDetail, card)));
+  modal.addEventListener('click', (event) => {
+    const image = event.target.closest('.experience-detail__media img, .archive-media-grid img');
+    if (image && !image.closest('[data-flip-poster]')) {
+      event.stopPropagation();
+      const overlay = document.querySelector('#lightbox-overlay');
+      const lightboxImage = document.querySelector('#lightbox-image');
+      const caption = document.querySelector('#lightbox-caption');
+      if (overlay && lightboxImage && caption) {
+        lightboxImage.src = image.currentSrc || image.src;
+        lightboxImage.alt = image.alt || '';
+        caption.textContent = image.alt || '';
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+      return;
+    }
+    if (event.target.closest('[data-modal-close]')) close();
+  });
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && modal.classList.contains('is-open')) close(); });
+}
+
+createExperienceArchiveModal();
 enrichLayout();
 createIridescentPlanet();
 createGalleryMotion();
 manageVideos();
 addEventListener('load', () => ScrollTrigger.refresh());
+
 
 
 

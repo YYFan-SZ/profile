@@ -1,4 +1,4 @@
-﻿body.planet-view-home {
+body.planet-view-home {
   background:
     linear-gradient(90deg, rgba(150,112,214,.035) 1px, transparent 1px),
     linear-gradient(rgba(150,112,214,.035) 1px, transparent 1px),
@@ -199,3 +199,9 @@ main:has(#hero) {
   .sac-hero__story { max-width: 360px; padding-top: 6px; }
 }
 
+
+/* Align the profile image and its written introduction to one clear top baseline. */
+@media(min-width:761px){
+  .sac-hero__profile{align-items:start!important}
+  .sac-hero__story{padding-top:0!important}
+}
