@@ -3,10 +3,9 @@
 const items = [
   ['hero', '01', '首页'],
   ['projects', '02', '作品'],
-  ['experience', '03', '校园'],
-  ['practice', '04', '实践'],
-  ['content', '05', '内容'],
-  ['contact', '06', '联系'],
+  ['experience', '03', '实践'],
+  ['content', '04', '内容'],
+  ['contact', '05', '联系'],
 ];
 
 const nav = document.createElement('nav');
@@ -114,6 +113,7 @@ document.addEventListener('click', (event) => {
 document.addEventListener('scroll', syncHomeState, { passive: true });
 
 updateNavState('hero');
+
 
 
 
