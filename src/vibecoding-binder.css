@@ -110,3 +110,53 @@
   .vibe-diary__left .vibe-diary__turn--previous{position:absolute!important;inset:auto auto 6px 24px!important;margin:0!important;transform:none!important}
   .vibe-diary__right .vibe-diary__turn--next,.vibe-diary__right .vibe-diary__turn--next:disabled{position:absolute!important;inset:auto 24px 6px auto!important;margin:0!important;transform:none!important}
 }
+
+/* Violet archive edition: compact enough to remain fully inside the viewport. */
+.vibe-diary {
+  --vibe-paper: #fdfbff;
+  --vibe-paper-shadow: #f0edf8;
+  --vibe-ink: #353044;
+  --vibe-muted: #756d84;
+  --vibe-line: rgba(111, 94, 150, .18);
+  box-sizing: border-box;
+  width: min(900px, calc(100% - 28px));
+  max-width: 900px;
+  padding: 22px 24px 26px !important;
+}
+.vibe-diary__cover {
+  border-radius: 32px;
+  background: linear-gradient(120deg, #685682 0%, #8776aa 42%, #a89bd0 72%, #5e7382 100%);
+  box-shadow: inset 0 0 0 2px rgba(242, 238, 255, .44), inset 0 0 0 12px rgba(54, 38, 78, .16), 0 20px 44px rgba(68, 51, 96, .26);
+}
+.vibe-diary__cover::before { inset: 12px; border-color: rgba(246, 242, 255, .5); border-radius: 23px; }
+.vibe-diary__book { grid-template-columns: 1fr 22px 1fr; min-height: 500px; filter: drop-shadow(0 12px 12px rgba(51, 40, 73, .28)); }
+.vibe-diary__left, .vibe-diary__right { background: linear-gradient(105deg, var(--vibe-paper), var(--vibe-paper-shadow)); }
+.vibe-diary__left { box-shadow: inset -14px 0 22px rgba(77, 64, 109, .12); }
+.vibe-diary__right { box-shadow: inset 14px 0 22px rgba(77, 64, 109, .12); }
+.vibe-diary__paper, .vibe-diary__project-page, .vibe-diary__detail, .vibe-diary__left > .vibe-diary__detail, .vibe-diary__right > .vibe-diary__project-page { min-height: 500px; }
+.vibe-diary__paper { padding: 30px 32px; color: var(--vibe-ink); }
+.vibe-diary__paper::after { opacity: .3; background-image: radial-gradient(rgba(111, 94, 150, .34) .65px, transparent .8px); }
+.vibe-diary__spine { background: linear-gradient(90deg, #3f3655, #beb4db 29%, #6c5c91 51%, #d0c7e7 72%, #44395b); box-shadow: 0 0 6px rgba(47, 38, 67, .78); }
+.vibe-diary__spine i { width: 18px; height: 18px; border-color: #4d4267; background: radial-gradient(circle at 35% 35%, #fff, #b8afd1 32%, #55476f 40%, #d7cfe9 61%, #473b5e 68%); box-shadow: 0 2px 4px rgba(30, 22, 46, .7), 0 0 0 2px rgba(238, 232, 255, .38); }
+.vibe-diary__eyebrow, .vibe-diary__contents b, .vibe-diary__contents em, .vibe-diary__back, .vibe-diary__link { color: #7560aa; }
+.vibe-diary h3, .vibe-diary__contents nav button, .vibe-diary__summary, .vibe-diary__project-meta strong { color: var(--vibe-ink); }
+.vibe-diary__hint, .vibe-diary__contents small, .vibe-diary__copy, .vibe-diary__placeholder, .vibe-diary__project-meta p { color: var(--vibe-muted); }
+.vibe-diary__contents nav button { border-color: var(--vibe-line); }
+.vibe-diary__contents nav button:hover, .vibe-diary__contents nav button.is-current { background: rgba(236, 230, 250, .7); }
+.vibe-diary__contents nav button::after { background: #9a8ac4; }
+.vibe-diary__left::before, .vibe-diary__right::before { background: linear-gradient(90deg, rgba(203, 192, 233, .78), rgba(236, 230, 250, .84)); box-shadow: 0 1px 3px rgba(72, 56, 102, .16); }
+.vibe-diary__left::after, .vibe-diary__right::after { background: radial-gradient(circle, rgba(175, 155, 210, .5) 1.2px, transparent 1.4px); }
+.vibe-diary__project-media, .vibe-diary__media { border-color: rgba(119, 100, 159, .18); background: rgba(255, 255, 255, .62); box-shadow: 0 10px 18px rgba(69, 55, 96, .1); }
+.vibe-diary__project-media::after { color: rgba(103, 83, 146, .58); }
+.vibe-diary__rule { background: #8873bb; }
+.vibe-diary__notes span, .vibe-diary__footer span { border-color: rgba(119, 100, 159, .22); background: rgba(248, 245, 255, .85); color: #70608d; }
+@media (min-width: 761px) {
+  .vibe-diary__project-media { min-height: 280px; }
+  .vibe-diary__project-media img, .vibe-diary__project-media video { max-height: 286px; }
+  .vibe-diary__project-page--pink .vibe-diary__project-media, .vibe-diary__project-page--mint .vibe-diary__project-media { min-height: 300px; }
+  .vibe-diary__project-page--pink .vibe-diary__project-media img, .vibe-diary__project-page--mint .vibe-diary__project-media img { max-height: 292px; }
+}
+@media (max-width: 760px) {
+  .vibe-diary { width: calc(100% - 20px); padding: 14px 12px 20px !important; }
+  .vibe-diary__paper, .vibe-diary__project-page, .vibe-diary__detail, .vibe-diary__left > .vibe-diary__detail, .vibe-diary__right > .vibe-diary__project-page { min-height: 0; }
+}
