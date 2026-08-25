@@ -1,5 +1,8 @@
 node_modules/
 dist/
+.next/
+.tools/
+blender/output/
 build/
 .env
 .DS_Store
@@ -7,3 +10,13 @@ build/
 .playwright-mcp/
 *.bak
 code.txt
+
+# Local archives and superseded source copies are not part of the live website.
+/_archive/
+/_backups/
+/reference-3d-portfolio/
+/_room-source/
+/_room-work/
+
+# Built by room-source before Next.js builds the live site.
+/public/room-engine/

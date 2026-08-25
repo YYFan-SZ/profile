@@ -1,18 +1,36 @@
 {
-  "name": "zhengyifan-immersive-portfolio",
+  "name": "portfolio_web",
+  "version": "0.1.0",
   "private": true,
-  "version": "2.0.0",
-  "type": "module",
+  "workspaces": [
+    "room-source"
+  ],
   "scripts": {
-    "dev": "node scripts/build-static.mjs && vite --host 127.0.0.1",
-    "build": "node scripts/build-static.mjs",
-    "preview": "vite preview --host 127.0.0.1",
-    "build:static": "node scripts/build-static.mjs"
+    "dev": "npm run build:room && next dev",
+    "build:room": "npm --workspace room-source run build",
+    "build": "npm run build:room && next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.0",
+    "lenis": "^1.3.23",
+    "next": "16.2.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "simple-icons": "^16.16.0",
+    "three": "^0.184.0"
   },
   "devDependencies": {
-    "esbuild": "^0.28.1",
-    "gsap": "^3.15.0",
-    "three": "^0.185.1",
-    "vite": "^8.1.2"
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/three": "^0.184.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }
