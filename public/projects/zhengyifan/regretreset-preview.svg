@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">RegretReset project preview</title>
+  <desc id="desc">A warm editorial preview showing the RegretReset reflection flow.</desc>
+  <rect width="1200" height="760" fill="#f1e8df"/>
+  <circle cx="1020" cy="118" r="190" fill="#dfc6c1" opacity=".7"/>
+  <circle cx="170" cy="660" r="250" fill="#e5d4bb" opacity=".65"/>
+  <text x="82" y="112" fill="#6b4b48" font-family="Arial, sans-serif" font-size="22" letter-spacing="6">AI REFLECTION TOOL</text>
+  <text x="82" y="228" fill="#2e2828" font-family="Georgia, serif" font-size="78">RegretReset</text>
+  <text x="86" y="276" fill="#856b66" font-family="Arial, sans-serif" font-size="24">from stuck thoughts to a next step</text>
+  <g fill="#fffaf4" stroke="#c8aaa2" stroke-width="2">
+    <rect x="82" y="390" width="286" height="156" rx="24"/>
+    <rect x="458" y="390" width="286" height="156" rx="24"/>
+    <rect x="834" y="390" width="286" height="156" rx="24"/>
+  </g>
+  <g fill="#a56b62" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">
+    <text x="116" y="438">01 · CLARIFY</text>
+    <text x="492" y="438">02 · CHOOSE</text>
+    <text x="868" y="438">03 · ACT</text>
+  </g>
+  <g fill="#554344" font-family="Arial, sans-serif" font-size="24">
+    <text x="116" y="490">看清事实与感受</text>
+    <text x="492" y="490">对齐价值与选择</text>
+    <text x="868" y="490">生成下一步行动</text>
+  </g>
+  <g stroke="#a56b62" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M368 468h72"/><path d="M744 468h72"/>
+    <path d="m428 452 16 16-16 16"/><path d="m804 452 16 16-16 16"/>
+  </g>
+  <text x="84" y="680" fill="#a56b62" font-family="Arial, sans-serif" font-size="18" letter-spacing="4">A QUIET TOOL FOR MOVING FORWARD</text>
+</svg>
