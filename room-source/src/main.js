@@ -574,7 +574,9 @@ function createStarOutlineShape(outerRadius = 0.30, innerRadius = 0.20) {
 }
 
 function registerRoomInteraction(targetOrTargets, effect = "bounce", options = {}) {
-  const targets = (Array.isArray(targetOrTargets) ? targetOrTargets : [targetOrTargets]).filter(Boolean);
+  const targets = (Array.isArray(targetOrTargets) ? targetOrTargets : [targetOrTargets])
+    .filter(Boolean)
+    .filter((target) => !target.userData.roomInteractionEntry);
   if (!targets.length) return null;
 
   const entry = {
@@ -2661,6 +2663,20 @@ controls.update();
 
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
+
+// Non-critical decorations are intentionally scheduled after the room shell
+// is visible. This keeps the large main room model from competing with every
+// optional GLB for the first network connection and first render frame.
+function scheduleRoomDecoration(task, delay = 0) {
+  window.setTimeout(() => {
+    if (typeof window.requestIdleCallback === "function") {
+      window.requestIdleCallback(task, { timeout: 1200 });
+    } else {
+      task();
+    }
+  }, delay);
+}
+
 loader.load(
   "/room-engine/models/zhengyifan-room.glb?revision=20260823-clear-left-corner-layout",
   (gltf) => {
@@ -2829,15 +2845,6 @@ loader.load(
 
     prepareSofaNightMaterials(room);
     styleComputerWelcomeScreen(room);
-    createPhotoWall(room);
-    createWallBallRack(room);
-    createWallCalendarAndPocket(room);
-    createCornerShelfAndMirror(room);
-    createImportedTeaTableLamp(room);
-    createRecordPlayerMusicEffects(room);
-    createWallRosie(room);
-    createWallRosieDoll(room);
-    createProfileCardHolder(room);
     registerRoomInteractions(room);
     scene.add(room);
 
@@ -2853,6 +2860,22 @@ loader.load(
     };
     if (reducedMotion) revealRoom();
     else window.setTimeout(revealRoom, Math.max(0, minimumLoadingDuration - (performance.now() - loadingStartedAt)));
+
+    // Build lightweight geometry first, then request the heavier GLB
+    // decorations one at a time. They are still added to the same room group,
+    // so their positions and interactions remain unchanged.
+    scheduleRoomDecoration(() => {
+      createPhotoWall(room);
+      createWallCalendarAndPocket(room);
+      createCornerShelfAndMirror(room);
+      createRecordPlayerMusicEffects(room);
+      registerRoomInteractions(room);
+    }, 80);
+    scheduleRoomDecoration(() => createWallBallRack(room), 260);
+    scheduleRoomDecoration(() => createImportedTeaTableLamp(room), 430);
+    scheduleRoomDecoration(() => createWallRosie(room), 600);
+    scheduleRoomDecoration(() => createWallRosieDoll(room), 770);
+    scheduleRoomDecoration(() => createProfileCardHolder(room), 940);
   },
   (event) => {
     if (!event.total) return;

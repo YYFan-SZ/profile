@@ -33,6 +33,16 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // GLB, texture, image and audio files are content-addressed by the
+        // revision query strings used by the room. Let the browser/CDN keep
+        // them for a year so repeat visits do not download the whole room.
+        source: "/room-engine/:path*",
+        headers: [
+          ...securityHeaders,
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
+      {
         source: "/:path*",
         headers: securityHeaders,
       },
