@@ -22,9 +22,11 @@
             <g class="loading-star loading-star--6" transform="translate(444 48)"><path d="M0-9 3-3 9-2 4 3 5 9 0 6-5 9-4 3-9-2-3-3Z" /></g>
           </svg>
         </div>
-        <strong>正在布置 3D 房间…</strong>
+        <strong id="loading-title">正在布置 3D 房间…</strong>
         <div class="loading-progress-track" aria-hidden="true"><i id="loading-progress-fill"></i></div>
         <span id="loading-progress">0%</span>
+        <p id="loading-status" aria-live="polite"></p>
+        <button id="loading-retry" type="button" hidden>重新加载</button>
       </div>
 
       <aside class="exploration-progress" id="exploration-progress" aria-live="polite">

@@ -10,6 +10,9 @@ import "./style.css";
 const canvas = document.querySelector("#room-canvas");
 const progressLabel = document.querySelector("#loading-progress");
 const progressFill = document.querySelector("#loading-progress-fill");
+const loadingTitle = document.querySelector("#loading-title");
+const loadingStatus = document.querySelector("#loading-status");
+const loadingRetry = document.querySelector("#loading-retry");
 const lampSwitch = document.querySelector("#lamp-switch");
 const musicControl = document.querySelector("#music-control");
 const musicPlayer = document.querySelector("#music-player");
@@ -43,6 +46,31 @@ const weatherStatusLabel = document.querySelector("#weather-status-label");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const loadingStartedAt = performance.now();
 const minimumLoadingDuration = 3000;
+let latestLoadingProgress = 0;
+
+function setLoadingStatus(message, { showRetry = false, error = false } = {}) {
+  if (loadingStatus) loadingStatus.textContent = message;
+  loadingStatus?.classList.toggle("is-error", error);
+  if (loadingRetry) loadingRetry.hidden = !showRetry;
+}
+
+window.setTimeout(() => {
+  if (document.body.classList.contains("is-ready") || latestLoadingProgress > 0) return;
+  setLoadingStatus("房间模型比较大，正在加载，请耐心等待…");
+}, 5000);
+
+window.setTimeout(() => {
+  if (document.body.classList.contains("is-ready")) return;
+  setLoadingStatus("加载时间比平时长，请保持网络连接。\n你可以继续等待，或点击“重新加载”。", { showRetry: true });
+}, 15000);
+
+window.setTimeout(() => {
+  if (document.body.classList.contains("is-ready")) return;
+  if (loadingTitle) loadingTitle.textContent = "房间暂时还没加载好";
+  setLoadingStatus("房间加载失败，可能是网络连接或资源服务器暂时不可用。\n请刷新页面重试。", { showRetry: true, error: true });
+}, 30000);
+
+loadingRetry?.addEventListener("click", () => window.location.reload());
 
 // The loading screen now represents the assets that must be ready for the
 // first complete room view. The weights roughly follow the source file sizes,
@@ -191,6 +219,7 @@ function updateReturnPanoramaButton() {
 
 function setLoadingProgress(value) {
   const safeValue = Math.max(0, Math.min(100, Math.round(value)));
+  latestLoadingProgress = safeValue;
   progressLabel.textContent = `${safeValue}%`;
   progressFill.style.width = `${safeValue}%`;
 }
@@ -1387,19 +1416,24 @@ function createWallBallRack(room) {
     // Show a lightweight colored sphere immediately. The detailed GLB is
     // decorative and can take several seconds to download and parse, so it
     // should never leave an empty rack while the real asset is loading.
-    const placeholder = new THREE.Mesh(
-      new THREE.SphereGeometry(0.62, 20, 14),
-      new THREE.MeshStandardMaterial({
-        color: ballPlaceholderColors[index],
-        roughness: 0.42,
-        metalness: 0.02,
-      }),
-    );
+    const placeholder = new THREE.Group();
     placeholder.name = `WallRack_ColorBall_Placeholder_${index + 1}`;
-    placeholder.scale.y = 1.22;
+    const placeholderMaterial = new THREE.MeshStandardMaterial({
+      color: ballPlaceholderColors[index],
+      roughness: 0.42,
+      metalness: 0.02,
+    });
+    const placeholderChain = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.64, 8), hookMaterial);
+    placeholderChain.position.y = 0.38;
+    placeholderChain.castShadow = true;
+    placeholder.add(placeholderChain);
+    const placeholderBall = new THREE.Mesh(new THREE.SphereGeometry(0.48, 18, 12), placeholderMaterial);
+    placeholderBall.scale.y = 1.08;
+    placeholderBall.position.y = -0.18;
+    placeholderBall.castShadow = true;
+    placeholderBall.receiveShadow = true;
+    placeholder.add(placeholderBall);
     placeholder.position.set(x, 4.05, -2.98);
-    placeholder.castShadow = true;
-    placeholder.receiveShadow = true;
     rack.add(placeholder);
 
     const loadBall = () => new Promise((resolve) => {
@@ -3379,6 +3413,8 @@ loader.load(
   },
   (event) => trackCriticalAssetDownload("room", event),
   (error) => {
+    if (loadingTitle) loadingTitle.textContent = "房间暂时还没加载好";
+    setLoadingStatus("房间加载失败，可能是网络连接或资源服务器暂时不可用。\n请刷新页面重试。", { showRetry: true, error: true });
     progressLabel.textContent = "模型加载失败";
     console.error("Room model failed to load", error);
   },

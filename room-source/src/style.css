@@ -359,6 +359,40 @@ body.is-ready .loading-card {
   font-variant-numeric: tabular-nums;
 }
 
+#loading-status {
+  position: relative;
+  z-index: 2;
+  max-width: min(360px, 82vw);
+  margin: 2px 0 0;
+  color: #806d89;
+  font-size: 12px;
+  line-height: 1.65;
+  text-align: center;
+  white-space: pre-line;
+}
+
+#loading-status.is-error {
+  color: #a25d6b;
+}
+
+#loading-retry {
+  position: relative;
+  z-index: 2;
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 18px;
+  color: #fff;
+  background: #846b91;
+  box-shadow: 0 8px 18px rgba(105, 77, 122, 0.18);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+}
+
+#loading-retry:hover {
+  background: #70567e;
+}
+
 .loading-garland {
   position: relative;
   z-index: 2;
