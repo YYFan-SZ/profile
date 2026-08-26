@@ -1388,7 +1388,6 @@ function createWallBallRack(room) {
     ["/room-engine/models/hanging-ball-blue.glb", -5.30],
     ["/room-engine/models/hanging-ball-green.glb", -4.40],
   ];
-  const ballPlaceholderColors = [0xf3a8bd, 0xe96b62, 0xf6c34d, 0x63a7d8, 0x6fbd79];
 
   ballSpecs.forEach(([url, x], index) => {
     const mount = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.10, 24), hookMaterial);
@@ -1413,35 +1412,11 @@ function createWallBallRack(room) {
     hook.castShadow = true;
     rack.add(hook);
 
-    // Show a lightweight colored sphere immediately. The detailed GLB is
-    // decorative and can take several seconds to download and parse, so it
-    // should never leave an empty rack while the real asset is loading.
-    const placeholder = new THREE.Group();
-    placeholder.name = `WallRack_ColorBall_Placeholder_${index + 1}`;
-    const placeholderMaterial = new THREE.MeshStandardMaterial({
-      color: ballPlaceholderColors[index],
-      roughness: 0.42,
-      metalness: 0.02,
-    });
-    const placeholderChain = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.64, 8), hookMaterial);
-    placeholderChain.position.y = 0.38;
-    placeholderChain.castShadow = true;
-    placeholder.add(placeholderChain);
-    const placeholderBall = new THREE.Mesh(new THREE.SphereGeometry(0.48, 18, 12), placeholderMaterial);
-    placeholderBall.scale.y = 1.08;
-    placeholderBall.position.y = -0.18;
-    placeholderBall.castShadow = true;
-    placeholderBall.receiveShadow = true;
-    placeholder.add(placeholderBall);
-    placeholder.position.set(x, 4.05, -2.98);
-    rack.add(placeholder);
-
     const loadBall = () => new Promise((resolve) => {
       loader.load(
         `${url}?revision=20260823-corrected-ball-rack`,
         (gltf) => {
           const ball = gltf.scene;
-          placeholder.removeFromParent();
           ball.name = `WallRack_ColorBall_${index + 1}`;
         ball.traverse((child) => {
           if (!child.isMesh) return;
