@@ -1359,6 +1359,7 @@ function createWallBallRack(room) {
     ["/room-engine/models/hanging-ball-blue.glb", -5.30],
     ["/room-engine/models/hanging-ball-green.glb", -4.40],
   ];
+  const ballPlaceholderColors = [0xf3a8bd, 0xe96b62, 0xf6c34d, 0x63a7d8, 0x6fbd79];
 
   ballSpecs.forEach(([url, x], index) => {
     const mount = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.10, 24), hookMaterial);
@@ -1383,11 +1384,31 @@ function createWallBallRack(room) {
     hook.castShadow = true;
     rack.add(hook);
 
-    loader.load(
-      `${url}?revision=20260823-corrected-ball-rack`,
-      (gltf) => {
-        const ball = gltf.scene;
-        ball.name = `WallRack_ColorBall_${index + 1}`;
+    // Show a lightweight colored sphere immediately. The detailed GLB is
+    // decorative and can take several seconds to download and parse, so it
+    // should never leave an empty rack while the real asset is loading.
+    const placeholder = new THREE.Mesh(
+      new THREE.SphereGeometry(0.62, 20, 14),
+      new THREE.MeshStandardMaterial({
+        color: ballPlaceholderColors[index],
+        roughness: 0.42,
+        metalness: 0.02,
+      }),
+    );
+    placeholder.name = `WallRack_ColorBall_Placeholder_${index + 1}`;
+    placeholder.scale.y = 1.22;
+    placeholder.position.set(x, 4.05, -2.98);
+    placeholder.castShadow = true;
+    placeholder.receiveShadow = true;
+    rack.add(placeholder);
+
+    const loadBall = () => new Promise((resolve) => {
+      loader.load(
+        `${url}?revision=20260823-corrected-ball-rack`,
+        (gltf) => {
+          const ball = gltf.scene;
+          placeholder.removeFromParent();
+          ball.name = `WallRack_ColorBall_${index + 1}`;
         ball.traverse((child) => {
           if (!child.isMesh) return;
           child.castShadow = true;
@@ -1432,16 +1453,35 @@ function createWallBallRack(room) {
           -2.98 - scaledCenter.z,
         );
         rack.add(ball);
-        registerRoomInteraction(ball, "swing", {
-          hoverScale: 1.05,
-          hoverTilt: index % 2 ? 0.075 : -0.075,
-          swingAmount: 0.30,
-        });
-      },
-      undefined,
-      (error) => console.error(`Color ball failed to load: ${url}`, error),
-    );
+          registerRoomInteraction(ball, "swing", {
+            hoverScale: 1.05,
+            hoverTilt: index % 2 ? 0.075 : -0.075,
+            swingAmount: 0.30,
+          });
+          resolve();
+        },
+        undefined,
+        (error) => {
+          console.error(`Color ball failed to load: ${url}`, error);
+          // Keep the placeholder visible if a decorative asset is missing.
+          resolve();
+        },
+      );
+    });
+
+    // Parse one detailed ball per animation frame. This prevents five GLB
+    // decoders from blocking the main thread at the same time and keeps the
+    // room responsive while the rack finishes loading in the background.
+    ballSpecs[index][2] = loadBall;
   });
+
+  (async () => {
+    for (const [, , loadBall] of ballSpecs) {
+      if (!loadBall) continue;
+      await loadBall();
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+  })();
 
   room.add(rack);
 }
