@@ -18,6 +18,7 @@ const musicPrevious = document.querySelector("#music-previous");
 const musicPlayPause = document.querySelector("#music-play-pause");
 const musicNext = document.querySelector("#music-next");
 const lightingControl = document.querySelector("#lighting-control");
+const returnPanoramaButton = document.querySelector("#return-panorama");
 const contactCard = document.querySelector("#contact-card");
 const contactCardClose = document.querySelector("#contact-card-close");
 const photoViewer = document.querySelector("#photo-viewer");
@@ -30,9 +31,30 @@ const profileCardViewer = document.querySelector("#profile-card-viewer");
 const profileCardViewerCanvas = document.querySelector("#profile-card-viewer-canvas");
 const profileCardViewerClose = document.querySelector("#profile-card-viewer-close");
 const receiptSaveButton = document.querySelector("#receipt-save");
+const receiptAgainButton = document.querySelector("#receipt-again");
+const receiptActions = document.querySelector("#receipt-actions");
+const explorationProgress = document.querySelector("#exploration-progress");
+const explorationProgressLabel = document.querySelector("#exploration-progress-label");
+const explorationProgressCount = document.querySelector("#exploration-progress-count");
+const explorationProgressFill = document.querySelector("#exploration-progress-fill");
+const explorationProgressTrack = explorationProgress?.querySelector('[role="progressbar"]');
+const weatherStatus = document.querySelector("#weather-status");
+const weatherStatusLabel = document.querySelector("#weather-status-label");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const loadingStartedAt = performance.now();
 const minimumLoadingDuration = 3000;
+
+// The loading screen now represents the assets that must be ready for the
+// first complete room view. The weights roughly follow the source file sizes,
+// so one small photo does not move the progress bar as much as a large GLB.
+const criticalAssetProgress = new Map([
+  ["room", { weight: 73.3, progress: 0 }],
+  ["photoWall", { weight: 0.8, progress: 0 }],
+  ["teaTableLamp", { weight: 15.0, progress: 0 }],
+  ["wallRosie", { weight: 24.8, progress: 0 }],
+  ["rosieDoll", { weight: 22.6, progress: 0 }],
+  ["profileCard", { weight: 12.1, progress: 0 }],
+]);
 
 if (lampSwitch) {
   lampSwitch.hidden = true;
@@ -53,6 +75,7 @@ let teaTableLampLight = null;
 let teaTableLampManualOn = false;
 let roomIsNight = false;
 let currentPhotoIndex = -1;
+let activePhotoViewerItems = null;
 let currentMusicTrack = 0;
 let recordMusicDisc = null;
 const recordMusicNotes = [];
@@ -71,6 +94,7 @@ let receiptPaperSheet = null;
 let receiptPaperExtended = false;
 let receiptPaperAnimating = false;
 let receiptTicketCanvas = null;
+let receiptCurrentMessage = "";
 let receiptPrinterObject = null;
 let receiptFocusActive = false;
 const receiptFocusReturnPosition = new THREE.Vector3();
@@ -80,6 +104,21 @@ let profileCardFocusActive = false;
 const profileCardFocusReturnPosition = new THREE.Vector3();
 const profileCardFocusReturnTarget = new THREE.Vector3();
 let profileCardFocusReturnFov = 29;
+const discoveredInteractions = new Set();
+const explorationInteractionTotal = 8;
+let starCelebrationActive = false;
+let windowWeatherIndex = 0;
+let windowWeatherTexture = null;
+const windowGlassMeshes = [];
+let weatherStatusTimer = 0;
+
+const RECEIPT_MESSAGES = [
+  "所以我说，就让他去\n我知道潮落之后一定有潮起",
+  "你当时相信的那些事情\n会在如今变成美丽风景",
+  "没发生什么好事？\n那就先吃点好吃的。",
+  "有些事现在不做，\n一辈子都不会做了",
+  "慢一点也没关系，\n你一直在往前走。",
+];
 
 const MUSIC_TRACKS = [
   { title: "ROSÉ · number one girl", url: "/room-engine/music/rose-number-one-girl.mp3" },
@@ -112,10 +151,66 @@ const PHOTO_WALL_ITEMS = [
   ["/room-engine/photos/photo-19.jpg", "佛山游记"],
 ];
 
+const FOOD_GALLERY_ITEMS = [
+  ["/room-engine/food-gallery/food-01.jpg", "活动课"],
+  ["/room-engine/food-gallery/food-02.jpg", "火锅"],
+  ["/room-engine/food-gallery/food-03.jpg", "冰室"],
+  ["/room-engine/food-gallery/food-04.jpg", "探店"],
+  ["/room-engine/food-gallery/food-05.jpg", "探店 2"],
+  ["/room-engine/food-gallery/food-06.jpg", "探店 3"],
+  ["/room-engine/food-gallery/food-07.jpg", "美食公开课"],
+  ["/room-engine/food-gallery/food-08.jpg", "韩餐"],
+  ["/room-engine/food-gallery/food-09.jpg", "探店 4"],
+];
+
+const WINDOW_WEATHER_STATES = [
+  { key: "day", label: "白天阳光", hemisphere: 2.35, sun: 4.1, fill: 19, warm: 13, exposure: 1.08, roomShade: 1, starEmissive: 1.5, starPoint: 1.0, glow: 1.0, colors: [0xffead3, 0xb9b8ec, 0xffcda7] },
+  { key: "sunset", label: "黄昏", hemisphere: 1.35, sun: 2.5, fill: 9.5, warm: 20, exposure: 0.98, roomShade: 0.78, starEmissive: 1.9, starPoint: 1.35, glow: 1.30, colors: [0xff9b69, 0xb99bd8, 0xff8a58] },
+  { key: "night", label: "夜晚星空", hemisphere: 0.34, sun: 0.16, fill: 1.25, warm: 1.8, exposure: 0.78, roomShade: 0.30, starEmissive: 3.35, starPoint: 3.8, glow: 1.85, colors: [0xaebeff, 0x7784c7, 0xf2a864] },
+  { key: "rain", label: "雨天玻璃", hemisphere: 0.78, sun: 0.42, fill: 6.5, warm: 4.5, exposure: 0.86, roomShade: 0.56, starEmissive: 1.35, starPoint: 0.82, glow: 0.78, colors: [0xb9ccdc, 0x8ca9c3, 0xd1a99a] },
+];
+
+function markInteractionDiscovered(key) {
+  if (discoveredInteractions.has(key)) return;
+  discoveredInteractions.add(key);
+  const count = Math.min(discoveredInteractions.size, explorationInteractionTotal);
+  if (explorationProgressCount) explorationProgressCount.textContent = String(count);
+  if (explorationProgressFill) explorationProgressFill.style.width = `${(count / explorationInteractionTotal) * 100}%`;
+  explorationProgressTrack?.setAttribute("aria-valuenow", String(count));
+  if (count === explorationInteractionTotal) {
+    starCelebrationActive = true;
+    explorationProgress?.classList.add("is-complete");
+    if (explorationProgressLabel) explorationProgressLabel.textContent = "已解锁所有隐藏惊喜！";
+    document.body.classList.add("is-exploration-complete");
+  }
+}
+
+function updateReturnPanoramaButton() {
+  returnPanoramaButton?.removeAttribute("aria-hidden");
+}
+
 function setLoadingProgress(value) {
   const safeValue = Math.max(0, Math.min(100, Math.round(value)));
   progressLabel.textContent = `${safeValue}%`;
   progressFill.style.width = `${safeValue}%`;
+}
+
+function updateCriticalAssetProgress(key, progress) {
+  const entry = criticalAssetProgress.get(key);
+  if (!entry) return;
+  entry.progress = THREE.MathUtils.clamp(progress, 0, 1);
+  let loadedWeight = 0;
+  let totalWeight = 0;
+  criticalAssetProgress.forEach((asset) => {
+    loadedWeight += asset.weight * asset.progress;
+    totalWeight += asset.weight;
+  });
+  // Keep 100% reserved for the first fully rendered frame.
+  setLoadingProgress(Math.min(99, (loadedWeight / totalWeight) * 100));
+}
+
+function trackCriticalAssetDownload(key, event) {
+  if (event.total) updateCriticalAssetProgress(key, event.loaded / event.total);
 }
 
 function setMusicPlayerOpen(open) {
@@ -187,6 +282,7 @@ roomAudio.addEventListener("ended", () => loadMusicTrack(currentMusicTrack + 1, 
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(29, innerWidth / innerHeight, 0.1, 120);
+const panoramaCameraTarget = new THREE.Vector3(0, 2.25, -0.70);
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "high-performance" });
 
 renderer.setPixelRatio(Math.min(devicePixelRatio, 1.8));
@@ -214,7 +310,13 @@ function createGlowTexture() {
   return texture;
 }
 
-function createReceiptTexture() {
+function chooseReceiptMessage() {
+  const available = RECEIPT_MESSAGES.filter((message) => message !== receiptCurrentMessage);
+  receiptCurrentMessage = available[Math.floor(Math.random() * available.length)] ?? RECEIPT_MESSAGES[0];
+  return receiptCurrentMessage;
+}
+
+function createReceiptTexture(message = chooseReceiptMessage()) {
   const ticketCanvas = document.createElement("canvas");
   ticketCanvas.width = 1024;
   ticketCanvas.height = 1536;
@@ -249,9 +351,10 @@ function createReceiptTexture() {
   context.font = "500 31px 'Courier New', monospace";
   context.fillText("A LITTLE NOTE FOR YOU", 512, 338);
 
-  context.font = "500 54px 'Microsoft YaHei', sans-serif";
-  context.fillText("慢一点也没关系，", 512, 485);
-  context.fillText("你正在走自己的路。", 512, 568);
+  context.font = "500 50px 'Microsoft YaHei', sans-serif";
+  const messageLines = message.split("\n");
+  const messageStartY = messageLines.length > 1 ? 474 : 516;
+  messageLines.forEach((line, index) => context.fillText(line, 512, messageStartY + index * 78));
 
   context.strokeStyle = lavenderInk;
   context.lineWidth = 5;
@@ -316,7 +419,9 @@ function createReceiptPaper(room, receiptPrinter) {
 
   receiptPaperGroup = new THREE.Group();
   receiptPaperGroup.name = "ReceiptPaper_Group";
-  receiptPaperGroup.position.set(frontX + 0.055, slotY - 0.025, printerCenter.z);
+  // Keep the paper just outside the printer face so it visually grows from
+  // the slot instead of floating in front of the machine.
+  receiptPaperGroup.position.set(frontX + 0.014, slotY - 0.008, printerCenter.z);
   receiptPaperGroup.rotation.y = Math.PI / 2;
 
   const paperShape = new THREE.Shape();
@@ -361,7 +466,9 @@ function createReceiptPaper(room, receiptPrinter) {
 }
 
 function updateReceiptSaveButton() {
-  receiptSaveButton?.classList.toggle("is-visible", receiptFocusActive && receiptPaperExtended);
+  const visible = receiptFocusActive && receiptPaperExtended;
+  receiptActions?.classList.toggle("is-visible", visible);
+  receiptActions?.setAttribute("aria-hidden", String(!visible));
 }
 
 function saveReceiptImage() {
@@ -412,6 +519,43 @@ function toggleReceiptPaper() {
 
 receiptSaveButton?.addEventListener("click", saveReceiptImage);
 
+function refreshReceiptTexture() {
+  if (!receiptPaperSheet) return;
+  const previousTexture = receiptPaperSheet.material.map;
+  receiptPaperSheet.material.map = createReceiptTexture(chooseReceiptMessage());
+  receiptPaperSheet.material.needsUpdate = true;
+  previousTexture?.dispose();
+}
+
+function printAnotherReceipt() {
+  if (!receiptPaperSheet || receiptPaperAnimating || !receiptPaperExtended) return;
+  const duration = reducedMotion ? 0 : 0.62;
+  receiptPaperAnimating = true;
+  if (duration === 0) {
+    receiptPaperSheet.visible = false;
+    receiptPaperSheet.scale.y = 0.012;
+    receiptPaperExtended = false;
+    refreshReceiptTexture();
+    receiptPaperAnimating = false;
+    toggleReceiptPaper();
+    return;
+  }
+  gsap.to(receiptPaperSheet.scale, {
+    y: 0.012,
+    duration,
+    ease: "power2.in",
+    onComplete: () => {
+      receiptPaperSheet.visible = false;
+      receiptPaperExtended = false;
+      refreshReceiptTexture();
+      receiptPaperAnimating = false;
+      toggleReceiptPaper();
+    },
+  });
+}
+
+receiptAgainButton?.addEventListener("click", printAnotherReceipt);
+
 function makeWallFacingPlane(geometry, material) {
   const plane = new THREE.Mesh(geometry, material);
   const wallBasis = new THREE.Matrix4().makeBasis(
@@ -453,17 +597,28 @@ function createComputerWelcomeTexture() {
   screenCanvas.height = 720;
   const context = screenCanvas.getContext("2d");
 
+  const guideItems = [
+    ["01", "黑胶唱片机", "播放音乐"],
+    ["02", "照片墙", "翻看生活相册"],
+    ["03", "茶几甜点", "查看美食记录"],
+    ["04", "联系邮箱", "查看联系方式"],
+    ["05", "小票机", "打印并保存小票"],
+    ["06", "卡套", "近距离查看"],
+    ["07", "窗帘", "切换四种天气"],
+    ["08", "电脑屏幕", "拉近或返回"],
+  ];
+
   const background = context.createLinearGradient(60, 30, 1220, 690);
-  background.addColorStop(0, "#cfc5e4");
-  background.addColorStop(0.46, "#e8dff0");
-  background.addColorStop(1, "#f3dccd");
+  background.addColorStop(0, "#c9bfdf");
+  background.addColorStop(0.48, "#e7dfee");
+  background.addColorStop(1, "#f1d9cf");
   context.fillStyle = background;
   context.fillRect(0, 0, 1280, 720);
 
   const ambientBlobs = [
-    [160, 610, 270, "rgba(255,246,229,.42)"],
-    [1120, 115, 245, "rgba(190,207,235,.44)"],
-    [970, 650, 300, "rgba(236,189,211,.28)"],
+    [110, 640, 250, "rgba(255,246,229,.40)"],
+    [1160, 80, 260, "rgba(190,207,235,.42)"],
+    [1020, 690, 290, "rgba(236,189,211,.24)"],
   ];
   ambientBlobs.forEach(([x, y, radius, color]) => {
     context.fillStyle = color;
@@ -472,47 +627,77 @@ function createComputerWelcomeTexture() {
     context.fill();
   });
 
-  context.fillStyle = "rgba(255,255,255,.28)";
-  context.fillRect(0, 0, 1280, 62);
-  context.fillStyle = "rgba(76,62,88,.68)";
-  context.font = "600 20px 'Segoe UI', 'Microsoft YaHei', sans-serif";
   context.textAlign = "left";
   context.textBaseline = "middle";
-  context.fillText("3D ROOM", 38, 31);
+  context.fillStyle = "rgba(255,255,255,.24)";
+  context.fillRect(0, 0, 1280, 54);
+  context.fillStyle = "rgba(77,59,89,.64)";
+  context.font = "700 17px 'Segoe UI', sans-serif";
+  context.fillText("MY 3D ROOM", 42, 28);
   context.textAlign = "right";
-  context.fillText("10:24   ♫   ◉", 1240, 31);
+  context.fillText("EXPLORE  /  08", 1238, 28);
 
-  context.shadowColor = "rgba(80,57,100,.16)";
-  context.shadowBlur = 30;
-  context.shadowOffsetY = 12;
-  context.fillStyle = "rgba(255,252,250,.80)";
+  context.textAlign = "left";
+  context.fillStyle = "#8f75a0";
+  context.font = "750 18px 'Segoe UI', sans-serif";
+  context.fillText("ROOM GUIDE", 64, 105);
+  context.fillStyle = "#51405c";
+  context.font = "750 58px 'Microsoft YaHei', sans-serif";
+  context.fillText("房间", 62, 168);
+  context.fillText("探索指南", 62, 235);
+  context.fillStyle = "#806e88";
+  context.font = "500 23px 'Microsoft YaHei', sans-serif";
+  context.fillText("点击物件，", 65, 303);
+  context.fillText("发现我的生活碎片。", 65, 339);
+
+  context.strokeStyle = "rgba(101,78,115,.17)";
+  context.lineWidth = 2;
   context.beginPath();
-  context.roundRect(238, 145, 804, 420, 46);
-  context.fill();
-  context.shadowColor = "transparent";
+  context.moveTo(384, 84);
+  context.lineTo(384, 646);
+  context.stroke();
 
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillStyle = "#a687b8";
-  context.font = "700 27px 'Segoe UI', sans-serif";
-  context.fillText("✦  WELCOME  ✦", 640, 218);
-  context.fillStyle = "#594966";
-  context.font = "750 78px 'Segoe UI', 'Microsoft YaHei', sans-serif";
-  context.fillText("MY 3D ROOM", 640, 326);
-  context.fillStyle = "#887590";
-  context.font = "500 38px 'Microsoft YaHei', sans-serif";
-  context.fillText("点击物件，开始探索", 640, 412);
-
-  const pillGradient = context.createLinearGradient(500, 0, 780, 0);
-  pillGradient.addColorStop(0, "#a98abd");
-  pillGradient.addColorStop(1, "#c397ae");
-  context.fillStyle = pillGradient;
+  context.fillStyle = "rgba(255,252,249,.42)";
   context.beginPath();
-  context.roundRect(505, 470, 270, 58, 29);
+  context.roundRect(62, 440, 278, 122, 25);
   context.fill();
-  context.fillStyle = "#fffaf6";
-  context.font = "700 24px 'Microsoft YaHei', sans-serif";
-  context.fillText("START  →", 640, 500);
+  context.fillStyle = "#9d83aa";
+  context.font = "750 15px 'Segoe UI', sans-serif";
+  context.fillText("HOW TO MOVE", 86, 472);
+  context.fillStyle = "#6f5b78";
+  context.font = "600 19px 'Microsoft YaHei', sans-serif";
+  context.fillText("拖动旋转  ·  滚轮缩放", 86, 511);
+  context.fillText("点击物件，触发互动", 86, 540);
+
+  guideItems.forEach(([number, title, action], index) => {
+    const column = index < 4 ? 0 : 1;
+    const row = index % 4;
+    const x = 432 + column * 410;
+    const y = 120 + row * 134;
+
+    context.textAlign = "left";
+    context.fillStyle = column === 0 ? "#9c7eae" : "#b67f93";
+    context.font = "750 17px 'Segoe UI', sans-serif";
+    context.fillText(number, x, y);
+
+    context.fillStyle = "#5d4b67";
+    context.font = "700 27px 'Microsoft YaHei', sans-serif";
+    context.fillText(title, x + 46, y);
+    context.fillStyle = "#927f9a";
+    context.font = "500 19px 'Microsoft YaHei', sans-serif";
+    context.fillText(action, x + 46, y + 36);
+    context.strokeStyle = "rgba(101,78,115,.14)";
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(x, y + 68);
+    context.lineTo(x + 350, y + 68);
+    context.stroke();
+  });
+
+  context.textAlign = "right";
+  context.fillStyle = "rgba(91,70,103,.58)";
+  context.font = "600 16px 'Microsoft YaHei', sans-serif";
+  context.fillText("每个角落，都藏着一点生活。", 1216, 676);
 
   const texture = new THREE.CanvasTexture(screenCanvas);
   texture.colorSpace = THREE.SRGBColorSpace;
@@ -529,8 +714,22 @@ function styleComputerWelcomeScreen(room) {
   // The imported screen mesh has no reliable image UVs. A dedicated front
   // plane guarantees the canvas text is readable instead of sampling one
   // blank strip from the texture.
+  screen.geometry.computeBoundingBox();
+  const screenBounds = screen.geometry.boundingBox;
+  const screenSize = screenBounds.getSize(new THREE.Vector3());
+  const screenCenter = screenBounds.getCenter(new THREE.Vector3());
+  const textureAspect = 16 / 9;
+  const maximumWidth = screenSize.x * 0.90;
+  const maximumHeight = screenSize.y * 0.84;
+  let displayWidth = maximumWidth;
+  let displayHeight = displayWidth / textureAspect;
+  if (displayHeight > maximumHeight) {
+    displayHeight = maximumHeight;
+    displayWidth = displayHeight * textureAspect;
+  }
+
   const display = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.50, 1.18),
+    new THREE.PlaneGeometry(displayWidth, displayHeight),
     new THREE.MeshBasicMaterial({
       map: createComputerWelcomeTexture(),
       color: 0xffffff,
@@ -538,7 +737,7 @@ function styleComputerWelcomeScreen(room) {
     }),
   );
   display.name = "Computer_Monitor_Welcome_Display";
-  display.position.z = 0.026;
+  display.position.set(screenCenter.x, screenCenter.y, screenBounds.max.z + 0.006);
   screen.add(display);
 }
 
@@ -865,6 +1064,12 @@ function createPhotoWall(room) {
   const tapeMaterials = [0xeeb8c8, 0xc8b8e2, 0xe8c789, 0xaccfc2].map((color) => new THREE.MeshStandardMaterial({ color, roughness: 0.8, metalness: 0, transparent: true, opacity: 0.9 }));
   const stickerMaterials = [0xf2a9bd, 0xf3cd70, 0x9dcdbd, 0xb9a6df].map((color) => new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
   const photoLoader = new THREE.TextureLoader();
+  const photoReadyPromises = [];
+  let settledPhotoCount = 0;
+  const settlePhoto = () => {
+    settledPhotoCount += 1;
+    updateCriticalAssetProgress("photoWall", settledPhotoCount / PHOTO_WALL_ITEMS.length);
+  };
   const photoLayouts = [
     { y: -5.10, z: 5.35, width: 0.56 }, { y: -4.98, z: 4.45, width: 0.40 },
     { y: -4.25, z: 5.18, width: 0.54 }, { y: -4.16, z: 4.30, width: 0.43 },
@@ -889,6 +1094,7 @@ function createPhotoWall(room) {
   const tilts = [-0.035, 0.028, -0.018, 0.04, 0.015, -0.032, 0.026, -0.02, 0.036, -0.024, 0.016, -0.03, 0.026, -0.018, 0.034, -0.026, 0.015, -0.022, 0.028];
 
   PHOTO_WALL_ITEMS.forEach(([url, title], index) => {
+    const thumbnailUrl = url.replace("/photos/", "/photos/thumbs/");
     const layout = photoLayouts[index];
     const photoWidth = layout.width;
     const photoHeight = photoWidth / photoAspects[index];
@@ -925,16 +1131,29 @@ function createPhotoWall(room) {
       photoGroup.add(sticker);
     }
 
-    photoLoader.load(url, (texture) => {
-      texture.colorSpace = THREE.SRGBColorSpace;
-      texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
-      texture.minFilter = THREE.LinearMipmapLinearFilter;
-      const photoMaterial = new THREE.MeshBasicMaterial({ map: texture, toneMapped: false, side: THREE.FrontSide });
-      const photo = makeWallFacingPlane(new THREE.PlaneGeometry(photoWidth, photoHeight), photoMaterial);
-      photo.position.set(0.023, 0, 0.032);
-      photo.castShadow = true;
-      photoGroup.add(photo);
-    });
+    photoReadyPromises.push(new Promise((resolve) => {
+      photoLoader.load(
+        thumbnailUrl,
+        (texture) => {
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+          texture.minFilter = THREE.LinearMipmapLinearFilter;
+          const photoMaterial = new THREE.MeshBasicMaterial({ map: texture, toneMapped: false, side: THREE.FrontSide });
+          const photo = makeWallFacingPlane(new THREE.PlaneGeometry(photoWidth, photoHeight), photoMaterial);
+          photo.position.set(0.023, 0, 0.032);
+          photo.castShadow = true;
+          photoGroup.add(photo);
+          settlePhoto();
+          resolve();
+        },
+        undefined,
+        (error) => {
+          console.error(`Photo wall thumbnail failed to load: ${thumbnailUrl}`, error);
+          settlePhoto();
+          resolve();
+        },
+      );
+    }));
 
     if (index % 2 === 0) {
       const captionBar = new THREE.Mesh(
@@ -1096,6 +1315,8 @@ function createPhotoWall(room) {
   cornerConnector.name = "StarLights_ConnectedCorner";
   cornerConnector.castShadow = true;
   room.add(cornerConnector);
+
+  return Promise.all(photoReadyPromises);
 }
 
 function createWallBallRack(room) {
@@ -1529,7 +1750,10 @@ function createTeaTableOrbLamp(room) {
 
 function createImportedTeaTableLamp(room) {
   const tableTop = room.getObjectByName("Tea_Table_Top");
-  if (!tableTop) return;
+  if (!tableTop) {
+    updateCriticalAssetProgress("teaTableLamp", 1);
+    return Promise.resolve();
+  }
   room.updateMatrixWorld(true);
   const tableBounds = new THREE.Box3().setFromObject(tableTop);
   const tableCenter = tableBounds.getCenter(new THREE.Vector3());
@@ -1563,7 +1787,8 @@ function createImportedTeaTableLamp(room) {
   lamp.add(teaTableLampLight);
   room.add(lamp);
 
-  loader.load(
+  return loadCriticalGLTF(
+    "teaTableLamp",
     "/room-engine/models/tea-table-lamp.glb?revision=20260825-replacement",
     (gltf) => {
       const lampModel = gltf.scene;
@@ -1579,8 +1804,7 @@ function createImportedTeaTableLamp(room) {
       lampModel.position.set(-scaledCenter.x, -scaledBounds.min.y, -scaledCenter.z);
       lamp.add(lampModel);
     },
-    undefined,
-    (error) => console.error("Tea table lamp failed to load", error),
+    "Tea table lamp failed to load",
   );
 }
 
@@ -1694,7 +1918,8 @@ function createRecordPlayerMusicEffects(room) {
 }
 
 function createWallRosie(room) {
-  loader.load(
+  return loadCriticalGLTF(
+    "wallRosie",
     "/room-engine/models/meshy-ai-rosie.glb?revision=20260824-wall-rosie",
     (gltf) => {
       const rosie = gltf.scene;
@@ -1737,8 +1962,7 @@ function createWallRosie(room) {
       room.add(rosie);
       registerRoomInteraction(rosie, "wiggle", { hoverScale: 1.045, wiggleAmount: 0.14 });
     },
-    undefined,
-    (error) => console.error("Rosie wall model failed to load", error),
+    "Rosie wall model failed to load",
   );
 }
 
@@ -1764,7 +1988,8 @@ function prepareDecorModel(root, castShadow = false) {
 }
 
 function createWallRosieDoll(room) {
-  loader.load(
+  return loadCriticalGLTF(
+    "rosieDoll",
     "/room-engine/models/rosie-doll.glb?revision=20260825-wall-layout",
     (gltf) => {
       const doll = gltf.scene;
@@ -1786,8 +2011,7 @@ function createWallRosieDoll(room) {
       room.add(doll);
       registerRoomInteraction(doll, "pulse", { hoverScale: 1.05 });
     },
-    undefined,
-    (error) => console.error("Rosie doll failed to load", error),
+    "Rosie doll failed to load",
   );
 }
 
@@ -1840,7 +2064,8 @@ function createProfileCardTexture() {
 }
 
 function createProfileCardHolder(room) {
-  loader.load(
+  return loadCriticalGLTF(
+    "profileCard",
     "/room-engine/models/profile-card-holder.glb?revision=20260825-profile-card",
     (gltf) => {
       const holderModel = gltf.scene;
@@ -1885,8 +2110,7 @@ function createProfileCardHolder(room) {
       profileCardObject = profile;
       registerRoomInteraction(profile, "pulse", { hoverScale: 1.035 });
     },
-    undefined,
-    (error) => console.error("Profile card holder failed to load", error),
+    "Profile card holder failed to load",
   );
 }
 
@@ -2197,70 +2421,197 @@ const warm = new THREE.PointLight(0xffcda7, 13, 24, 2);
 warm.position.set(-6, 5, 7);
 scene.add(warm);
 
-function setRoomNightMode(nextNightMode) {
-  roomIsNight = nextNightMode;
-  const duration = reducedMotion ? 0 : 0.9;
-  const lightTargets = [
-    [hemisphere, roomIsNight ? 0.34 : 2.35],
-    [sun, roomIsNight ? 0.16 : 4.1],
-    [fill, roomIsNight ? 1.25 : 19],
-    [warm, roomIsNight ? 1.8 : 13],
-  ];
+function createWindowWeatherTexture(state) {
+  const weatherCanvas = document.createElement("canvas");
+  weatherCanvas.width = 768;
+  weatherCanvas.height = 512;
+  const context = weatherCanvas.getContext("2d");
+  const palettes = {
+    day: ["#9fd6f4", "#e9f5fa", "#fff0c9"],
+    sunset: ["#766b9f", "#d591a8", "#ffbd78"],
+    night: ["#121831", "#28345c", "#5d5682"],
+    rain: ["#64788b", "#91a6b5", "#c3d0d5"],
+  };
+  const [top, middle, bottom] = palettes[state.key];
+  const sky = context.createLinearGradient(0, 0, 0, 512);
+  sky.addColorStop(0, top);
+  sky.addColorStop(0.58, middle);
+  sky.addColorStop(1, bottom);
+  context.fillStyle = sky;
+  context.fillRect(0, 0, 768, 512);
 
+  if (state.key === "day" || state.key === "sunset") {
+    const sunX = state.key === "day" ? 590 : 560;
+    const sunY = state.key === "day" ? 112 : 350;
+    const sunGlow = context.createRadialGradient(sunX, sunY, 4, sunX, sunY, 92);
+    sunGlow.addColorStop(0, "rgba(255,250,218,.98)");
+    sunGlow.addColorStop(0.35, state.key === "day" ? "rgba(255,231,151,.72)" : "rgba(255,153,102,.78)");
+    sunGlow.addColorStop(1, "rgba(255,180,110,0)");
+    context.fillStyle = sunGlow;
+    context.fillRect(sunX - 100, sunY - 100, 200, 200);
+    context.fillStyle = state.key === "day" ? "rgba(255,255,246,.55)" : "rgba(244,214,220,.24)";
+    [[155,150,125,34],[330,218,165,42],[610,246,130,34]].forEach(([x,y,rx,ry]) => {
+      context.beginPath();
+      context.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+      context.fill();
+    });
+  }
+
+  if (state.key === "night") {
+    context.fillStyle = "rgba(255,247,207,.92)";
+    context.beginPath();
+    context.arc(598, 116, 46, 0, Math.PI * 2);
+    context.fill();
+    context.fillStyle = top;
+    context.beginPath();
+    context.arc(618, 99, 43, 0, Math.PI * 2);
+    context.fill();
+    let seed = 41;
+    for (let index = 0; index < 92; index += 1) {
+      seed = (seed * 16807) % 2147483647;
+      const x = seed % 768;
+      seed = (seed * 16807) % 2147483647;
+      const y = seed % 350;
+      const radius = 0.8 + (seed % 4) * 0.55;
+      context.fillStyle = `rgba(255,244,194,${0.45 + (seed % 40) / 100})`;
+      context.beginPath();
+      context.arc(x, y, radius, 0, Math.PI * 2);
+      context.fill();
+    }
+  }
+
+  if (state.key === "rain") {
+    context.fillStyle = "rgba(43,61,76,.20)";
+    context.fillRect(0, 0, 768, 512);
+    let seed = 73;
+    for (let index = 0; index < 115; index += 1) {
+      seed = (seed * 48271) % 2147483647;
+      const x = seed % 768;
+      seed = (seed * 48271) % 2147483647;
+      const y = seed % 512;
+      const length = 18 + (seed % 36);
+      context.strokeStyle = `rgba(229,242,248,${0.18 + (seed % 34) / 100})`;
+      context.lineWidth = 1 + (seed % 3) * 0.55;
+      context.beginPath();
+      context.moveTo(x, y);
+      context.lineTo(x - 8, y + length);
+      context.stroke();
+    }
+  }
+
+  const texture = new THREE.CanvasTexture(weatherCanvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 8);
+  return texture;
+}
+
+function updateWindowWeatherTexture(state) {
+  windowWeatherTexture?.dispose();
+  windowWeatherTexture = createWindowWeatherTexture(state);
+  windowGlassMeshes.forEach((mesh) => {
+    mesh.material.map = windowWeatherTexture;
+    mesh.material.opacity = state.key === "rain" ? 0.88 : 0.76;
+    mesh.material.needsUpdate = true;
+  });
+}
+
+function setupWindowWeather(room) {
+  const windowGlass = room.getObjectByName("Window_Glass");
+  if (!windowGlass) return;
+  windowGlassMeshes.length = 0;
+  windowGlass.traverse((object) => {
+    if (!object.isMesh) return;
+    object.material = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.76,
+      side: THREE.DoubleSide,
+      toneMapped: false,
+      depthWrite: false,
+    });
+    object.renderOrder = 2;
+    windowGlassMeshes.push(object);
+  });
+  if (windowGlass.isMesh && !windowGlassMeshes.includes(windowGlass)) windowGlassMeshes.push(windowGlass);
+  updateWindowWeatherTexture(WINDOW_WEATHER_STATES[windowWeatherIndex]);
+}
+
+function showWeatherStatus(label) {
+  if (!weatherStatus || !weatherStatusLabel) return;
+  window.clearTimeout(weatherStatusTimer);
+  weatherStatusLabel.textContent = label;
+  weatherStatus.classList.add("is-visible");
+  weatherStatus.setAttribute("aria-hidden", "false");
+  weatherStatusTimer = window.setTimeout(() => {
+    weatherStatus.classList.remove("is-visible");
+    weatherStatus.setAttribute("aria-hidden", "true");
+  }, 1900);
+}
+
+function setWindowWeatherState(index, announce = true) {
+  windowWeatherIndex = (index + WINDOW_WEATHER_STATES.length) % WINDOW_WEATHER_STATES.length;
+  const state = WINDOW_WEATHER_STATES[windowWeatherIndex];
+  roomIsNight = state.key === "night";
+  const duration = reducedMotion ? 0 : 0.9;
+  const lightTargets = [[hemisphere, state.hemisphere], [sun, state.sun], [fill, state.fill], [warm, state.warm]];
   lightTargets.forEach(([light, intensity]) => {
     if (duration === 0) light.intensity = intensity;
     else gsap.to(light, { intensity, duration, ease: "power2.inOut" });
   });
 
+  [[sun, state.colors[0]], [fill, state.colors[1]], [warm, state.colors[2]]].forEach(([light, hex]) => {
+    const target = new THREE.Color(hex);
+    if (duration === 0) light.color.copy(target);
+    else gsap.to(light.color, { r: target.r, g: target.g, b: target.b, duration, ease: "power2.inOut" });
+  });
+
   starPointLights.forEach((light) => {
-    const intensity = roomIsNight ? 3.8 : light.userData.dayIntensity;
+    const intensity = state.key === "night" ? state.starPoint : light.userData.dayIntensity * state.starPoint;
     if (duration === 0) light.intensity = intensity;
     else gsap.to(light, { intensity, duration: 0.75, ease: "power2.inOut" });
   });
-
   starLightMaterials.forEach((material) => {
-    const emissiveIntensity = roomIsNight ? 3.35 : 1.5;
-    if (duration === 0) material.emissiveIntensity = emissiveIntensity;
-    else gsap.to(material, { emissiveIntensity, duration: 0.75, ease: "power2.inOut" });
+    if (duration === 0) material.emissiveIntensity = state.starEmissive;
+    else gsap.to(material, { emissiveIntensity: state.starEmissive, duration: 0.75, ease: "power2.inOut" });
   });
-
   starGlows.forEach((glow) => {
     if (glow.userData.dayBaseOpacity === undefined) glow.userData.dayBaseOpacity = glow.userData.baseOpacity;
-    glow.userData.baseOpacity = roomIsNight
-      ? Math.min(0.62, glow.userData.dayBaseOpacity * 1.85)
-      : glow.userData.dayBaseOpacity;
+    glow.userData.baseOpacity = Math.min(0.66, glow.userData.dayBaseOpacity * state.glow);
   });
 
   updateTeaTableLampState(duration);
-
   sofaNightMaterials.forEach(({ material, dayColor, dayEnvMapIntensity }) => {
-    const targetColor = roomIsNight ? dayColor.clone().multiplyScalar(0.30) : dayColor;
-    const targetEnvMapIntensity = roomIsNight ? Math.min(dayEnvMapIntensity, 0.06) : dayEnvMapIntensity;
+    const targetColor = dayColor.clone().multiplyScalar(state.roomShade);
+    const targetEnvMapIntensity = state.roomShade < 0.5 ? Math.min(dayEnvMapIntensity, 0.06) : dayEnvMapIntensity * state.roomShade;
     if (duration === 0) {
       material.color.copy(targetColor);
       if ("envMapIntensity" in material) material.envMapIntensity = targetEnvMapIntensity;
     } else {
-      gsap.to(material.color, {
-        r: targetColor.r,
-        g: targetColor.g,
-        b: targetColor.b,
-        duration,
-        ease: "power2.inOut",
-      });
-      if ("envMapIntensity" in material) {
-        gsap.to(material, { envMapIntensity: targetEnvMapIntensity, duration, ease: "power2.inOut" });
-      }
+      gsap.to(material.color, { r: targetColor.r, g: targetColor.g, b: targetColor.b, duration, ease: "power2.inOut" });
+      if ("envMapIntensity" in material) gsap.to(material, { envMapIntensity: targetEnvMapIntensity, duration, ease: "power2.inOut" });
     }
   });
 
-  const exposure = roomIsNight ? 0.78 : 1.08;
-  if (duration === 0) renderer.toneMappingExposure = exposure;
-  else gsap.to(renderer, { toneMappingExposure: exposure, duration, ease: "power2.inOut" });
-
+  if (duration === 0) renderer.toneMappingExposure = state.exposure;
+  else gsap.to(renderer, { toneMappingExposure: state.exposure, duration, ease: "power2.inOut" });
   document.body.classList.toggle("is-night", roomIsNight);
+  document.body.classList.toggle("weather-sunset", state.key === "sunset");
+  document.body.classList.toggle("weather-rain", state.key === "rain");
   lightingControl?.classList.toggle("is-active", roomIsNight);
   lightingControl?.setAttribute("aria-pressed", String(roomIsNight));
-  lightingControl?.setAttribute("aria-label", roomIsNight ? "切换为明亮房间" : "切换为暗色房间");
+  lightingControl?.setAttribute("aria-label", roomIsNight ? "切换为白天房间" : "切换为夜晚房间");
+  if (windowGlassMeshes.length) updateWindowWeatherTexture(state);
+  if (announce) showWeatherStatus(state.label);
+}
+
+function cycleWindowWeather() {
+  setWindowWeatherState(windowWeatherIndex + 1, true);
+}
+
+function setRoomNightMode(nextNightMode) {
+  setWindowWeatherState(nextNightMode ? 2 : 0, true);
 }
 
 function updateTeaTableLampState(duration = reducedMotion ? 0 : 0.65) {
@@ -2295,7 +2646,7 @@ controls.minPolarAngle = 0.72;
 controls.maxPolarAngle = 1.38;
 controls.minAzimuthAngle = -0.15;
 controls.maxAzimuthAngle = 1.38;
-controls.target.set(0, 2.25, -0.70);
+controls.target.copy(panoramaCameraTarget);
 
 function setComputerFocus(active) {
   if (!roomModel || active === computerFocusActive) return;
@@ -2322,6 +2673,7 @@ function setComputerFocus(active) {
     computerFocusReturnTarget.copy(controls.target);
     computerFocusReturnFov = camera.fov;
     computerFocusActive = true;
+    updateReturnPanoramaButton();
     controls.enabled = false;
     controls.minDistance = 0.8;
 
@@ -2366,6 +2718,7 @@ function setComputerFocus(active) {
   }
 
   computerFocusActive = false;
+  updateReturnPanoramaButton();
   controls.enabled = false;
   const restoreControls = () => {
     controls.minDistance = 8.5;
@@ -2440,6 +2793,7 @@ function setReceiptFocus(active) {
     receiptFocusReturnTarget.copy(controls.target);
     receiptFocusReturnFov = camera.fov;
     receiptFocusActive = true;
+    updateReturnPanoramaButton();
     controls.enabled = false;
     controls.minDistance = 0.8;
     controls.maxAzimuthAngle = 1.72;
@@ -2472,6 +2826,7 @@ function setReceiptFocus(active) {
   }
 
   receiptFocusActive = false;
+  updateReturnPanoramaButton();
   updateReceiptSaveButton();
   controls.enabled = false;
   const restoreControls = () => {
@@ -2509,12 +2864,61 @@ function setReceiptFocus(active) {
 function handleReceiptPrinterClick() {
   if (!receiptFocusActive) {
     setReceiptFocus(true);
-    if (!receiptPaperExtended && !receiptPaperAnimating) toggleReceiptPaper();
     return;
   }
-  if (receiptPaperExtended && !receiptPaperAnimating) toggleReceiptPaper();
-  setReceiptFocus(false);
+  if (!receiptPaperAnimating) toggleReceiptPaper();
 }
+
+function returnToPanorama() {
+  if (!roomModel) return;
+  setContactOpen(false);
+  closePhotoViewer();
+  closeProfileCardViewer();
+  if (computerFocusActive) setComputerFocus(false);
+  if (receiptFocusActive) setReceiptFocus(false);
+  if (profileCardFocusActive) setProfileCardFocus(false);
+
+  gsap.killTweensOf(camera.position);
+  gsap.killTweensOf(controls.target);
+  gsap.killTweensOf(camera);
+  const mobile = innerWidth < 700;
+  const panoramaPosition = new THREE.Vector3(...(mobile ? [19.5, 13.2, 24.5] : [16.8, 11.1, 21.5]));
+  const panoramaFov = mobile ? 38 : 29;
+  const duration = reducedMotion ? 0 : 0.85;
+  controls.enabled = false;
+  controls.minDistance = 8.5;
+  controls.maxAzimuthAngle = 1.38;
+  if (duration === 0) {
+    camera.position.copy(panoramaPosition);
+    controls.target.copy(panoramaCameraTarget);
+    camera.fov = panoramaFov;
+    camera.updateProjectionMatrix();
+    controls.enabled = true;
+    controls.update();
+    return;
+  }
+  gsap.to(camera.position, {
+    x: panoramaPosition.x,
+    y: panoramaPosition.y,
+    z: panoramaPosition.z,
+    duration,
+    ease: "power3.inOut",
+  });
+  gsap.to(controls.target, {
+    x: panoramaCameraTarget.x,
+    y: panoramaCameraTarget.y,
+    z: panoramaCameraTarget.z,
+    duration,
+    ease: "power3.inOut",
+    onComplete: () => {
+      controls.enabled = true;
+      controls.update();
+    },
+  });
+  gsap.to(camera, { fov: panoramaFov, duration, ease: "power3.inOut", onUpdate: () => camera.updateProjectionMatrix() });
+}
+
+returnPanoramaButton?.addEventListener("click", returnToPanorama);
 
 function setProfileCardFocus(active) {
   if (!profileCardObject || active === profileCardFocusActive) return;
@@ -2540,6 +2944,7 @@ function setProfileCardFocus(active) {
     profileCardFocusReturnTarget.copy(controls.target);
     profileCardFocusReturnFov = camera.fov;
     profileCardFocusActive = true;
+    updateReturnPanoramaButton();
     controls.enabled = false;
     controls.minDistance = 0.6;
 
@@ -2569,6 +2974,7 @@ function setProfileCardFocus(active) {
   }
 
   profileCardFocusActive = false;
+  updateReturnPanoramaButton();
   controls.enabled = false;
   const restoreControls = () => {
     controls.minDistance = 8.5;
@@ -2655,6 +3061,7 @@ function setCameraForViewport() {
   const mobile = innerWidth < 700;
   camera.fov = mobile ? 38 : 29;
   camera.position.set(...(mobile ? [19.5, 13.2, 24.5] : [16.8, 11.1, 21.5]));
+  controls.target.copy(panoramaCameraTarget);
   camera.updateProjectionMatrix();
 }
 
@@ -2663,6 +3070,32 @@ controls.update();
 
 const loader = new GLTFLoader();
 loader.setMeshoptDecoder(MeshoptDecoder);
+
+function loadCriticalGLTF(key, url, onLoad, errorMessage) {
+  return new Promise((resolve) => {
+    loader.load(
+      url,
+      (gltf) => {
+        try {
+          onLoad(gltf);
+        } catch (error) {
+          console.error(`${errorMessage} during scene setup`, error);
+        } finally {
+          updateCriticalAssetProgress(key, 1);
+          resolve();
+        }
+      },
+      (event) => trackCriticalAssetDownload(key, event),
+      (error) => {
+        console.error(errorMessage, error);
+        // A missing optional decoration should not trap visitors forever on
+        // the loading screen. Its placeholder remains and the room can open.
+        updateCriticalAssetProgress(key, 1);
+        resolve();
+      },
+    );
+  });
+}
 
 // Non-critical decorations are intentionally scheduled after the room shell
 // is visible. This keeps the large main room model from competing with every
@@ -2677,9 +3110,39 @@ function scheduleRoomDecoration(task, delay = 0) {
   }, delay);
 }
 
+async function prepareCriticalRoomAssets(room) {
+  // Procedural pieces are added immediately behind the loading overlay. Photo
+  // thumbnails and large GLBs then load in two lanes to avoid a network spike.
+  const photoWallReady = createPhotoWall(room);
+  createWallCalendarAndPocket(room);
+  createCornerShelfAndMirror(room);
+  createRecordPlayerMusicEffects(room);
+  registerRoomInteractions(room);
+
+  await Promise.all([
+    photoWallReady,
+    (async () => {
+      await createImportedTeaTableLamp(room);
+      await createWallRosieDoll(room);
+    })(),
+    (async () => {
+      await createWallRosie(room);
+      await createProfileCardHolder(room);
+    })(),
+  ]);
+
+  registerRoomInteractions(room);
+  room.updateMatrixWorld(true);
+  // Compile shaders and draw one hidden frame before revealing the canvas, so
+  // the first visible frame is already complete instead of assembling itself.
+  renderer.compile(scene, camera);
+  renderer.render(scene, camera);
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+}
+
 loader.load(
   "/room-engine/models/zhengyifan-room.glb?revision=20260823-clear-left-corner-layout",
-  (gltf) => {
+  async (gltf) => {
     const room = gltf.scene;
     roomModel = room;
     room.name = "Room3D";
@@ -2845,8 +3308,17 @@ loader.load(
 
     prepareSofaNightMaterials(room);
     styleComputerWelcomeScreen(room);
+    setupWindowWeather(room);
     registerRoomInteractions(room);
     scene.add(room);
+
+    updateCriticalAssetProgress("room", 1);
+    try {
+      await prepareCriticalRoomAssets(room);
+    } catch (error) {
+      // The base room is still usable if a procedural decoration fails.
+      console.error("Critical room preparation failed", error);
+    }
 
     setLoadingProgress(100);
     const revealRoom = () => {
@@ -2857,30 +3329,15 @@ loader.load(
         gsap.to(room.rotation, { y: 0, duration: 2.25, ease: "power3.out" });
       }
       document.body.classList.add("is-ready");
+
+      // The five hanging-ball GLBs are decorative and comparatively large.
+      // Start them only after the complete first view is already interactive.
+      scheduleRoomDecoration(() => createWallBallRack(room), 450);
     };
     if (reducedMotion) revealRoom();
     else window.setTimeout(revealRoom, Math.max(0, minimumLoadingDuration - (performance.now() - loadingStartedAt)));
-
-    // Build lightweight geometry first, then request the heavier GLB
-    // decorations one at a time. They are still added to the same room group,
-    // so their positions and interactions remain unchanged.
-    scheduleRoomDecoration(() => {
-      createPhotoWall(room);
-      createWallCalendarAndPocket(room);
-      createCornerShelfAndMirror(room);
-      createRecordPlayerMusicEffects(room);
-      registerRoomInteractions(room);
-    }, 80);
-    scheduleRoomDecoration(() => createWallBallRack(room), 260);
-    scheduleRoomDecoration(() => createImportedTeaTableLamp(room), 430);
-    scheduleRoomDecoration(() => createWallRosie(room), 600);
-    scheduleRoomDecoration(() => createWallRosieDoll(room), 770);
-    scheduleRoomDecoration(() => createProfileCardHolder(room), 940);
   },
-  (event) => {
-    if (!event.total) return;
-    setLoadingProgress((event.loaded / event.total) * 100);
-  },
+  (event) => trackCriticalAssetDownload("room", event),
   (error) => {
     progressLabel.textContent = "模型加载失败";
     console.error("Room model failed to load", error);
@@ -2985,19 +3442,31 @@ function closeProfileCardViewer() {
 }
 
 function showPhotoAt(index) {
-  currentPhotoIndex = (index + PHOTO_WALL_ITEMS.length) % PHOTO_WALL_ITEMS.length;
-  const [url, title] = PHOTO_WALL_ITEMS[currentPhotoIndex];
+  const items = activePhotoViewerItems ?? PHOTO_WALL_ITEMS;
+  currentPhotoIndex = (index + items.length) % items.length;
+  const [url, title] = items[currentPhotoIndex];
   photoViewerImage.src = url;
   photoViewerImage.alt = title;
   photoViewerCaption.textContent = title;
 }
 
-function openPhotoViewer(url) {
-  const requestedIndex = PHOTO_WALL_ITEMS.findIndex(([photoUrl]) => photoUrl === url);
+function openPhotoViewer(url, items = PHOTO_WALL_ITEMS) {
+  activePhotoViewerItems = items;
+  const requestedIndex = items.findIndex(([photoUrl]) => photoUrl === url);
   showPhotoAt(requestedIndex >= 0 ? requestedIndex : 0);
   photoViewer.classList.add("is-open");
   photoViewer.setAttribute("aria-hidden", "false");
   photoViewerClose.focus();
+}
+
+function openFoodGallery() {
+  openPhotoViewer(FOOD_GALLERY_ITEMS[0][0], FOOD_GALLERY_ITEMS);
+}
+
+function isTeaTableFood(object) {
+  return object.name.startsWith("Cake_")
+    || object.name.startsWith("Macaron_")
+    || object.name.startsWith("Milk_Tea_");
 }
 
 function closePhotoViewer() {
@@ -3055,23 +3524,38 @@ canvas.addEventListener("pointerup", (event) => {
     let current = object;
     while (current) {
       if (current.userData.photoUrl) {
+        markInteractionDiscovered("photoWall");
         openPhotoViewer(current.userData.photoUrl);
         return;
       }
       if (current.name.startsWith("Computer_Monitor_")) {
+        markInteractionDiscovered("computer");
         toggleComputerFocus();
         return;
       }
       if (current.name.startsWith("Wall_Receipt_Printer") || current.name.startsWith("ReceiptPaper_")) {
+        markInteractionDiscovered("receiptPrinter");
         handleReceiptPrinterClick();
         return;
       }
       if (current.name.startsWith("Profile_Card_")) {
+        markInteractionDiscovered("profileCard");
         toggleProfileCardFocus();
         return;
       }
       if (current.name.startsWith("Contact_Mailbox")) {
+        markInteractionDiscovered("contactMailbox");
         toggleContact();
+        return;
+      }
+      if (current.name.startsWith("Curtain")) {
+        markInteractionDiscovered("curtainWeather");
+        cycleWindowWeather();
+        return;
+      }
+      if (isTeaTableFood(current)) {
+        markInteractionDiscovered("foodGallery");
+        openFoodGallery();
         return;
       }
       if (current.name.startsWith("TeaTable_OpalOrbLamp") || current.name.startsWith("Imported_Tea_Table_Lamp")) {
@@ -3079,6 +3563,7 @@ canvas.addEventListener("pointerup", (event) => {
         return;
       }
       if (current.userData.recordPlayerMusicControl || current.name.startsWith("Record_Player")) {
+        markInteractionDiscovered("recordPlayer");
         toggleMusicPlayback();
         return;
       }
@@ -3115,6 +3600,8 @@ canvas.addEventListener("pointermove", (event) => {
         || current.name.startsWith("ReceiptPaper_")
         || current.name.startsWith("Profile_Card_")
         || current.name.startsWith("Contact_Mailbox")
+        || current.name.startsWith("Curtain")
+        || isTeaTableFood(current)
         || current.name.startsWith("TeaTable_OpalOrbLamp")
         || current.name.startsWith("Imported_Tea_Table_Lamp")
         || current.userData.recordPlayerMusicControl
@@ -3143,9 +3630,25 @@ function render() {
   const delta = clock.getDelta();
   const elapsed = clock.elapsedTime;
   controls.update(delta);
-  starGlows.forEach((glow) => {
-    glow.material.opacity = glow.userData.baseOpacity + Math.sin(elapsed * 1.45 + glow.userData.phase) * 0.075;
+  const sparkleSpeed = starCelebrationActive ? 5.2 : 1.45;
+  const sparkleAmount = starCelebrationActive ? 0.24 : 0.075;
+  starGlows.forEach((glow, index) => {
+    const wave = Math.sin(elapsed * sparkleSpeed + glow.userData.phase + index * 0.16);
+    glow.material.opacity = THREE.MathUtils.clamp(glow.userData.baseOpacity + wave * sparkleAmount, 0.04, 0.92);
   });
+  if (starCelebrationActive) {
+    const weatherState = WINDOW_WEATHER_STATES[windowWeatherIndex];
+    starLightMaterials.forEach((material, index) => {
+      material.emissiveIntensity = weatherState.starEmissive + 0.85 + Math.sin(elapsed * 4.6 + index * 1.2) * 0.72;
+    });
+    starPointLights.forEach((light, index) => {
+      const baseIntensity = weatherState.key === "night" ? weatherState.starPoint : light.userData.dayIntensity * weatherState.starPoint;
+      light.intensity = Math.max(0, baseIntensity + Math.sin(elapsed * 4.2 + index * 1.7) * 0.72);
+    });
+  }
+  if (WINDOW_WEATHER_STATES[windowWeatherIndex].key === "rain" && windowWeatherTexture) {
+    windowWeatherTexture.offset.y = (windowWeatherTexture.offset.y - delta * 0.11) % 1;
+  }
   if (!roomAudio.paused) {
     if (recordMusicDisc) recordMusicDisc.rotation.y -= delta * 0.72;
     recordMusicNotes.forEach((note, index) => {

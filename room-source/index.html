@@ -27,9 +27,17 @@
         <span id="loading-progress">0%</span>
       </div>
 
-      <div class="room-tip">
-        <span class="mouse-icon" aria-hidden="true"></span>
-        拖动旋转 · 滚轮缩放 · 点击照片或邮箱
+      <aside class="exploration-progress" id="exploration-progress" aria-live="polite">
+        <span>ROOM EXPLORATION</span>
+        <strong id="exploration-progress-label">已发现 <b id="exploration-progress-count">0</b> / 8 个互动</strong>
+        <div class="exploration-progress-track" role="progressbar" aria-label="房间探索进度" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0">
+          <i id="exploration-progress-fill"></i>
+        </div>
+      </aside>
+
+      <div class="weather-status" id="weather-status" aria-live="polite" aria-hidden="true">
+        <span>窗外天气</span>
+        <strong id="weather-status-label">白天阳光</strong>
       </div>
 
       <nav class="room-controls" aria-label="房间快捷控制">
@@ -56,14 +64,29 @@
             <path class="lighting-sun" d="M10 19a8 8 0 0 1 16 0M6 23h24M9 27h18" />
           </svg>
         </button>
+        <button class="room-control room-control--panorama" id="return-panorama" type="button" aria-label="返回房间全景" title="返回全景">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <path d="M6 13V7h6M26 13V7h-6M6 19v6h6M26 19v6h-6" />
+            <path d="M9 16h14M9 16l3-3M9 16l3 3" />
+          </svg>
+        </button>
       </nav>
 
-      <button class="receipt-save" id="receipt-save" type="button" aria-label="将小票保存为图片">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 16v3h14v-3" />
-        </svg>
-        <span>保存小票</span>
-      </button>
+      <div class="receipt-actions" id="receipt-actions" aria-hidden="true">
+        <button class="receipt-action receipt-save" id="receipt-save" type="button" aria-label="将小票保存为图片">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 16v3h14v-3" />
+          </svg>
+          <span>保存小票</span>
+        </button>
+        <button class="receipt-action receipt-again" id="receipt-again" type="button" aria-label="再打印一张小票">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 8V4h10v4M6 17H4V9h16v8h-2M7 14h10v6H7z" />
+            <path d="M17 12h.01" />
+          </svg>
+          <span>再来一张</span>
+        </button>
+      </div>
 
       <section class="contact-card" id="contact-card" aria-hidden="true" aria-label="联系方式">
         <button class="contact-card-close" id="contact-card-close" type="button" aria-label="关闭联系方式">×</button>
@@ -74,7 +97,7 @@
         <div class="contact-wechat">WeChat · zhengyyff123</div>
       </section>
 
-      <section class="photo-viewer" id="photo-viewer" aria-hidden="true" aria-label="照片大图预览">
+      <section class="photo-viewer" id="photo-viewer" aria-hidden="true" aria-label="照片画廊大图预览">
         <div class="photo-viewer-card" role="dialog" aria-modal="true" aria-labelledby="photo-viewer-caption">
           <button class="photo-viewer-close" id="photo-viewer-close" type="button" aria-label="关闭照片">×</button>
           <button class="photo-viewer-nav photo-viewer-nav--previous" id="photo-viewer-previous" type="button" aria-label="查看上一张照片">‹</button>

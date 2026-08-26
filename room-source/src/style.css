@@ -253,6 +253,20 @@ body.is-night {
     linear-gradient(145deg, #262139 0%, #302b4a 52%, #1b2540 100%);
 }
 
+body.weather-sunset {
+  background:
+    radial-gradient(circle at 76% 24%, rgba(255, 177, 115, 0.62), transparent 34%),
+    radial-gradient(circle at 24% 22%, rgba(199, 155, 207, 0.48), transparent 38%),
+    linear-gradient(145deg, #e7c3cc 0%, #c4afd0 54%, #8e91bc 100%);
+}
+
+body.weather-rain {
+  background:
+    radial-gradient(circle at 28% 18%, rgba(208, 224, 232, 0.46), transparent 34%),
+    radial-gradient(circle at 80% 24%, rgba(126, 151, 177, 0.38), transparent 40%),
+    linear-gradient(145deg, #aebcca 0%, #899cad 54%, #66788f 100%);
+}
+
 #room-canvas {
   position: fixed;
   inset: 0;
@@ -404,27 +418,124 @@ body.is-ready .loading-card {
   transition: width 0.22s ease;
 }
 
-.room-tip {
+.exploration-progress {
   position: fixed;
-  right: clamp(18px, 3vw, 44px);
+  left: clamp(18px, 3vw, 42px);
+  right: auto;
   bottom: clamp(18px, 3vw, 34px);
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 15px;
-  border: 1px solid rgba(255, 255, 255, 0.68);
-  border-radius: 999px;
-  background: rgba(255, 251, 248, 0.58);
-  color: rgba(78, 62, 92, 0.68);
-  font-size: 12px;
+  z-index: 11;
+  display: grid;
+  gap: 4px;
+  width: min(230px, calc(100vw - 36px));
+  padding: 4px 2px;
   opacity: 0;
-  backdrop-filter: blur(12px);
-  transition: opacity 0.8s ease 0.65s;
+  pointer-events: none;
+  transform: translateY(10px);
+  filter: drop-shadow(0 2px 9px rgba(255, 255, 255, 0.82)) drop-shadow(0 8px 18px rgba(64, 44, 76, 0.13));
+  transition: opacity 0.65s ease 0.85s, transform 0.65s ease 0.85s;
 }
 
-body.is-ready .room-tip {
+body.is-ready .exploration-progress {
   opacity: 1;
+  transform: translateY(0);
+}
+
+.exploration-progress > span {
+  color: rgba(112, 86, 128, 0.62);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+.exploration-progress strong {
+  color: rgba(75, 55, 86, 0.78);
+  font-size: 13px;
+  font-weight: 700;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.76);
+}
+
+.exploration-progress strong b {
+  color: #ad83b8;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.exploration-progress-track {
+  width: 100%;
+  height: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(112, 84, 126, 0.11);
+  backdrop-filter: blur(4px);
+}
+
+.exploration-progress-track i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #b899cb, #edaab9, #f1cc79);
+  box-shadow: 0 0 9px rgba(214, 151, 186, 0.48);
+  transition: width 420ms cubic-bezier(.2,.75,.25,1);
+}
+
+body.is-night .exploration-progress {
+  filter: drop-shadow(0 2px 10px rgba(21, 17, 39, 0.52));
+}
+
+body.is-night .exploration-progress > span { color: rgba(219, 202, 232, 0.68); }
+body.is-night .exploration-progress strong { color: rgba(250, 242, 252, 0.88); text-shadow: 0 1px rgba(15, 10, 27, 0.5); }
+
+.exploration-progress.is-complete {
+  width: min(270px, calc(100vw - 36px));
+}
+
+.exploration-progress.is-complete > span {
+  color: rgba(171, 116, 151, 0.72);
+}
+
+.exploration-progress.is-complete strong {
+  color: rgba(117, 70, 102, 0.92);
+}
+
+.weather-status {
+  position: fixed;
+  left: clamp(18px, 3vw, 42px);
+  right: auto;
+  bottom: calc(clamp(18px, 3vw, 34px) + 72px);
+  z-index: 14;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 0;
+  color: #68526f;
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 0 2px 14px rgba(255, 250, 246, 0.95), 0 1px 3px rgba(69, 49, 77, 0.16);
+  transform: translateY(9px) scale(0.96);
+  transition: opacity 180ms ease, transform 220ms cubic-bezier(.2,.75,.25,1);
+}
+
+.weather-status.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.weather-status span {
+  color: rgba(121, 94, 134, 0.62);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.weather-status strong {
+  font-size: 12px;
+}
+
+body.is-night .weather-status {
+  color: #eee5f3;
+  text-shadow: 0 2px 14px rgba(40, 34, 66, 0.95), 0 1px 3px rgba(20, 16, 34, 0.32);
 }
 
 .room-controls {
@@ -447,11 +558,47 @@ body.is-ready .room-controls {
   transform: translateY(0);
 }
 
-.receipt-save {
+.room-control--panorama {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(235, 225, 247, 0.95), rgba(204, 189, 227, 0.92));
+  color: #725f93;
+}
+
+.room-control--panorama svg {
+  width: 27px;
+  height: 27px;
+}
+
+body.is-night .room-control--panorama {
+  color: #d8c5ed;
+  background: linear-gradient(145deg, rgba(79, 70, 111, 0.94), rgba(48, 52, 89, 0.94));
+  border-color: rgba(218, 205, 238, 0.24);
+}
+
+.receipt-actions {
   position: fixed;
   left: 50%;
   bottom: clamp(22px, 4vw, 42px);
   z-index: 16;
+  display: flex;
+  gap: 10px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, 14px) scale(0.94);
+  transition: opacity 220ms ease, visibility 220ms ease, transform 260ms cubic-bezier(.2,.75,.25,1);
+}
+
+.receipt-actions.is-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0) scale(1);
+}
+
+.receipt-action {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -461,29 +608,18 @@ body.is-ready .room-controls {
   color: #6d5579;
   background: linear-gradient(145deg, rgba(255, 251, 245, 0.96), rgba(225, 207, 237, 0.95));
   box-shadow: 0 14px 34px rgba(54, 39, 65, 0.24), inset 0 1px rgba(255, 255, 255, 0.94);
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
   cursor: pointer;
-  transform: translate(-50%, 14px) scale(0.94);
-  transition: opacity 220ms ease, visibility 220ms ease, transform 260ms cubic-bezier(.2,.75,.25,1), box-shadow 180ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
-.receipt-save.is-visible {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-  transform: translate(-50%, 0) scale(1);
-}
-
-.receipt-save:hover,
-.receipt-save:focus-visible {
+.receipt-action:hover,
+.receipt-action:focus-visible {
   box-shadow: 0 17px 40px rgba(54, 39, 65, 0.30), inset 0 1px rgba(255, 255, 255, 0.96);
   outline: none;
-  transform: translate(-50%, -2px) scale(1.025);
+  transform: translateY(-2px) scale(1.025);
 }
 
-.receipt-save svg {
+.receipt-action svg {
   width: 19px;
   height: 19px;
   fill: none;
@@ -493,13 +629,13 @@ body.is-ready .room-controls {
   stroke-linejoin: round;
 }
 
-.receipt-save span {
+.receipt-action span {
   font-size: 12px;
   font-weight: 750;
   letter-spacing: 0.04em;
 }
 
-body.is-night .receipt-save {
+body.is-night .receipt-action {
   border-color: rgba(228, 216, 238, 0.34);
   color: #eee3f5;
   background: linear-gradient(145deg, rgba(88, 72, 105, 0.96), rgba(55, 54, 87, 0.96));
@@ -834,23 +970,6 @@ body.is-ready .lamp-switch {
   cursor: pointer;
 }
 
-.mouse-icon {
-  width: 12px;
-  height: 17px;
-  border: 1.5px solid currentColor;
-  border-radius: 8px;
-}
-
-.mouse-icon::before {
-  content: "";
-  display: block;
-  width: 2px;
-  height: 4px;
-  margin: 3px auto 0;
-  border-radius: 2px;
-  background: currentColor;
-}
-
 @keyframes wireReveal {
   to { stroke-dashoffset: 0; }
 }
@@ -866,10 +985,6 @@ body.is-ready .lamp-switch {
 }
 
 @media (max-width: 700px) {
-  .room-tip {
-    display: none;
-  }
-
   .lamp-switch {
     left: 16px;
     bottom: 16px;
@@ -899,6 +1014,34 @@ body.is-ready .lamp-switch {
   .room-control--lighting {
     width: 55px;
     height: 43px;
+  }
+
+  .room-control--panorama {
+    width: 43px;
+    height: 43px;
+  }
+
+  .exploration-progress {
+    left: 14px;
+    right: auto;
+    bottom: 14px;
+    width: min(196px, calc(100vw - 28px));
+    padding: 4px 2px;
+  }
+
+  .weather-status {
+    left: 14px;
+    right: auto;
+    bottom: 72px;
+  }
+
+  .receipt-actions {
+    bottom: 18px;
+    gap: 7px;
+  }
+
+  .receipt-action {
+    padding: 9px 12px;
   }
 
   .contact-card {
