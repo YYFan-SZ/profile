@@ -20,6 +20,9 @@ const musicTrackTitle = document.querySelector("#music-track-title");
 const musicPrevious = document.querySelector("#music-previous");
 const musicPlayPause = document.querySelector("#music-play-pause");
 const musicNext = document.querySelector("#music-next");
+const musicVolume = document.querySelector("#music-volume");
+const musicVolumeDown = document.querySelector("#music-volume-down");
+const musicVolumeUp = document.querySelector("#music-volume-up");
 const lightingControl = document.querySelector("#lighting-control");
 const returnPanoramaButton = document.querySelector("#return-panorama");
 const contactCard = document.querySelector("#contact-card");
@@ -301,10 +304,28 @@ function changeMusicTrack(direction) {
   setMusicPlayerOpen(true);
 }
 
+function setMusicVolume(value) {
+  const nextVolume = THREE.MathUtils.clamp(Number(value) || 0, 0, 1);
+  roomAudio.volume = nextVolume;
+  if (musicVolume) musicVolume.value = String(nextVolume);
+  const percent = Math.round(nextVolume * 100);
+  musicVolume?.setAttribute("aria-valuetext", `${percent}%`);
+  musicVolumeDown?.setAttribute("title", `降低音量（当前 ${percent}%）`);
+  musicVolumeUp?.setAttribute("title", `提高音量（当前 ${percent}%）`);
+}
+
+function stepMusicVolume(delta) {
+  setMusicVolume(roomAudio.volume + delta);
+}
+
 musicControl?.addEventListener("click", toggleMusicPlayback);
 musicPlayPause?.addEventListener("click", toggleMusicPlayback);
 musicPrevious?.addEventListener("click", () => changeMusicTrack(-1));
 musicNext?.addEventListener("click", () => changeMusicTrack(1));
+musicVolume?.addEventListener("input", (event) => setMusicVolume(event.target.value));
+musicVolumeDown?.addEventListener("click", () => stepMusicVolume(-0.05));
+musicVolumeUp?.addEventListener("click", () => stepMusicVolume(0.05));
+setMusicVolume(roomAudio.volume);
 roomAudio.addEventListener("play", () => updateMusicPlaybackUI(true));
 roomAudio.addEventListener("pause", () => updateMusicPlaybackUI(false));
 roomAudio.addEventListener("ended", () => loadMusicTrack(currentMusicTrack + 1, true));
