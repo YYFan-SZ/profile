@@ -17,12 +17,15 @@ const lampSwitch = document.querySelector("#lamp-switch");
 const musicControl = document.querySelector("#music-control");
 const musicPlayer = document.querySelector("#music-player");
 const musicTrackTitle = document.querySelector("#music-track-title");
+const musicTrackArtist = document.querySelector("#music-track-artist");
 const musicPrevious = document.querySelector("#music-previous");
 const musicPlayPause = document.querySelector("#music-play-pause");
 const musicNext = document.querySelector("#music-next");
 const musicVolume = document.querySelector("#music-volume");
 const musicVolumeDown = document.querySelector("#music-volume-down");
 const musicVolumeUp = document.querySelector("#music-volume-up");
+const musicVolumeToggle = document.querySelector("#music-volume-toggle");
+const musicVolumePopover = document.querySelector("#music-volume-popover");
 const lightingControl = document.querySelector("#lighting-control");
 const returnPanoramaButton = document.querySelector("#return-panorama");
 const contactCard = document.querySelector("#contact-card");
@@ -152,9 +155,9 @@ const RECEIPT_MESSAGES = [
 ];
 
 const MUSIC_TRACKS = [
-  { title: "ROSÉ · number one girl", url: "/room-engine/music/rose-number-one-girl.mp3" },
-  { title: "ROSÉ · On The Ground", url: "/room-engine/music/rose-on-the-ground.mp3" },
-  { title: "五月天 · 顽固", url: "/room-engine/music/mayday-stubborn.mp3" },
+  { artist: "ROSÉ", title: "number one girl", url: "/room-engine/music/rose-number-one-girl.mp3" },
+  { artist: "ROSÉ", title: "On The Ground", url: "/room-engine/music/rose-on-the-ground.mp3" },
+  { artist: "五月天", title: "顽固", url: "/room-engine/music/mayday-stubborn.mp3" },
 ];
 const roomAudio = new Audio();
 roomAudio.preload = "metadata";
@@ -278,6 +281,7 @@ function loadMusicTrack(index, autoplay = false) {
   currentMusicTrack = (index + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
   const track = MUSIC_TRACKS[currentMusicTrack];
   musicTrackTitle.textContent = track.title;
+  if (musicTrackArtist) musicTrackArtist.textContent = track.artist;
   roomAudio.src = track.url;
   roomAudio.load();
   if (autoplay) {
@@ -318,6 +322,14 @@ function stepMusicVolume(delta) {
   setMusicVolume(roomAudio.volume + delta);
 }
 
+function setMusicVolumePopoverOpen(open) {
+  musicPlayer?.classList.toggle("is-volume-open", open);
+  musicVolumeToggle?.setAttribute("aria-expanded", String(open));
+  musicVolumeToggle?.setAttribute("aria-label", open ? "关闭音量调节" : "打开音量调节");
+  musicVolumeToggle?.setAttribute("title", open ? "关闭音量调节" : "打开音量调节");
+  musicVolumePopover?.setAttribute("aria-hidden", String(!open));
+}
+
 musicControl?.addEventListener("click", toggleMusicPlayback);
 musicPlayPause?.addEventListener("click", toggleMusicPlayback);
 musicPrevious?.addEventListener("click", () => changeMusicTrack(-1));
@@ -325,6 +337,9 @@ musicNext?.addEventListener("click", () => changeMusicTrack(1));
 musicVolume?.addEventListener("input", (event) => setMusicVolume(event.target.value));
 musicVolumeDown?.addEventListener("click", () => stepMusicVolume(-0.05));
 musicVolumeUp?.addEventListener("click", () => stepMusicVolume(0.05));
+musicVolumeToggle?.addEventListener("click", () => {
+  setMusicVolumePopoverOpen(!musicPlayer?.classList.contains("is-volume-open"));
+});
 setMusicVolume(roomAudio.volume);
 roomAudio.addEventListener("play", () => updateMusicPlaybackUI(true));
 roomAudio.addEventListener("pause", () => updateMusicPlaybackUI(false));

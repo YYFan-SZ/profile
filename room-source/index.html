@@ -46,17 +46,21 @@
         <div class="music-player" id="music-player" aria-hidden="true">
           <div class="music-player-track">
             <span>NOW PLAYING</span>
-            <strong id="music-track-title">ROSÉ · number one girl</strong>
+            <strong id="music-track-title">number one girl</strong>
+            <small id="music-track-artist">ROSÉ</small>
           </div>
           <button class="music-player-button" id="music-previous" type="button" aria-label="上一首" title="上一首">‹</button>
           <button class="music-player-button music-player-button--play" id="music-play-pause" type="button" aria-label="播放" title="播放">
             <span class="music-play-icon" aria-hidden="true"></span>
           </button>
           <button class="music-player-button" id="music-next" type="button" aria-label="下一首" title="下一首">›</button>
-          <div class="music-volume" aria-label="音量控制">
-            <button class="music-volume-step" id="music-volume-down" type="button" aria-label="降低音量" title="降低音量">−</button>
-            <input id="music-volume" type="range" min="0" max="1" step="0.01" value="0.58" aria-label="音乐音量" />
-            <button class="music-volume-step" id="music-volume-up" type="button" aria-label="提高音量" title="提高音量">＋</button>
+          <div class="music-volume-control">
+            <button class="music-player-button music-volume-toggle" id="music-volume-toggle" type="button" aria-label="打开音量调节" aria-expanded="false" title="打开音量调节">♫</button>
+            <div class="music-volume-popover" id="music-volume-popover" aria-hidden="true">
+              <button class="music-volume-step" id="music-volume-up" type="button" aria-label="提高音量" title="提高音量">＋</button>
+              <input id="music-volume" type="range" min="0" max="1" step="0.01" value="0.58" aria-label="音乐音量" />
+              <button class="music-volume-step" id="music-volume-down" type="button" aria-label="降低音量" title="降低音量">−</button>
+            </div>
           </div>
         </div>
         <button class="room-control room-control--music" id="music-control" type="button" aria-label="播放音乐" aria-pressed="false" title="播放音乐">
