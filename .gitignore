@@ -20,3 +20,6 @@ code.txt
 
 # Built by room-source before Next.js builds the live site.
 /public/room-engine/
+
+# Temporary intermediate files created while optimizing the 3D room models.
+/room-source/.model-opt-temp/

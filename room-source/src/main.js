@@ -139,8 +139,8 @@ window.setTimeout(() => {
 
 window.setTimeout(() => {
   if (document.body.classList.contains("is-ready")) return;
-  if (loadingTitle) loadingTitle.textContent = "房间暂时还没加载好";
-  setLoadingStatus("房间加载失败，可能是网络连接或资源服务器暂时不可用。\n请刷新页面重试。", { showRetry: true, error: true });
+  if (loadingTitle) loadingTitle.textContent = "房间仍在布置中";
+  setLoadingStatus("资源仍在下载或解析，请再耐心等待一会儿。\n你也可以点击“重新加载”。", { showRetry: true });
 }, 30000);
 
 loadingRetry?.addEventListener("click", () => window.location.reload());
@@ -149,13 +149,13 @@ loadingRetry?.addEventListener("click", () => window.location.reload());
 // first complete room view. The weights roughly follow the source file sizes,
 // so one small photo does not move the progress bar as much as a large GLB.
 const criticalAssetProgress = new Map([
-  ["room", { weight: 73.3, progress: 0 }],
+  ["room", { weight: 29.3, progress: 0 }],
   ["photoWall", { weight: 0.8, progress: 0 }],
-  ["teaTableLamp", { weight: 15.0, progress: 0 }],
-  ["wallRosie", { weight: 24.8, progress: 0 }],
-  ["rosieDoll", { weight: 22.6, progress: 0 }],
-  ["profileCard", { weight: 12.1, progress: 0 }],
-  ["ballRack", { weight: 58.0, progress: 0 }],
+  ["teaTableLamp", { weight: 2.9, progress: 0 }],
+  ["wallRosie", { weight: 5.4, progress: 0 }],
+  ["rosieDoll", { weight: 4.8, progress: 0 }],
+  ["profileCard", { weight: 2.5, progress: 0 }],
+  ["ballRack", { weight: 13.9, progress: 0 }],
 ]);
 
 if (lampSwitch) {
@@ -1469,11 +1469,11 @@ function createWallBallRack(room) {
   rack.add(upperTrim);
 
   const ballSpecs = [
-    ["/room-engine/models/hanging-ball-pink.glb", -8.00],
-    ["/room-engine/models/hanging-ball-red.glb", -7.10],
-    ["/room-engine/models/hanging-ball-yellow.glb", -6.20],
-    ["/room-engine/models/hanging-ball-blue.glb", -5.30],
-    ["/room-engine/models/hanging-ball-green.glb", -4.40],
+    ["/room-engine/models-web/hanging-ball-pink.glb", -8.00],
+    ["/room-engine/models-web/hanging-ball-red.glb", -7.10],
+    ["/room-engine/models-web/hanging-ball-yellow.glb", -6.20],
+    ["/room-engine/models-web/hanging-ball-blue.glb", -5.30],
+    ["/room-engine/models-web/hanging-ball-green.glb", -4.40],
   ];
   let loadedBalls = 0;
 
@@ -1501,7 +1501,7 @@ function createWallBallRack(room) {
     rack.add(hook);
 
     const loadBall = () => new Promise((resolve) => {
-      const ballUrl = `${url}?revision=20260823-corrected-ball-rack`;
+      const ballUrl = `${url}?revision=20260827-web-optimized`;
       const diagnosticState = beginRoomLoadDiagnostic(`ball-${index + 1}`, ballUrl);
       loader.load(
         ballUrl,
@@ -1579,20 +1579,13 @@ function createWallBallRack(room) {
       );
     });
 
-    // Parse one detailed ball per animation frame. This prevents five GLB
-    // decoders from blocking the main thread at the same time and keeps the
-    // room responsive while the rack finishes loading in the background.
     ballSpecs[index][2] = loadBall;
   });
 
   room.add(rack);
-  return (async () => {
-    for (const [, , loadBall] of ballSpecs) {
-      if (!loadBall) continue;
-      await loadBall();
-      await new Promise((resolve) => requestAnimationFrame(resolve));
-    }
-  })();
+  // Start all five requests together. Each GLB is now small enough that
+  // parallel download is faster than the previous one-by-one queue.
+  return Promise.all(ballSpecs.map(([, , loadBall]) => loadBall?.()));
 }
 
 function createCalendarTexture() {
@@ -1938,7 +1931,7 @@ function createImportedTeaTableLamp(room) {
 
   return loadCriticalGLTF(
     "teaTableLamp",
-    "/room-engine/models/tea-table-lamp.glb?revision=20260825-replacement",
+    "/room-engine/models-web/tea-table-lamp.glb?revision=20260827-web-optimized",
     (gltf) => {
       const lampModel = gltf.scene;
       lampModel.name = "Imported_Tea_Table_Lamp_Model";
@@ -2069,7 +2062,7 @@ function createRecordPlayerMusicEffects(room) {
 function createWallRosie(room) {
   return loadCriticalGLTF(
     "wallRosie",
-    "/room-engine/models/meshy-ai-rosie.glb?revision=20260824-wall-rosie",
+    "/room-engine/models-web/meshy-ai-rosie.glb?revision=20260827-web-optimized",
     (gltf) => {
       const rosie = gltf.scene;
       rosie.name = "Wall_Rosie_Decoration";
@@ -2139,7 +2132,7 @@ function prepareDecorModel(root, castShadow = false) {
 function createWallRosieDoll(room) {
   return loadCriticalGLTF(
     "rosieDoll",
-    "/room-engine/models/rosie-doll.glb?revision=20260825-wall-layout",
+    "/room-engine/models-web/rosie-doll.glb?revision=20260827-web-optimized",
     (gltf) => {
       const doll = gltf.scene;
       doll.name = "Wall_Rosie_Doll";
@@ -2215,7 +2208,7 @@ function createProfileCardTexture() {
 function createProfileCardHolder(room) {
   return loadCriticalGLTF(
     "profileCard",
-    "/room-engine/models/profile-card-holder.glb?revision=20260825-profile-card",
+    "/room-engine/models-web/profile-card-holder.glb?revision=20260827-web-optimized",
     (gltf) => {
       const holderModel = gltf.scene;
       holderModel.name = "Profile_Card_Holder_Model";
@@ -3261,9 +3254,11 @@ async function prepareCriticalRoomAssets(room) {
   createCornerShelfAndMirror(room);
   createRecordPlayerMusicEffects(room);
   registerRoomInteractions(room);
+  const ballRackReady = createWallBallRack(room);
 
   await Promise.all([
     photoWallReady,
+    ballRackReady,
     (async () => {
       await createImportedTeaTableLamp(room);
       await createWallRosieDoll(room);
@@ -3273,10 +3268,6 @@ async function prepareCriticalRoomAssets(room) {
       await createProfileCardHolder(room);
     })(),
   ]);
-  // Wait for the five decorative balls as well, so the first visible frame
-  // is the complete room rather than a view that keeps assembling after entry.
-  await createWallBallRack(room);
-
   registerRoomInteractions(room);
   room.updateMatrixWorld(true);
   // Compile shaders and draw one hidden frame before revealing the canvas, so
@@ -3291,7 +3282,7 @@ async function prepareCriticalRoomAssets(room) {
   });
 }
 
-const roomModelUrl = "/room-engine/models/zhengyifan-room.glb?revision=20260823-clear-left-corner-layout";
+const roomModelUrl = "/room-engine/models-web/zhengyifan-room.glb?revision=20260827-web-optimized";
 const roomModelDiagnostic = beginRoomLoadDiagnostic("room", roomModelUrl);
 
 loader.load(
@@ -3477,12 +3468,8 @@ loader.load(
 
     setLoadingProgress(100);
     const revealRoom = () => {
-      if (!reducedMotion) {
-        room.scale.setScalar(0.92);
-        room.rotation.y = -0.035;
-        gsap.to(room.scale, { x: 1, y: 1, z: 1, duration: 2.15, ease: "power3.out" });
-        gsap.to(room.rotation, { y: 0, duration: 2.25, ease: "power3.out" });
-      }
+      // The complete scene is already rendered behind the loading overlay.
+      // Reveal it without scaling individual assets into place.
       document.body.classList.add("is-ready");
 
     };
