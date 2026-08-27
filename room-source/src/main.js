@@ -48,6 +48,78 @@ const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const loadingStartedAt = performance.now();
 const minimumLoadingDuration = 3000;
 let latestLoadingProgress = 0;
+const roomLoadDiagnostics = new Map();
+const diagnosticProgressIntervalMs = 750;
+
+function formatLoadBytes(bytes) {
+  if (!Number.isFinite(bytes)) return "未知";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
+function beginRoomLoadDiagnostic(key, url) {
+  const state = {
+    key,
+    url,
+    startedAt: performance.now(),
+    lastProgressAt: 0,
+    lastLoaded: 0,
+    warnedMissingTotal: false,
+  };
+  roomLoadDiagnostics.set(key, state);
+  console.info("[RoomLoad] 开始请求", { key, url });
+  return state;
+}
+
+function trackRoomLoadDiagnosticProgress(state, event) {
+  if (!state || !event?.loaded) return;
+  const now = performance.now();
+  const isComplete = event.total > 0 && event.loaded >= event.total;
+  if (!isComplete && now - state.lastProgressAt < diagnosticProgressIntervalMs) return;
+  state.lastProgressAt = now;
+  state.lastLoaded = event.loaded;
+  if (!event.total && !state.warnedMissingTotal) {
+    state.warnedMissingTotal = true;
+    console.warn("[RoomLoad] 服务器未提供 Content-Length，进度条使用估算值", { key: state.key });
+  }
+  console.info("[RoomLoad] 下载进度", {
+    key: state.key,
+    loaded: formatLoadBytes(event.loaded),
+    total: event.total ? formatLoadBytes(event.total) : "未知",
+    percent: event.total ? `${Math.round((event.loaded / event.total) * 100)}%` : "估算中",
+    elapsedMs: Math.round(now - state.startedAt),
+  });
+}
+
+function finishRoomLoadDiagnostic(state, phase = "解析完成", details = {}) {
+  if (!state || state.finishedAt) return;
+  state.finishedAt = performance.now();
+  console.info(`[RoomLoad] ${phase}`, {
+    key: state.key,
+    elapsedMs: Math.round(state.finishedAt - state.startedAt),
+    loaded: formatLoadBytes(state.lastLoaded),
+    ...details,
+  });
+}
+
+function failRoomLoadDiagnostic(state, error) {
+  if (!state || state.finishedAt) return;
+  state.finishedAt = performance.now();
+  console.error("[RoomLoad] 请求或解析失败", {
+    key: state.key,
+    elapsedMs: Math.round(state.finishedAt - state.startedAt),
+    loaded: formatLoadBytes(state.lastLoaded),
+    error,
+  });
+}
+
+console.info("[RoomLoad] 诊断已开启", {
+  page: location.href,
+  userAgent: navigator.userAgent,
+  deviceMemory: navigator.deviceMemory ?? "未知",
+  hardwareConcurrency: navigator.hardwareConcurrency ?? "未知",
+});
 
 function setLoadingStatus(message, { showRetry = false, error = false } = {}) {
   if (loadingStatus) loadingStatus.textContent = message;
@@ -240,9 +312,10 @@ function updateCriticalAssetProgress(key, progress) {
   setLoadingProgress(Math.min(99, (loadedWeight / totalWeight) * 100));
 }
 
-function trackCriticalAssetDownload(key, event) {
+function trackCriticalAssetDownload(key, event, diagnosticState = roomLoadDiagnostics.get(key)) {
   const entry = criticalAssetProgress.get(key);
   if (!entry || !event.loaded) return;
+  trackRoomLoadDiagnosticProgress(diagnosticState, event);
   if (event.total) {
     updateCriticalAssetProgress(key, Math.max(entry.progress, event.loaded / event.total));
     return;
@@ -1428,9 +1501,12 @@ function createWallBallRack(room) {
     rack.add(hook);
 
     const loadBall = () => new Promise((resolve) => {
+      const ballUrl = `${url}?revision=20260823-corrected-ball-rack`;
+      const diagnosticState = beginRoomLoadDiagnostic(`ball-${index + 1}`, ballUrl);
       loader.load(
-        `${url}?revision=20260823-corrected-ball-rack`,
+        ballUrl,
         (gltf) => {
+          finishRoomLoadDiagnostic(diagnosticState, "下载与解析完成");
           const ball = gltf.scene;
           ball.name = `WallRack_ColorBall_${index + 1}`;
         ball.traverse((child) => {
@@ -1484,11 +1560,17 @@ function createWallBallRack(room) {
           });
           loadedBalls += 1;
           updateCriticalAssetProgress("ballRack", loadedBalls / ballSpecs.length);
+          console.info("[RoomLoad] 球体场景挂载完成", {
+            key: diagnosticState.key,
+            elapsedMs: Math.round(performance.now() - diagnosticState.startedAt),
+            loadedBalls,
+          });
           resolve();
         },
-        (event) => trackCriticalAssetDownload("ballRack", event),
+        (event) => trackCriticalAssetDownload("ballRack", event, diagnosticState),
         (error) => {
           console.error(`Color ball failed to load: ${url}`, error);
+          failRoomLoadDiagnostic(diagnosticState, error);
           // Keep the placeholder visible if a decorative asset is missing.
           loadedBalls += 1;
           updateCriticalAssetProgress("ballRack", loadedBalls / ballSpecs.length);
@@ -3140,21 +3222,28 @@ loader.setMeshoptDecoder(MeshoptDecoder);
 
 function loadCriticalGLTF(key, url, onLoad, errorMessage) {
   return new Promise((resolve) => {
+    const diagnosticState = beginRoomLoadDiagnostic(key, url);
     loader.load(
       url,
       (gltf) => {
+        finishRoomLoadDiagnostic(diagnosticState, "下载与解析完成");
         try {
           onLoad(gltf);
         } catch (error) {
           console.error(`${errorMessage} during scene setup`, error);
         } finally {
           updateCriticalAssetProgress(key, 1);
+          console.info("[RoomLoad] 关键资源处理完成", {
+            key,
+            elapsedMs: Math.round(performance.now() - diagnosticState.startedAt),
+          });
           resolve();
         }
       },
-      (event) => trackCriticalAssetDownload(key, event),
+      (event) => trackCriticalAssetDownload(key, event, diagnosticState),
       (error) => {
         console.error(errorMessage, error);
+        failRoomLoadDiagnostic(diagnosticState, error);
         // A missing optional decoration should not trap visitors forever on
         // the loading screen. Its placeholder remains and the room can open.
         updateCriticalAssetProgress(key, 1);
@@ -3195,11 +3284,20 @@ async function prepareCriticalRoomAssets(room) {
   renderer.compile(scene, camera);
   renderer.render(scene, camera);
   await new Promise((resolve) => requestAnimationFrame(resolve));
+  console.info("[RoomLoad] 首次完整可见帧已准备好", {
+    elapsedMs: Math.round(performance.now() - loadingStartedAt),
+    memory: { geometries: renderer.info.memory.geometries, textures: renderer.info.memory.textures },
+    render: { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles },
+  });
 }
 
+const roomModelUrl = "/room-engine/models/zhengyifan-room.glb?revision=20260823-clear-left-corner-layout";
+const roomModelDiagnostic = beginRoomLoadDiagnostic("room", roomModelUrl);
+
 loader.load(
-  "/room-engine/models/zhengyifan-room.glb?revision=20260823-clear-left-corner-layout",
+  roomModelUrl,
   async (gltf) => {
+    finishRoomLoadDiagnostic(roomModelDiagnostic, "下载与解析完成");
     const room = gltf.scene;
     roomModel = room;
     room.name = "Room3D";
@@ -3391,12 +3489,13 @@ loader.load(
     if (reducedMotion) revealRoom();
     else window.setTimeout(revealRoom, Math.max(0, minimumLoadingDuration - (performance.now() - loadingStartedAt)));
   },
-  (event) => trackCriticalAssetDownload("room", event),
+  (event) => trackCriticalAssetDownload("room", event, roomModelDiagnostic),
   (error) => {
     if (loadingTitle) loadingTitle.textContent = "房间暂时还没加载好";
     setLoadingStatus("房间加载失败，可能是网络连接或资源服务器暂时不可用。\n请刷新页面重试。", { showRetry: true, error: true });
     progressLabel.textContent = "模型加载失败";
     console.error("Room model failed to load", error);
+    failRoomLoadDiagnostic(roomModelDiagnostic, error);
   },
 );
 
