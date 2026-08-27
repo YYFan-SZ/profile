@@ -56,7 +56,7 @@ function setLoadingStatus(message, { showRetry = false, error = false } = {}) {
 }
 
 window.setTimeout(() => {
-  if (document.body.classList.contains("is-ready") || latestLoadingProgress > 0) return;
+  if (document.body.classList.contains("is-ready") || latestLoadingProgress >= 5) return;
   setLoadingStatus("房间模型比较大，正在加载，请耐心等待…");
 }, 5000);
 
@@ -83,6 +83,7 @@ const criticalAssetProgress = new Map([
   ["wallRosie", { weight: 24.8, progress: 0 }],
   ["rosieDoll", { weight: 22.6, progress: 0 }],
   ["profileCard", { weight: 12.1, progress: 0 }],
+  ["ballRack", { weight: 58.0, progress: 0 }],
 ]);
 
 if (lampSwitch) {
@@ -240,7 +241,18 @@ function updateCriticalAssetProgress(key, progress) {
 }
 
 function trackCriticalAssetDownload(key, event) {
-  if (event.total) updateCriticalAssetProgress(key, event.loaded / event.total);
+  const entry = criticalAssetProgress.get(key);
+  if (!entry || !event.loaded) return;
+  if (event.total) {
+    updateCriticalAssetProgress(key, Math.max(entry.progress, event.loaded / event.total));
+    return;
+  }
+  // Some static hosts omit Content-Length, leaving ProgressEvent.total at 0.
+  // Use the source-size weight as a conservative estimate so the UI never
+  // appears frozen at 0% while bytes are actually arriving.
+  const estimatedBytes = Math.max(1, entry.weight * 1024 * 1024);
+  const estimatedProgress = Math.min(0.96, Math.max(0.01, event.loaded / estimatedBytes));
+  updateCriticalAssetProgress(key, Math.max(entry.progress, estimatedProgress));
 }
 
 function setMusicPlayerOpen(open) {
@@ -1390,6 +1402,7 @@ function createWallBallRack(room) {
     ["/room-engine/models/hanging-ball-blue.glb", -5.30],
     ["/room-engine/models/hanging-ball-green.glb", -4.40],
   ];
+  let loadedBalls = 0;
 
   ballSpecs.forEach(([url, x], index) => {
     const mount = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.10, 24), hookMaterial);
@@ -1469,12 +1482,16 @@ function createWallBallRack(room) {
             hoverTilt: index % 2 ? 0.075 : -0.075,
             swingAmount: 0.30,
           });
+          loadedBalls += 1;
+          updateCriticalAssetProgress("ballRack", loadedBalls / ballSpecs.length);
           resolve();
         },
-        undefined,
+        (event) => trackCriticalAssetDownload("ballRack", event),
         (error) => {
           console.error(`Color ball failed to load: ${url}`, error);
           // Keep the placeholder visible if a decorative asset is missing.
+          loadedBalls += 1;
+          updateCriticalAssetProgress("ballRack", loadedBalls / ballSpecs.length);
           resolve();
         },
       );
@@ -1486,15 +1503,14 @@ function createWallBallRack(room) {
     ballSpecs[index][2] = loadBall;
   });
 
-  (async () => {
+  room.add(rack);
+  return (async () => {
     for (const [, , loadBall] of ballSpecs) {
       if (!loadBall) continue;
       await loadBall();
       await new Promise((resolve) => requestAnimationFrame(resolve));
     }
   })();
-
-  room.add(rack);
 }
 
 function createCalendarTexture() {
@@ -3148,19 +3164,6 @@ function loadCriticalGLTF(key, url, onLoad, errorMessage) {
   });
 }
 
-// Non-critical decorations are intentionally scheduled after the room shell
-// is visible. This keeps the large main room model from competing with every
-// optional GLB for the first network connection and first render frame.
-function scheduleRoomDecoration(task, delay = 0) {
-  window.setTimeout(() => {
-    if (typeof window.requestIdleCallback === "function") {
-      window.requestIdleCallback(task, { timeout: 1200 });
-    } else {
-      task();
-    }
-  }, delay);
-}
-
 async function prepareCriticalRoomAssets(room) {
   // Procedural pieces are added immediately behind the loading overlay. Photo
   // thumbnails and large GLBs then load in two lanes to avoid a network spike.
@@ -3181,6 +3184,9 @@ async function prepareCriticalRoomAssets(room) {
       await createProfileCardHolder(room);
     })(),
   ]);
+  // Wait for the five decorative balls as well, so the first visible frame
+  // is the complete room rather than a view that keeps assembling after entry.
+  await createWallBallRack(room);
 
   registerRoomInteractions(room);
   room.updateMatrixWorld(true);
@@ -3381,9 +3387,6 @@ loader.load(
       }
       document.body.classList.add("is-ready");
 
-      // The five hanging-ball GLBs are decorative and comparatively large.
-      // Start them only after the complete first view is already interactive.
-      scheduleRoomDecoration(() => createWallBallRack(room), 450);
     };
     if (reducedMotion) revealRoom();
     else window.setTimeout(revealRoom, Math.max(0, minimumLoadingDuration - (performance.now() - loadingStartedAt)));
