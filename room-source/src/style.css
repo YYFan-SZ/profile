@@ -652,6 +652,7 @@ body.is-ready .room-controls {
   transform: translateY(0);
 }
 
+.room-control--home,
 .room-control--panorama {
   width: 48px;
   height: 48px;
@@ -660,11 +661,18 @@ body.is-ready .room-controls {
   color: #725f93;
 }
 
+.room-control--home {
+  flex: 0 0 auto;
+  text-decoration: none;
+}
+
+.room-control--home svg,
 .room-control--panorama svg {
   width: 27px;
   height: 27px;
 }
 
+body.is-night .room-control--home,
 body.is-night .room-control--panorama {
   color: #d8c5ed;
   background: linear-gradient(145deg, rgba(79, 70, 111, 0.94), rgba(48, 52, 89, 0.94));
@@ -1140,6 +1148,7 @@ body.is-ready .lamp-switch {
     height: 43px;
   }
 
+  .room-control--home,
   .room-control--panorama {
     width: 43px;
     height: 43px;
