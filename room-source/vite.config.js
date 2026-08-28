@@ -24,11 +24,14 @@ export default defineConfig({
     {
       name: "exclude-source-room-models",
       async closeBundle() {
-        await Promise.all(
-          sourceOnlyModelNames.map((name) =>
+        await Promise.all([
+          ...sourceOnlyModelNames.map((name) =>
             rm(join(outputDirectory, "models", name), { force: true }),
           ),
-        );
+          // Keep the previously approved 58.87 MiB set in source control as a
+          // fallback, but do not duplicate it in the deployed static output.
+          rm(join(outputDirectory, "models-web"), { recursive: true, force: true }),
+        ]);
       },
     },
   ],

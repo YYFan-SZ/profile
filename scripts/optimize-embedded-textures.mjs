@@ -3,16 +3,17 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, extname, join, resolve } from "node:path";
 
-const [, , inputArg, outputArg, qualityArg = "95"] = process.argv;
+const [, , inputArg, outputArg, qualityArg = "95", maxDimensionArg = "0"] = process.argv;
 
 if (!inputArg || !outputArg) {
-  console.error("Usage: node scripts/optimize-embedded-textures.mjs <input.glb> <output.glb> [quality]");
+  console.error("Usage: node scripts/optimize-embedded-textures.mjs <input.glb> <output.glb> [quality] [maxDimension]");
   process.exit(1);
 }
 
 const inputPath = resolve(inputArg);
 const outputPath = resolve(outputArg);
 const quality = Math.max(1, Math.min(100, Number(qualityArg)));
+const maxDimension = Math.max(0, Number(maxDimensionArg) || 0);
 const source = readFileSync(inputPath);
 
 if (source.readUInt32LE(0) !== 0x46546c67 || source.readUInt32LE(4) !== 2) {
@@ -61,11 +62,18 @@ try {
     const tempOutput = join(tempRoot, `${imageIndex}.webp`);
     writeFileSync(tempInput, bytes);
 
-    execFileSync(
-      "magick",
-      [tempInput, "-quality", String(quality), "-define", "webp:method=6", "-define", "webp:alpha-quality=100", tempOutput],
-      { stdio: "ignore" },
+    const convertArgs = [tempInput];
+    if (maxDimension > 0) convertArgs.push("-resize", `${maxDimension}x${maxDimension}>`);
+    convertArgs.push(
+      "-quality",
+      String(quality),
+      "-define",
+      "webp:method=6",
+      "-define",
+      "webp:alpha-quality=100",
+      tempOutput,
     );
+    execFileSync("magick", convertArgs, { stdio: "ignore" });
 
     const optimized = readFileSync(tempOutput);
     originalImageBytes += bytes.length;
@@ -181,7 +189,8 @@ try {
   const outputMiB = (totalLength / 1024 / 1024).toFixed(2);
   const imageSavingMiB = ((originalImageBytes - optimizedImageBytes) / 1024 / 1024).toFixed(2);
   console.log(`${basename(inputPath)}: ${originalMiB} MiB -> ${outputMiB} MiB`);
-  console.log(`转换贴图 ${convertedImages.size} 张，贴图减少 ${imageSavingMiB} MiB，分辨率未调整。`);
+  const dimensionMessage = maxDimension > 0 ? `最大边限制 ${maxDimension}px` : "分辨率未调整";
+  console.log(`转换贴图 ${convertedImages.size} 张，贴图减少 ${imageSavingMiB} MiB，${dimensionMessage}。`);
 } finally {
   rmSync(tempRoot, { recursive: true, force: true });
 }

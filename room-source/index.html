@@ -107,7 +107,13 @@
         <div class="photo-viewer-card" role="dialog" aria-modal="true" aria-labelledby="photo-viewer-caption">
           <button class="photo-viewer-close" id="photo-viewer-close" type="button" aria-label="关闭照片">×</button>
           <button class="photo-viewer-nav photo-viewer-nav--previous" id="photo-viewer-previous" type="button" aria-label="查看上一张照片">‹</button>
-          <img id="photo-viewer-image" alt="" />
+          <div class="photo-viewer-media is-loading" id="photo-viewer-media">
+            <div class="photo-viewer-loading" id="photo-viewer-loading" role="status" aria-live="polite">
+              <span class="photo-viewer-loading-spinner" aria-hidden="true"></span>
+              <span id="photo-viewer-loading-text">照片加载中…</span>
+            </div>
+            <img id="photo-viewer-image" alt="" />
+          </div>
           <button class="photo-viewer-nav photo-viewer-nav--next" id="photo-viewer-next" type="button" aria-label="查看下一张照片">›</button>
           <p id="photo-viewer-caption"></p>
           <span class="photo-viewer-hint">点击空白处或按 Esc 关闭</span>

@@ -27,6 +27,8 @@ const contactCard = document.querySelector("#contact-card");
 const contactCardClose = document.querySelector("#contact-card-close");
 const photoViewer = document.querySelector("#photo-viewer");
 const photoViewerImage = document.querySelector("#photo-viewer-image");
+const photoViewerMedia = document.querySelector("#photo-viewer-media");
+const photoViewerLoadingText = document.querySelector("#photo-viewer-loading-text");
 const photoViewerCaption = document.querySelector("#photo-viewer-caption");
 const photoViewerClose = document.querySelector("#photo-viewer-close");
 const photoViewerPrevious = document.querySelector("#photo-viewer-previous");
@@ -149,13 +151,13 @@ loadingRetry?.addEventListener("click", () => window.location.reload());
 // first complete room view. The weights roughly follow the source file sizes,
 // so one small photo does not move the progress bar as much as a large GLB.
 const criticalAssetProgress = new Map([
-  ["room", { weight: 29.3, progress: 0 }],
+  ["room", { weight: 10.2, progress: 0 }],
   ["photoWall", { weight: 0.8, progress: 0 }],
-  ["teaTableLamp", { weight: 2.9, progress: 0 }],
-  ["wallRosie", { weight: 5.4, progress: 0 }],
-  ["rosieDoll", { weight: 4.8, progress: 0 }],
-  ["profileCard", { weight: 2.5, progress: 0 }],
-  ["ballRack", { weight: 13.9, progress: 0 }],
+  ["teaTableLamp", { weight: 0.8, progress: 0 }],
+  ["wallRosie", { weight: 1.8, progress: 0 }],
+  ["rosieDoll", { weight: 1.4, progress: 0 }],
+  ["profileCard", { weight: 0.9, progress: 0 }],
+  ["ballRack", { weight: 2.3, progress: 0 }],
 ]);
 
 if (lampSwitch) {
@@ -178,6 +180,7 @@ let teaTableLampManualOn = false;
 let roomIsNight = false;
 let currentPhotoIndex = -1;
 let activePhotoViewerItems = null;
+let photoViewerLoadVersion = 0;
 let currentMusicTrack = 0;
 let recordMusicDisc = null;
 const recordMusicNotes = [];
@@ -1469,11 +1472,11 @@ function createWallBallRack(room) {
   rack.add(upperTrim);
 
   const ballSpecs = [
-    ["/room-engine/models-web/hanging-ball-pink.glb", -8.00],
-    ["/room-engine/models-web/hanging-ball-red.glb", -7.10],
-    ["/room-engine/models-web/hanging-ball-yellow.glb", -6.20],
-    ["/room-engine/models-web/hanging-ball-blue.glb", -5.30],
-    ["/room-engine/models-web/hanging-ball-green.glb", -4.40],
+    ["/room-engine/models-web-fast/hanging-ball-pink.glb", -8.00],
+    ["/room-engine/models-web-fast/hanging-ball-red.glb", -7.10],
+    ["/room-engine/models-web-fast/hanging-ball-yellow.glb", -6.20],
+    ["/room-engine/models-web-fast/hanging-ball-blue.glb", -5.30],
+    ["/room-engine/models-web-fast/hanging-ball-green.glb", -4.40],
   ];
   let loadedBalls = 0;
 
@@ -1501,7 +1504,7 @@ function createWallBallRack(room) {
     rack.add(hook);
 
     const loadBall = () => new Promise((resolve) => {
-      const ballUrl = `${url}?revision=20260827-web-optimized`;
+      const ballUrl = `${url}?revision=20260827-fast-candidate`;
       const diagnosticState = beginRoomLoadDiagnostic(`ball-${index + 1}`, ballUrl);
       loader.load(
         ballUrl,
@@ -1931,7 +1934,7 @@ function createImportedTeaTableLamp(room) {
 
   return loadCriticalGLTF(
     "teaTableLamp",
-    "/room-engine/models-web/tea-table-lamp.glb?revision=20260827-web-optimized",
+    "/room-engine/models-web-fast/tea-table-lamp.glb?revision=20260827-fast-candidate",
     (gltf) => {
       const lampModel = gltf.scene;
       lampModel.name = "Imported_Tea_Table_Lamp_Model";
@@ -2062,7 +2065,7 @@ function createRecordPlayerMusicEffects(room) {
 function createWallRosie(room) {
   return loadCriticalGLTF(
     "wallRosie",
-    "/room-engine/models-web/meshy-ai-rosie.glb?revision=20260827-web-optimized",
+    "/room-engine/models-web-fast/meshy-ai-rosie.glb?revision=20260827-fast-candidate",
     (gltf) => {
       const rosie = gltf.scene;
       rosie.name = "Wall_Rosie_Decoration";
@@ -2132,7 +2135,7 @@ function prepareDecorModel(root, castShadow = false) {
 function createWallRosieDoll(room) {
   return loadCriticalGLTF(
     "rosieDoll",
-    "/room-engine/models-web/rosie-doll.glb?revision=20260827-web-optimized",
+    "/room-engine/models-web-fast/rosie-doll.glb?revision=20260827-fast-candidate",
     (gltf) => {
       const doll = gltf.scene;
       doll.name = "Wall_Rosie_Doll";
@@ -2208,7 +2211,7 @@ function createProfileCardTexture() {
 function createProfileCardHolder(room) {
   return loadCriticalGLTF(
     "profileCard",
-    "/room-engine/models-web/profile-card-holder.glb?revision=20260827-web-optimized",
+    "/room-engine/models-web-fast/profile-card-holder.glb?revision=20260827-fast-candidate",
     (gltf) => {
       const holderModel = gltf.scene;
       holderModel.name = "Profile_Card_Holder_Model";
@@ -3282,7 +3285,7 @@ async function prepareCriticalRoomAssets(room) {
   });
 }
 
-const roomModelUrl = "/room-engine/models-web/zhengyifan-room.glb?revision=20260827-web-optimized";
+const roomModelUrl = "/room-engine/models-web-fast/zhengyifan-room.glb?revision=20260828-ultrafast-restored";
 const roomModelDiagnostic = beginRoomLoadDiagnostic("room", roomModelUrl);
 
 loader.load(
@@ -3587,9 +3590,35 @@ function showPhotoAt(index) {
   const items = activePhotoViewerItems ?? PHOTO_WALL_ITEMS;
   currentPhotoIndex = (index + items.length) % items.length;
   const [url, title] = items[currentPhotoIndex];
-  photoViewerImage.src = url;
-  photoViewerImage.alt = title;
+
+  const loadVersion = ++photoViewerLoadVersion;
+  photoViewerMedia.classList.add("is-loading");
+  photoViewerMedia.classList.remove("is-error");
+  photoViewerLoadingText.textContent = "照片加载中…";
+  photoViewerImage.removeAttribute("src");
+  photoViewerImage.alt = "";
   photoViewerCaption.textContent = title;
+
+  const pendingImage = new Image();
+  pendingImage.decoding = "async";
+  pendingImage.onload = async () => {
+    try {
+      await pendingImage.decode();
+    } catch {
+      // 图片已完成下载时，即使浏览器不支持 decode() 也可以继续显示。
+    }
+    if (loadVersion !== photoViewerLoadVersion) return;
+    photoViewerImage.src = url;
+    photoViewerImage.alt = title;
+    photoViewerMedia.classList.remove("is-loading", "is-error");
+  };
+  pendingImage.onerror = () => {
+    if (loadVersion !== photoViewerLoadVersion) return;
+    photoViewerMedia.classList.remove("is-loading");
+    photoViewerMedia.classList.add("is-error");
+    photoViewerLoadingText.textContent = "照片加载失败，请检查网络后重试";
+  };
+  pendingImage.src = url;
 }
 
 function openPhotoViewer(url, items = PHOTO_WALL_ITEMS) {
@@ -3612,6 +3641,7 @@ function isTeaTableFood(object) {
 }
 
 function closePhotoViewer() {
+  photoViewerLoadVersion += 1;
   photoViewer.classList.remove("is-open");
   photoViewer.setAttribute("aria-hidden", "true");
 }

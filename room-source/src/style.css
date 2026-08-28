@@ -46,14 +46,73 @@
   transform: translateY(0) scale(1);
 }
 
-.photo-viewer img {
+.photo-viewer-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: min(64vh, 620px);
+  overflow: hidden;
+  border-radius: 15px;
+  background: #eee7ef;
+  box-shadow: 0 16px 38px rgba(60, 42, 66, 0.22);
+}
+
+.photo-viewer-media img {
   display: block;
   max-width: 100%;
   max-height: min(76vh, 820px);
-  border-radius: 15px;
+  border-radius: inherit;
   object-fit: contain;
-  background: #eee7ef;
-  box-shadow: 0 16px 38px rgba(60, 42, 66, 0.22);
+  opacity: 1;
+  transition: opacity 180ms ease;
+}
+
+.photo-viewer-media.is-loading img,
+.photo-viewer-media.is-error img {
+  opacity: 0;
+}
+
+.photo-viewer-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  color: #705d7b;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 160ms ease, visibility 160ms ease;
+}
+
+.photo-viewer-media.is-loading .photo-viewer-loading,
+.photo-viewer-media.is-error .photo-viewer-loading {
+  opacity: 1;
+  visibility: visible;
+}
+
+.photo-viewer-loading-spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(112, 93, 123, 0.18);
+  border-top-color: #8b70a0;
+  border-radius: 50%;
+  animation: photo-viewer-spin 760ms linear infinite;
+}
+
+.photo-viewer-media.is-error .photo-viewer-loading-spinner {
+  display: none;
+}
+
+@keyframes photo-viewer-spin {
+  to { transform: rotate(360deg); }
 }
 
 .photo-viewer p {
@@ -127,7 +186,8 @@
 @media (max-width: 680px) {
   .photo-viewer { padding: 12px; }
   .photo-viewer-card { width: 96vw; padding: 10px; border-radius: 18px; }
-  .photo-viewer img { max-height: 74vh; border-radius: 11px; }
+  .photo-viewer-media { min-height: 58vh; border-radius: 11px; }
+  .photo-viewer-media img { max-height: 74vh; }
   .photo-viewer p { margin-top: 10px; }
   .photo-viewer-hint { display: none; }
   .photo-viewer-nav { width: 38px; height: 48px; border-radius: 13px; font-size: 32px; }

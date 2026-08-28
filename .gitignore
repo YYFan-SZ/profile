@@ -23,3 +23,4 @@ code.txt
 
 # Temporary intermediate files created while optimizing the 3D room models.
 /room-source/.model-opt-temp/
+/room-source/.model-candidates/
