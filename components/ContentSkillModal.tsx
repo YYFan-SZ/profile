@@ -23,41 +23,41 @@ type Step = {
 const BATCH_STEPS: readonly Step[] = [
   {
     eyebrow: "01 / INPUT",
-    title: { es: "整理选题与素材", en: "Collect topics and source material" },
+    title: { es: "收集素材", en: "Collect topics and source material" },
     body: {
-      es: "接收选题、原始资料、图片、视频或商品信息，先把这一批要处理的内容和目标人群整理清楚。",
+      es: "选题/资料，存放在本地文件夹",
       en: "Gather topics, source files, images, video or product information, then define the batch and its audience.",
     },
   },
   {
     eyebrow: "02 / PLAN",
-    title: { es: "锁定内容规则", en: "Lock the content rules" },
+    title: { es: "设定规则", en: "Lock the content rules" },
     body: {
-      es: "确认内容范围、文件顺序、发布模板、字段和命名方式，让同一批素材可以按统一规则处理。",
+      es: "模板/字段（已提前预设并封装成 Skill）",
       en: "Set the scope, file order, publishing template, fields and naming rules so the batch can be processed consistently.",
     },
   },
   {
     eyebrow: "03 / PRODUCE",
-    title: { es: "批量生成笔记", en: "Produce the notes in batches" },
+    title: { es: "批量制作", en: "Produce the notes in batches" },
     body: {
-      es: "用 Skill 和可复用模板处理封面、内容页、标题、正文和标签；统一制作标准，但保留每篇笔记的真实差异。",
+      es: "Codex 发送指令，即可直接整理：封面、标题、正文、标签",
       en: "Use reusable Skills and templates for covers, pages, titles, copy and tags while keeping each note tied to its real source.",
     },
   },
   {
     eyebrow: "04 / PACKAGE",
-    title: { es: "组装发布包", en: "Assemble the publishing package" },
+    title: { es: "整理发布包", en: "Assemble the publishing package" },
     body: {
-      es: "将每篇内容整理成独立发布包，包含图片、标题、正文、标签和素材对应关系，方便批量发布和后续追踪。",
+      es: "一篇一记录汇总",
       en: "Turn each note into a standalone package with images, copy, tags and source mapping for publishing and tracking.",
     },
   },
   {
     eyebrow: "05 / VERIFY",
-    title: { es: "写入、归档与核验", en: "Write, archive and verify" },
+    title: { es: "写入飞书", en: "Write, archive and verify" },
     body: {
-      es: "通过飞书 Base 或表格记录内容和发布状态，检查附件数量、顺序、名称与字段，确保制作结果可以被复用和追踪。",
+      es: "飞书归档：发布素材汇总 / 多账号视图",
       en: "Record the content and status in Feishu Base or a table, then check attachment counts, order, names and fields.",
     },
   },
@@ -178,17 +178,17 @@ export default function ContentSkillModal({ mode, open, onClose }: Props) {
         }
     : isBatch
       ? {
-          kicker: "CONTENT / BATCH PRODUCTION",
+          kicker: "内容生产流程",
           title: "小红书笔记批量制作",
-          lead: "把一批素材整理成可直接发布、可追踪的内容包。",
-          intro: "这里展示的是一次批量制作任务如何被拆解和执行：从输入素材，到 Skill 和模板处理，再到发布包归档与结果核验。",
+          lead: "把一批零散素材，整理成多套可直接发布的小红书笔记。",
+          intro: "",
           route: ["输入素材", "制作规则", "批量生成", "发布包", "归档核验"],
-          system: "可复用的执行层",
-          systemBody: "exam-paper-xiaohongshu-feishu 和 yf-xhs-batch-publisher 是这套批量制作能力中已经沉淀下来的两个执行 Skill。前者的公开 GitHub 仓库可以查看具体实现。",
-          boundary: "这里讲的是内容制作流程；发布后的数据复盘是另一项独立能力。",
-          deliverables: "实现结果",
-          deliverableItems: ["结构化的选题与素材清单", "封面、图文页、标题、正文和标签", "每篇独立的发布包", "发布记录与素材归档"],
-          github: "查看 GitHub 仓库 ↗",
+          system: "可复用的制作规则与 Skill",
+          systemBody: "",
+          boundary: "",
+          deliverables: "素材清单 · 完整笔记 · 发布包 · 发布记录",
+          deliverableItems: ["可发布", "可追踪", "可复用"],
+          github: "查看Github仓库 ↗",
           close: "关闭批量制作档案",
         }
       : {
@@ -206,6 +206,8 @@ export default function ContentSkillModal({ mode, open, onClose }: Props) {
           close: "关闭数据复盘档案",
         };
 
+  const flowLine = text.route.join("  →  ");
+
   return (
     <div className={`content-skill-modal ${open ? "content-skill-modal--open" : ""}`} aria-hidden={!open}>
       <button className="content-skill-modal__backdrop" type="button" onClick={onClose} aria-label={text.close} />
@@ -216,16 +218,14 @@ export default function ContentSkillModal({ mode, open, onClose }: Props) {
             <p>{text.kicker}</p>
             <h2 id={`content-skill-modal-title-${mode}`}>{text.title}</h2>
             <strong>{text.lead}</strong>
-            <span>{text.intro}</span>
+            {text.intro && <span>{text.intro}</span>}
           </header>
 
-          <div className="content-skill-modal__route" aria-label={`${text.title} workflow`}>
-            {text.route.map((item, index) => (
-              <span key={item}>{item}{index < text.route.length - 1 && <i aria-hidden>→</i>}</span>
-            ))}
-          </div>
+          {isBatch && !isEnglish ? null : (
+            <p className="content-skill-modal__flow-line">{flowLine}</p>
+          )}
 
-          <div className="content-skill-modal__steps">
+          <div className="content-skill-modal__steps" aria-label={`${text.title} workflow`}>
             {steps.map((step) => (
               <article key={step.eyebrow} className="content-skill-modal__step">
                 <p>{step.eyebrow}</p>
@@ -239,14 +239,14 @@ export default function ContentSkillModal({ mode, open, onClose }: Props) {
 
           <div className="content-skill-modal__footer">
             <section className="content-skill-modal__system">
-              <p>{isBatch ? "SKILL / IMPLEMENTATION" : "REVIEW / METHOD"}</p>
+              <p>{isBatch && !isEnglish ? "这套能力沉淀了什么？" : isBatch ? "SKILL SYSTEM / 01" : "REVIEW / METHOD"}</p>
               <h3>{text.system}</h3>
-              <span>{text.systemBody}</span>
-              <small>{text.boundary}</small>
+              {text.systemBody && <span>{text.systemBody}</span>}
+              {text.boundary && <small>{text.boundary}</small>}
               {text.github && <a className="content-skill-modal__github" href={githubUrl} target="_blank" rel="noreferrer">{text.github}</a>}
             </section>
             <section className="content-skill-modal__deliverables">
-              <p>OUTPUT / CHECKLIST</p>
+              <p>{isBatch && !isEnglish ? "最终交付什么？" : "DELIVERABLES / 02"}</p>
               <h3>{text.deliverables}</h3>
               <ul>{text.deliverableItems.map((item) => <li key={item}>{item}</li>)}</ul>
             </section>

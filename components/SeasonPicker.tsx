@@ -16,12 +16,6 @@ const ICONS: Record<SeasonId, React.ReactNode> = {
       <path d="M18.5 4.5a8.5 8.5 0 11-9 15A8.5 8.5 0 0018.5 4.5z" />
     </svg>
   ),
-  mono: (
-    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden>
-      <path d="M5 6h14M5 12h14M5 18h14" />
-      <path d="M8 4v4M16 10v4M10 16v4" />
-    </svg>
-  ),
 };
 
 export default function SeasonPicker({ className = "" }: { className?: string }) {

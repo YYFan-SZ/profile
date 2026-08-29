@@ -18,6 +18,46 @@ import type { Lang } from "@/lib/i18n";
 const EMAIL = "2388598618@qq.com";
 const WECHAT = "zhengyyff123";
 
+const EN_LABELS: Record<string, string> = {
+  "SZPU 创业协会": "SZPU Entrepreneurship Association",
+  "校团委科创部": "University Innovation Office",
+  "全运会志愿服务": "National Games Volunteer Service",
+  "生财有术航海": "Shengcai Growth Voyage",
+  "校园荣誉与表达": "Campus honours & expression",
+  "视觉设计": "Visual design",
+  "内容运营": "Content operations",
+  "活动执行": "Event execution",
+  "赛事流程": "Event workflow",
+  "多方沟通": "Stakeholder communication",
+  "任务管理": "Task management",
+  "转播辅助": "Broadcast support",
+  "媒体接待": "Media reception",
+  "现场协调": "On-site coordination",
+  "社群陪伴": "Community support",
+  "问题拆解": "Problem framing",
+  "协作推进": "Collaboration",
+  "公开表达": "Public speaking",
+  "方案策划": "Planning",
+  "复盘沉淀": "Review & learning",
+  "校园组织": "Campus organisation",
+  "校园实践": "Campus practice",
+  "大型赛事": "Major event",
+  "社群运营": "Community operations",
+  "学习成长": "Learning & growth",
+  "微信小程序": "WeChat Mini Program",
+  "3000+ 用户": "3,000+ users",
+  "互动内容": "Interactive content",
+  "语音转写": "Speech transcription",
+  "AI 文案": "AI copywriting",
+  "AI 陪伴": "AI companion",
+  "行动规划": "Action planning",
+  "日常工具": "Everyday utilities",
+};
+
+function label(value: string, lang: Lang) {
+  return lang === "en" ? (EN_LABELS[value] ?? value) : value;
+}
+
 // Localised content lives in `{ es, en }` objects inside these arrays so the
 // page can be a straightforward array.map() at render time. Tech names stay
 // as plain strings (they're brand names, not localised).
@@ -29,7 +69,7 @@ type Project = ProjectDetail & {
 const projectCatalog: Project[] = [
   {
     num: "01",
-    name: { es: "五迷小记小程序", en: "Mayday Fan Notes" },
+    name: { es: "五迷小记 · 微信小程序", en: "Mayday Fan Notes · WeChat Mini Program" },
     stack: ["微信小程序", "3000+ 用户", "互动内容"],
     desc: {
       es: "把五月天歌迷分散的听歌、测试、游戏与内容收藏，整理成一个可以持续探索的互动入口。",
@@ -61,7 +101,7 @@ const projectCatalog: Project[] = [
   },
   {
     num: "02",
-    name: { es: "途说 APP", en: "Tusuo APP" },
+    name: { es: "途说 · 安卓 APP", en: "Tusuo · Android App" },
     stack: ["Android · Beta", "uni-app", "语音转写", "AI 文案"],
     desc: {
       es: "为旅行创作者设计的移动端灵感采集工具，覆盖现场录音、语音转写、素材归类和内容草稿生成。",
@@ -94,7 +134,7 @@ const projectCatalog: Project[] = [
   },
   {
     num: "03",
-    name: { es: "RegretReset", en: "RegretReset" },
+    name: { es: "RegretReset · 网站", en: "RegretReset · Website" },
     stack: ["Web · Beta", "AI 陪伴", "行动规划"],
     desc: {
       es: "围绕后悔、纠结与反复回想的 AI 反思工具，帮助用户先看清问题，再找到能执行的下一步。",
@@ -162,7 +202,7 @@ const projectCatalog: Project[] = [
   },
   {
     num: "05",
-    name: { es: "日常工具小程序", en: "Everyday Utility Mini-programs" },
+    name: { es: "日常工具 · 微信小程序", en: "Everyday Utilities · WeChat Mini Program" },
     stack: ["微信小程序", "日常工具"],
     desc: {
       es: "两个轻量的日常工具：记录重要日期，也帮助用户在出门前核对物品。",
@@ -338,6 +378,45 @@ const abilityDetails = [
   },
 ];
 
+const contentWorkflow: Array<{ num: string; title: Localised; accent: Localised; body: Localised }> = [
+  {
+    num: "01",
+    title: { es: "需求洞察与选题", en: "Demand insight & topics" },
+    accent: { es: "考试节点、搜索与反馈", en: "Timing, search & feedback" },
+    body: {
+      es: "判断真实需求，筛选有明确使用场景、可持续交付的内容方向。",
+      en: "Identify real demand and prioritise topics with a clear use case and repeatable delivery.",
+    },
+  },
+  {
+    num: "02",
+    title: { es: "内容产品化", en: "Turn content into a product" },
+    accent: { es: "结构、标题、封面与标签", en: "Structure, title, cover & tags" },
+    body: {
+      es: "把选题整理为清楚、可购买的内容产品。",
+      en: "Turn each topic into clear, purchasable content.",
+    },
+  },
+  {
+    num: "03",
+    title: { es: "AI 工作流搭建", en: "AI workflow design" },
+    accent: { es: "Codex + 飞书", en: "Codex + Feishu" },
+    body: {
+      es: "串联素材、文案与归档，减少重复制作。",
+      en: "Connect materials, copy and archiving to reduce repeated work.",
+    },
+  },
+  {
+    num: "04",
+    title: { es: "数据复盘与迭代", en: "Review & iterate" },
+    accent: { es: "点击、成交与售后反馈", en: "Clicks, sales & feedback" },
+    body: {
+      es: "识别值得放大的内容，调整下一轮选题与表达。",
+      en: "Find what to scale and refine the next round of topics and expression.",
+    },
+  },
+];
+
 function pick<T>(loc: { es: T; en: T }, lang: Lang): T {
   return loc[lang];
 }
@@ -437,6 +516,7 @@ function PracticeMedia({
 }: {
   entry: (typeof experiences)[number];
 }) {
+  const { lang } = useLanguage();
   const [flipped, setFlipped] = useState(false);
   const [materialIndex, setMaterialIndex] = useState(0);
   const [zoomedSrc, setZoomedSrc] = useState<string | null>(null);
@@ -445,16 +525,16 @@ function PracticeMedia({
 
   if (entry.title === "SZPU 创业协会") {
     const materials = [
-      { label: "海报", type: "poster" as const, src: gallery[0] },
-      { label: "推文 01", type: "long" as const, src: gallery[2] },
-      { label: "推文 02", type: "long" as const, src: gallery[3] },
-      { label: "现场 KT 板", type: "long" as const, src: gallery[4] },
+      { label: lang === "en" ? "Poster" : "海报", type: "poster" as const, src: gallery[0] },
+      { label: lang === "en" ? "Article 01" : "推文 01", type: "long" as const, src: gallery[2] },
+      { label: lang === "en" ? "Article 02" : "推文 02", type: "long" as const, src: gallery[3] },
+      { label: lang === "en" ? "On-site KT board" : "现场 KT 板", type: "long" as const, src: gallery[4] },
     ];
     const material = materials[materialIndex] ?? materials[0];
 
     return (
       <div className="practice-association-media">
-        <div className="practice-materials__tabs" role="tablist" aria-label="创业协会物料">
+        <div className="practice-materials__tabs" role="tablist" aria-label={lang === "en" ? "Association materials" : "创业协会物料"}>
           {materials.map((item, index) => (
             <button
               key={item.label}
@@ -479,32 +559,32 @@ function PracticeMedia({
               type="button"
               className="practice-poster-flip"
               onClick={() => setFlipped((value) => !value)}
-              aria-label={flipped ? "查看海报正面" : "查看海报背面"}
+              aria-label={flipped ? (lang === "en" ? "View poster front" : "查看海报正面") : (lang === "en" ? "View poster back" : "查看海报背面")}
             >
               <span className={`practice-poster-flip__inner ${flipped ? "is-flipped" : ""}`}>
                 <span className="practice-poster-flip__face">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={gallery[0]}
-                    alt="创业协会活动海报正面"
+                    alt={lang === "en" ? "Entrepreneurship association poster front" : "创业协会活动海报正面"}
                     onClick={(event) => {
                       event.stopPropagation();
                       setZoomedSrc(gallery[0]);
                     }}
                   />
-                  <span className="practice-media-hint">点击翻面</span>
+                  <span className="practice-media-hint">{lang === "en" ? "Click to flip" : "点击翻面"}</span>
                 </span>
                 <span className="practice-poster-flip__face practice-poster-flip__back">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={gallery[1]}
-                    alt="创业协会活动海报背面"
+                    alt={lang === "en" ? "Entrepreneurship association poster back" : "创业协会活动海报背面"}
                     onClick={(event) => {
                       event.stopPropagation();
                       setZoomedSrc(gallery[1]);
                     }}
                   />
-                  <span className="practice-media-hint">点击返回正面</span>
+                  <span className="practice-media-hint">{lang === "en" ? "Click to return" : "点击返回正面"}</span>
                 </span>
               </span>
             </button>
@@ -512,9 +592,9 @@ function PracticeMedia({
               type="button"
               className="practice-media-zoom"
               onClick={() => setZoomedSrc(flipped ? gallery[1] : gallery[0])}
-              aria-label="放大当前海报"
+              aria-label={lang === "en" ? "Zoom current poster" : "放大当前海报"}
             >
-              放大 ↗
+              {lang === "en" ? "Zoom ↗" : "放大 ↗"}
             </button>
           </div>
         ) : (
@@ -534,14 +614,14 @@ function PracticeMedia({
               type="button"
               className="practice-media-zoom"
               onClick={() => setZoomedSrc(material.src)}
-              aria-label={`放大${material.label}`}
+              aria-label={lang === "en" ? `Zoom ${material.label}` : `放大${material.label}`}
             >
-              放大 ↗
+              {lang === "en" ? "Zoom ↗" : "放大 ↗"}
             </button>
           </div>
         )}
         <p className="practice-media-caption">
-          {material.type === "poster" ? "海报正反面 · 点击图片翻转" : "在图内向下滚动查看完整内容"}
+          {material.type === "poster" ? (lang === "en" ? "Poster front & back · click to flip" : "海报正反面 · 点击图片翻转") : (lang === "en" ? "Scroll inside to view the full content" : "在图内向下滚动查看完整内容")}
         </p>
         {zoomedSrc && (
           <div
@@ -603,7 +683,6 @@ export default function Home() {
   const [practiceIndex, setPracticeIndex] = useState(0);
   const [selectedAbilityIndex, setSelectedAbilityIndex] = useState<number | null>(null);
   const [batchSkillOpen, setBatchSkillOpen] = useState(false);
-  const [reviewSkillOpen, setReviewSkillOpen] = useState(false);
 
   useEffect(() => {
     const onKeyboardFocus = (event: Event) => {
@@ -662,12 +741,6 @@ export default function Home() {
             >
               ZhengYifan
             </span>
-            {/* Wrapper (not the pill itself) carries the hide: .status-pill
-                hard-sets display:inline-flex, which beats Tailwind's .hidden
-                due to CSS source order, so hiding must happen on a parent. */}
-            <span className="hidden md:inline-flex">
-              <span className="status-pill">{t("header.availability")}</span>
-            </span>
           </div>
           <div className="flex items-center gap-2 pointer-events-auto">
             <SeasonPicker />
@@ -698,7 +771,7 @@ export default function Home() {
                 {t("hero.greeting")}
               </p>
               <h1 className="hero-profile__name" style={{ color: "var(--ice-50)" }}>
-                <HeroWord text="ZhengYifan" delay={120} />
+                <HeroWord text="Zheng Yifan" delay={120} />
               </h1>
 
               <div className="hero-profile__content fade-in-up" style={{ ["--d" as string]: "420ms" }}>
@@ -713,17 +786,18 @@ export default function Home() {
                 </figure>
 
                 <div className="hero-profile__details">
+                  <p className="hero-profile__role">{lang === "en" ? "AI product, content operations & practice" : "AI 产品、内容运营与实践项目"}</p>
                   <p className="hero-profile__intro">
-                    始终保持对新技术的好奇，兼具执行力、创造力与商业落地思维，期待与志同道合的伙伴交流合作、共同成长。
+                    {lang === "en" ? "I work across product design, content operations, campus organisations and real business projects, exploring how to find problems, organise resources and make things happen." : "我持续参与产品设计、内容运营、校园组织和真实业务实践，在不同场景中探索如何发现问题、组织资源并把事情落地。"}
                   </p>
                   <dl className="hero-profile__facts">
                     <div>
-                      <dt>年龄</dt>
-                      <dd>20 岁</dd>
+                      <dt>{lang === "en" ? "Age" : "年龄"}</dt>
+                      <dd>{lang === "en" ? "20" : "20 岁"}</dd>
                     </div>
                     <div>
-                      <dt>城市</dt>
-                      <dd>深圳</dd>
+                      <dt>{lang === "en" ? "City" : "城市"}</dt>
+                      <dd>{lang === "en" ? "Shenzhen" : "深圳"}</dd>
                     </div>
                   </dl>
 
@@ -742,7 +816,8 @@ export default function Home() {
             <div className="relative md:h-[120vh] pt-16 md:pt-24">
               <div className="md:sticky md:top-28 text-center">
                 <Reveal>
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.03em] text-[color:var(--ice-50)] leading-[0.95]" style={{ color: "var(--ice-50)" }}>
+                  <p className="section-heading__kicker">01 / CAPABILITIES</p>
+                  <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98]" style={{ color: "var(--ice-50)" }}>
                     {t("stack.title")}
                   </h2>
                 </Reveal>
@@ -754,7 +829,7 @@ export default function Home() {
                 </Reveal>
                 <div className="ability-note" aria-live="polite">
                   {selectedAbilityIndex === null ? (
-                    <span>选择一枚琴键，查看我的能力侧重</span>
+                    <span>{lang === "en" ? "Choose a key to see my focus" : "选择一枚琴键，查看我的能力侧重"}</span>
                   ) : (
                     <>
                       <strong>{abilityDetails[selectedAbilityIndex].label}</strong>
@@ -775,15 +850,13 @@ export default function Home() {
               resume, presented as a quiet directory + visual field note. */}
           <section
             data-kb-section="experience"
-            className="section-space section-space--experience order-4 relative min-h-screen flex items-start p-6 sm:p-8 md:p-10 pt-24 md:pt-28 pb-12"
+            className="section-space section-space--experience order-5 relative min-h-screen flex items-center p-6 sm:p-8 md:p-10 pt-24 md:pt-28 pb-12"
           >
-            <div className="relative z-10 w-full max-w-5xl md:w-[56%] lg:w-[56%] md:mr-auto md:ml-0 pointer-events-auto">
+            <div className="relative z-10 w-full max-w-5xl md:w-[56%] lg:w-[56%] md:ml-auto md:mr-0 pointer-events-auto">
               <Reveal>
                 <div className="mb-4 max-w-xl">
-                  <p className="font-mono text-xs text-ice-400 mb-2">
-                    05 · {t("experience.kicker")}
-                  </p>
-                  <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98]" style={{ color: "var(--ice-50)" }}>
+                  <p className="section-heading__kicker">04 / EXPERIENCE</p>
+                  <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98]" style={{ color: "var(--ice-50)" }}>
                     {t("experience.title")}
                   </h2>
                   <p className="mt-2 text-xs sm:text-sm text-ice-300 leading-relaxed">
@@ -793,7 +866,7 @@ export default function Home() {
               </Reveal>
 
               <div className="practice-archive-shell">
-                <nav aria-label="实践经历目录" className="practice-switcher">
+                <nav aria-label={lang === "en" ? "Practice archive" : "实践经历目录"} className="practice-switcher">
                   {experiences.map((entry, idx) => (
                     <button
                       key={entry.title}
@@ -802,8 +875,8 @@ export default function Home() {
                       aria-current={practiceIndex === idx ? "page" : undefined}
                       className={`practice-switcher__item ${practiceIndex === idx ? "is-active" : ""}`}
                     >
-                      <span className="font-mono text-[10px] tracking-[0.12em]">实践 {String(idx + 1).padStart(2, "0")}</span>
-                      <span>{entry.title}</span>
+                      <span className="font-mono text-[10px] tracking-[0.12em]">{lang === "en" ? "Practice" : "实践"} {String(idx + 1).padStart(2, "0")}</span>
+                      <span>{label(entry.title, lang)}</span>
                     </button>
                   ))}
                 </nav>
@@ -814,9 +887,9 @@ export default function Home() {
                       <div>
                         <p className="font-mono text-[10px] tracking-[0.18em] text-ice-400 mb-2">{pick(practice.period, lang)}</p>
                         <h3 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[1.05]" style={{ color: "var(--ice-50)" }}>
-                          {practice.title}
+                          {label(practice.title, lang)}
                         </h3>
-                        <p className="mt-2 text-xs sm:text-sm text-ice-400">{pick(practice.role, lang)} · {practice.company}</p>
+                        <p className="mt-2 text-xs sm:text-sm text-ice-400">{pick(practice.role, lang)} · {label(practice.company, lang)}</p>
                       </div>
                       <span className="font-mono text-[10px] tracking-[0.12em] text-ice-400 whitespace-nowrap">{pick(practice.location, lang)}</span>
                     </div>
@@ -826,7 +899,7 @@ export default function Home() {
                       {practice.bullets.map((bullet) => <li key={bullet.es}>· {pick(bullet, lang)}</li>)}
                     </ul>
                     <div className="flex flex-wrap gap-x-4 gap-y-2">
-                      {practice.stack.map((tag) => <span key={tag} className="font-mono text-[10px] tracking-[0.08em] text-ice-400">#{tag}</span>)}
+                      {practice.stack.map((tag) => <span key={tag} className="font-mono text-[10px] tracking-[0.08em] text-ice-400">#{label(tag, lang)}</span>)}
                     </div>
                   </div>
                   <div className="practice-detail__media">
@@ -849,17 +922,15 @@ export default function Home() {
                 <>
                   <Reveal>
                     <div className="mb-8 md:mb-9 max-w-xl">
-                      <p className="font-mono text-sm text-ice-400 mb-3">
-                        05 · {t("projects.kicker")}
-                      </p>
-                      <h2 className="text-4xl sm:text-6xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98]" style={{ color: "var(--ice-50)" }}>
+                      <p className="section-heading__kicker">02 / VIBECODING WORKS</p>
+                      <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98]" style={{ color: "var(--ice-50)" }}>
                         {t("projects.title")}
                       </h2>
                       <p className="mt-4 text-sm sm:text-base text-ice-300 leading-relaxed">
                         {t("projects.subtitle")}
                       </p>
                       <p className="mt-2 font-mono text-[11px] tracking-[0.14em] text-ice-400">
-                        点击琴键，查看对应作品
+                        {lang === "en" ? "Click a key to open a project" : "点击琴键，查看对应作品"}
                       </p>
                     </div>
                   </Reveal>
@@ -891,11 +962,11 @@ export default function Home() {
                           }}
                           className="mb-7 font-mono text-[11px] tracking-[0.14em] text-ice-400 hover:text-ice-100"
                         >
-                          ← 返回作品总览
+                          {lang === "en" ? "← Back to VibeCoding work overview" : "← 返回 VibeCoding 作品总览"}
                         </button>
                         <div className="practice-detail project-detail">
                           <div className="practice-detail__copy">
-                            <p className="font-mono text-[10px] tracking-[0.18em] text-ice-400 mb-2">{p.num} · 作品项目</p>
+                            <p className="font-mono text-[10px] tracking-[0.18em] text-ice-400 mb-2">{p.num} · {lang === "en" ? "PROJECT" : "作品项目"}</p>
                             <div className="project-detail__title-row">
                               <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[1.05]" style={{ color: "var(--ice-50)" }}>
                                 {pick(p.name, lang)}
@@ -907,12 +978,12 @@ export default function Home() {
                                   rel="noreferrer"
                                   className="project-detail__title-link"
                                 >
-                                  访问网站 ↗
+                                  {lang === "en" ? "Open website ↗" : "访问网站 ↗"}
                                 </a>
                               )}
                             </div>
                             <div className="project-detail__meta">
-                              {p.stack.map((tag) => <span key={tag}>#{tag}</span>)}
+                              {p.stack.map((tag) => <span key={tag}>#{label(tag, lang)}</span>)}
                             </div>
                             <span className="practice-detail__accent" aria-hidden />
                             <p className="text-sm sm:text-[15px] text-ice-200 leading-relaxed mb-3">{pick(p.desc, lang)}</p>
@@ -922,27 +993,27 @@ export default function Home() {
                               <div className="project-detail__sections">
                                 {p.sections.problem && (
                                   <div className="project-detail__section-card">
-                                    <h4>发现的问题</h4>
+                                    <h4>{lang === "en" ? "Problem" : "发现的问题"}</h4>
                                     <p>{pick(p.sections.problem, lang)}</p>
                                   </div>
                                 )}
                                 {p.sections.made && (
                                   <div className="project-detail__section-card">
-                                    <h4>我做成了什么</h4>
+                                    <h4>{lang === "en" ? "What I made" : "我做成了什么"}</h4>
                                     <p>{pick(p.sections.made, lang)}</p>
                                   </div>
                                 )}
                                 {p.sections.solved && (
                                   <div className="project-detail__section-card">
-                                    <h4>它解决了什么</h4>
+                                    <h4>{lang === "en" ? "Outcome" : "它解决了什么"}</h4>
                                     <p>{pick(p.sections.solved, lang)}</p>
                                   </div>
                                 )}
                                 {p.sections.technical && (
                                   <div className="project-detail__section-card project-detail__tech-card">
-                                    <h4>技术与实现</h4>
+                                    <h4>{lang === "en" ? "Technology & implementation" : "技术与实现"}</h4>
                                     <div className="project-detail__tech-list">
-                                      {p.sections.technical.split(" · ").map((tech) => <span key={tech}>{tech}</span>)}
+                                      {p.sections.technical.split(" · ").map((tech) => <span key={tech}>{label(tech, lang)}</span>)}
                                     </div>
                                   </div>
                                 )}
@@ -962,8 +1033,8 @@ export default function Home() {
 
                             {(p.github || p.download) && (
                               <div className="project-detail__links">
-                                {p.github && <a href={p.github} target="_blank" rel="noreferrer">查看代码 ↗</a>}
-                                {p.download && <a href={p.download} download>下载安装包 ↓</a>}
+                                {p.github && <a href={p.github} target="_blank" rel="noreferrer">{lang === "en" ? "View code ↗" : "查看代码 ↗"}</a>}
+                                {p.download && <a href={p.download} download>{lang === "en" ? "Download APK ↓" : "下载安装包 ↓"}</a>}
                               </div>
                             )}
                           </div>
@@ -983,135 +1054,105 @@ export default function Home() {
               Xiaohongshu shop and media experiments from the original site. */}
           <section
             data-kb-section="content"
-            className="section-space section-space--content order-5 relative min-h-screen flex items-center p-6 sm:p-10 md:p-14"
+            className="content-section order-4 relative min-h-screen flex items-center p-6 sm:p-10 md:p-14"
+            style={isMobile ? undefined : {
+              height: "100svh",
+              minHeight: "100svh",
+              paddingTop: "clamp(4.5rem, 7vh, 5.75rem)",
+              paddingBottom: "clamp(2.25rem, 4vh, 3.5rem)",
+              overflow: "hidden",
+            }}
           >
-            <div className="content-archive relative z-10 w-full max-w-5xl md:w-[58%] md:ml-auto md:mr-0 pointer-events-auto">
+            <div className="content-archive relative z-10 w-full max-w-5xl md:w-[58%] md:mr-auto md:ml-0 pointer-events-auto">
               <Reveal>
-                <div className="content-archive__masthead mb-7">
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="font-mono text-xs text-ice-400">
-                      CONTENT / {t("content.kicker")}
+                <div className="content-archive__masthead mb-3">
+                  <div>
+                    <p className="section-heading__kicker">
+                      03 / CONTENT PRACTICE
                     </p>
-                    <span className="content-archive__index">FIELD NOTE / 01</span>
                   </div>
-                  <h2 className="mt-3 text-3xl sm:text-5xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98]" style={{ color: "var(--ice-50)" }}>
+                  <h2 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98]" style={{ color: "var(--ice-50)" }}>
                     {t("content.title")}
                   </h2>
                   <div className="content-archive__intro">
                     <p className="text-sm text-ice-300">{t("content.subtitle")}</p>
-                    <p className="mt-3 max-w-2xl text-sm text-ice-200 leading-relaxed">{t("content.intro")}</p>
+                    <p className="mt-2 max-w-2xl text-xs sm:text-sm text-ice-200 leading-relaxed">{t("content.intro")}</p>
                   </div>
                 </div>
               </Reveal>
 
-              <div className="content-archive__spread grid gap-7 sm:grid-cols-[0.76fr_1.24fr] items-start">
+              <div className="content-archive__spread">
                 <Reveal delay={90}>
-                  <a
-                    href="/content/xiaohongshu-store.jpg"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="content-archive__visual group block pointer-events-auto"
-                    aria-label={t("content.imageCaption")}
-                  >
-                    <div className="content-archive__photo relative overflow-hidden">
-                      <span className="content-archive__photo-index">01</span>
-                      <img
-                        src="/content/xiaohongshu-store.jpg"
-                        alt="小红书店铺主页"
-                        className="h-full w-full object-contain transition-transform duration-700 group-hover:scale-[1.025]"
-                      />
-                    </div>
-                    <p className="content-archive__caption mt-2 font-mono text-[10px] tracking-[0.12em] text-ice-400">
-                      <span>MEDIA PROFILE ↗</span>
-                      {t("content.imageCaption")}
-                    </p>
-                  </a>
+                  <div className="content-archive__primary-grid" style={{ gap: "1rem" }}>
+                    <section className="content-archive__workflow" aria-label={lang === "en" ? "Content commerce workflow" : "内容商业化闭环"}>
+                      <div className="content-archive__section-label">
+                        <span>01—04</span>
+                        <strong>{lang === "en" ? "CONTENT COMMERCE LOOP" : "内容商业化闭环"}</strong>
+                      </div>
+                      <div className="content-archive__workflow-grid">
+                        {contentWorkflow.map((step) => (
+                          <article className="content-archive__step" key={step.num} style={{ minHeight: "6.8rem", padding: ".68rem .75rem" }}>
+                            <span>{step.num}</span>
+                            <h3>{pick(step.title, lang)}</h3>
+                            <p><strong style={{ color: "var(--ice-600)", fontWeight: 700 }}>{pick(step.accent, lang)}</strong>，{pick(step.body, lang)}</p>
+                          </article>
+                        ))}
+                      </div>
+                    </section>
+
+                    <aside className="content-archive__result" aria-label={lang === "en" ? "E-commerce results" : "电商实践成果"}>
+                      <div className="content-archive__result-label">ECOMMERCE / {lang === "en" ? "RESULTS" : "实践成果"}</div>
+                      <h3>{t("content.storeTitle")}</h3>
+                      <p className="content-archive__result-meta">{t("content.storeMeta")}</p>
+                      <div className="content-archive__gmv">
+                        <strong>&gt;50K</strong>
+                        <span>{lang === "en" ? "cumulative GMV" : "累计成交额"}</span>
+                      </div>
+                      <p className="content-archive__result-body">{t("content.storeBody")}</p>
+                      <button type="button" className="content-archive__workflow-link" onClick={() => setBatchSkillOpen(true)}>
+                        {lang === "en" ? "Xiaohongshu batch-production Skill" : "小红书笔记批量制作 Skill"} <span aria-hidden>↗</span>
+                      </button>
+                    </aside>
+                  </div>
                 </Reveal>
 
                 <Reveal delay={150}>
-                  <div className="content-archive__notes">
-                    <article className="content-archive__entry">
-                      <div className="content-archive__entry-head flex items-baseline justify-between gap-3">
-                        <h3 className="text-lg sm:text-xl font-semibold text-[color:var(--ice-50)]" style={{ color: "var(--ice-50)" }}>
-                          {t("content.storeTitle")}
-                        </h3>
-                        <span className="font-mono text-[10px] tracking-[0.12em] text-ice-400 whitespace-nowrap">GMV</span>
+                  <article className="content-archive__experiment" style={{ marginTop: ".65rem", paddingTop: ".65rem" }}>
+                    <div>
+                      <p>SIDE EXPERIMENT / {lang === "en" ? "CONTENT TESTS" : "内容实验"}</p>
+                      <h3>{t("content.mediaTitle")}</h3>
+                      <p className="content-archive__experiment-body">{t("content.mediaBody")}</p>
+                    </div>
+                    <div className="content-archive__metrics">
+                      <div>
+                        <strong>500+</strong>
+                        <span>{lang === "en" ? "public-account followers" : "公众号粉丝"}</span>
                       </div>
-                      <p className="mt-1 text-xs text-ice-400">{t("content.storeMeta")}</p>
-                      <div className="content-archive__gmv mt-4 flex items-end gap-3">
-                        <strong className="text-4xl sm:text-5xl font-semibold tracking-[-0.06em] text-[color:var(--ice-50)]" style={{ color: "var(--ice-50)" }}>
-                          &gt;50k
-                        </strong>
-                        <span className="pb-1 text-xs text-ice-300">总成交额</span>
+                      <div>
+                        <strong>1000+</strong>
+                        <span>{lang === "en" ? "video-account followers" : "视频号粉丝"}</span>
                       </div>
-                      <p className="mt-3 text-sm text-ice-200 leading-relaxed">{t("content.storeBody")}</p>
-                      <p className="content-archive__tags mt-3 font-mono text-[10px] leading-relaxed tracking-[0.08em] text-ice-400">{t("content.model")}</p>
-                      <div className="content-skill-actions mt-5">
-                        <button
-                          type="button"
-                          className="content-skill-open"
-                          onClick={() => setBatchSkillOpen(true)}
-                        >
-                          <span>
-                            <small>SKILL / BATCH</small>
-                            <strong>{lang === "en" ? "Batch note production" : "笔记批量制作"}</strong>
-                          </span>
-                          <b aria-hidden>↗</b>
-                        </button>
-                        <button
-                          type="button"
-                          className="content-skill-open content-skill-open--review"
-                          onClick={() => setReviewSkillOpen(true)}
-                        >
-                          <span>
-                            <small>CONTENT / REVIEW</small>
-                            <strong>{lang === "en" ? "Content data review" : "内容数据复盘"}</strong>
-                          </span>
-                          <b aria-hidden>↗</b>
-                        </button>
-                      </div>
-                    </article>
-
-                    <article className="content-archive__entry">
-                      <div className="content-archive__entry-head flex items-baseline justify-between gap-3">
-                        <h3 className="text-lg sm:text-xl font-semibold text-[color:var(--ice-50)]" style={{ color: "var(--ice-50)" }}>
-                          {t("content.mediaTitle")}
-                        </h3>
-                        <span className="font-mono text-[10px] tracking-[0.12em] text-ice-400 whitespace-nowrap">内容试水</span>
-                      </div>
-                      <div className="content-archive__metrics mt-4 grid grid-cols-2 gap-5 py-3">
-                        <div>
-                          <strong className="block text-2xl font-semibold text-[color:var(--ice-50)]" style={{ color: "var(--ice-50)" }}>500+</strong>
-                          <span className="text-xs text-ice-400">公众号粉丝</span>
-                        </div>
-                        <div>
-                          <strong className="block text-2xl font-semibold text-[color:var(--ice-50)]" style={{ color: "var(--ice-50)" }}>1000+</strong>
-                          <span className="text-xs text-ice-400">视频号粉丝</span>
-                        </div>
-                      </div>
-                      <p className="text-sm text-ice-200 leading-relaxed">{t("content.mediaBody")}</p>
-                      <p className="content-archive__tags mt-3 font-mono text-[10px] tracking-[0.08em] text-ice-400">网感培养 · 视听语言 · 平台规律</p>
-                    </article>
-                  </div>
+                    </div>
+                  </article>
                 </Reveal>
               </div>
             </div>
           </section>
 
-          {/* Contact — copy pinned to the left so the (large, hero-posed)
-              keyboard on the right has room to bob its random keys. */}
+          {/* Contact keeps the 3D-room invitation. The global canvas stays in
+              place while its keyboard eases into this section's own pose. */}
           <section
             data-kb-section="contact"
             className="section-space section-space--contact order-6 relative py-24 md:min-h-screen flex flex-col justify-center p-6 sm:p-10 md:p-14"
           >
             <div className="contact-copy relative">
               <Reveal>
-                <p className="font-mono text-sm text-ice-400 mb-3">
-                  {t("contact.kicker")}
+                <p className="section-heading__kicker">
+                  05 / CONTACT
                 </p>
               </Reveal>
               <Reveal delay={80}>
-                <h2 className="text-4xl sm:text-6xl font-semibold tracking-tight text-[color:var(--ice-50)] mb-6" style={{ color: "var(--ice-50)" }}>
+                <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98] mb-6" style={{ color: "var(--ice-50)" }}>
                   {t("contact.title")}
                 </h2>
               </Reveal>
@@ -1136,7 +1177,7 @@ export default function Home() {
                       </span>
                       <span className="contact-method__text">
                         <span className="contact-method__value">{EMAIL}</span>
-                        <span className="contact-method__hint">点击复制</span>
+                        <span className="contact-method__hint">{lang === "en" ? "Copy" : "点击复制"}</span>
                       </span>
                     </span>
                     <span className="contact-method__action" aria-hidden>
@@ -1161,7 +1202,7 @@ export default function Home() {
                       </span>
                       <span className="contact-method__text">
                         <span className="contact-method__value">{WECHAT}</span>
-                        <span className="contact-method__hint">点击复制</span>
+                        <span className="contact-method__hint">{lang === "en" ? "Copy" : "点击复制"}</span>
                       </span>
                     </span>
                     <span className="contact-method__action" aria-hidden>
@@ -1175,15 +1216,15 @@ export default function Home() {
               </Reveal>
             </div>
             <Reveal delay={280}>
-              <div className="life-room-entry pointer-events-auto">
-                <span className="life-room-kicker">LIFE OUTSIDE WORK / 生活日常</span>
+              <div data-kb-section="room" className="life-room-entry pointer-events-auto">
+                <span className="life-room-kicker">LIFE OUTSIDE WORK / {lang === "en" ? "EVERYDAY LIFE" : "生活日常"}</span>
                 <a
                   href="/room"
                   data-cursor="hover"
                   data-magnetic
                   className="life-room-link"
                 >
-                  进入我的 3D 房间 <span aria-hidden>↗</span>
+                  {lang === "en" ? "Enter my 3D room" : "进入我的 3D 房间"} <span aria-hidden>↗</span>
                 </a>
               </div>
             </Reveal>
@@ -1196,7 +1237,6 @@ export default function Home() {
         </main>
 
         <ContentSkillModal mode="batch" open={batchSkillOpen} onClose={() => setBatchSkillOpen(false)} />
-        <ContentSkillModal mode="review" open={reviewSkillOpen} onClose={() => setReviewSkillOpen(false)} />
 
       </div>
     </SmoothScroll>

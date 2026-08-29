@@ -24,7 +24,9 @@ type SeasonCtx = {
 
 const Ctx = createContext<SeasonCtx | null>(null);
 
-const STORAGE_KEY = "portfolio-season";
+// Bump the key so the refreshed palette starts from the light theme instead
+// of restoring an older saved dark/mono selection.
+const STORAGE_KEY = "portfolio-season-v2";
 
 // Client-side script that runs before React hydrates. Reads the stored
 // season and sets data-season on <html> so the first paint already uses

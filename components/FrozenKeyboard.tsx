@@ -14,6 +14,7 @@ import {
   useState,
 } from "react";
 import { useSeason } from "@/components/SeasonProvider";
+import { useLanguage } from "@/components/LanguageProvider";
 import * as THREE from "three";
 
 // Per-section keyboard "states" — same idea as Naresh's animated-background-
@@ -106,20 +107,22 @@ const SECTION_STATES: Record<string, KeyboardState> = {
     yaw: Math.PI * 0.3,
     pitch: Math.PI * 0.08,
     roll: 0,
-    // Practice copy is kept on the left; the instrument eases back to the
-    // right side as this section becomes active.
-    posX: 2.35,
+    // Practice copy sits in the right reading column; the keyboard anchors
+    // the matching left display zone.
+    posX: -2.35,
     posY: 0.05,
     posZ: 0,
     scale: 0.8,
   },
   content: {
-    yaw: Math.PI * 0.24,
+    // Mirror the angle for the right-hand display zone: the keyboard opens
+    // toward the right instead of pointing back across the reading column.
+    yaw: -Math.PI * 0.24,
     pitch: Math.PI * 0.1,
-    roll: -Math.PI * 0.018,
-    // The content archive is right aligned, so the piano rests on the left
-    // with a little more breathing room than the practice scene.
-    posX: -2.65,
+    roll: Math.PI * 0.018,
+    // Content copy occupies the left reading column; the keyboard anchors
+    // the matching right display zone.
+    posX: 2.65,
     posY: 0.05,
     posZ: 0,
     scale: 0.86,
@@ -132,8 +135,21 @@ const SECTION_STATES: Record<string, KeyboardState> = {
     yaw: Math.PI * 0.15,
     pitch: Math.PI * 0.18,
     roll: Math.PI * 0.025,
-    posX: 2.35,
-    posY: 0,
+    posX: 2.0,
+    // Keep the entire keyboard above the line that introduces the 3D room.
+    posY: 0.82,
+    posZ: 0,
+    scale: 0.78,
+  },
+  // The 3D-room invitation begins after the contact details. It deliberately
+  // reuses the contact composition so the keyboard remains parked there
+  // instead of travelling down into the room-entry area.
+  room: {
+    yaw: Math.PI * 0.15,
+    pitch: Math.PI * 0.18,
+    roll: Math.PI * 0.025,
+    posX: 2.0,
+    posY: 0.82,
     posZ: 0,
     scale: 0.78,
   },
@@ -279,6 +295,13 @@ const PIANO_ABILITY_LABELS: readonly (string | null)[] = [
   "沟通协作",
   null,
 ];
+const PIANO_ABILITY_LABELS_EN: Record<string, string> = {
+  "产品开发": "Product",
+  "内容运营": "Content",
+  "流程自动化": "Automation",
+  "视觉表达": "Visuals",
+  "沟通协作": "Collaboration",
+};
 const PIANO_ABILITY_INDEXES: readonly (number | null)[] = [
   0,
   null,
@@ -417,7 +440,6 @@ function Keycap({
   selected = false,
   label,
   hovered,
-  highlightsRef,
   activeSectionRef,
   wavePhase,
   accent,
@@ -431,9 +453,6 @@ function Keycap({
   selected?: boolean;
   label?: string;
   hovered: boolean;
-  // Reactive set of slugs to animate; read every frame so we don't force
-  // re-renders when the active project changes.
-  highlightsRef: React.RefObject<Set<string>>;
   // Current section id (ref so we don't re-render when it flips). Used by
   // the contact section to trigger idle random bobs.
   activeSectionRef: React.RefObject<string>;
@@ -451,16 +470,22 @@ function Keycap({
   const matRef = useRef<THREE.MeshPhysicalMaterial>(null);
   const baseEmissive = 0.3;
 
-  // Each key gets its own random frequency + phase, stable across re-renders
-  // so every keycap's random bob feels independent (no synchronised wave).
-  // Sampled once at mount.
+  // Derive a stable pseudo-random rhythm from the key position. This keeps
+  // neighbouring keycaps independent without changing values during render.
   const randomBob = useMemo(
-    () => ({
-      freq: 0.6 + Math.random() * 0.6, // 0.6..1.2 Hz-ish
-      phase: Math.random() * Math.PI * 2,
-      threshold: 0.45 + Math.random() * 0.2, // 0.45..0.65 — higher = rarer pop
-    }),
-    []
+    () => {
+      const seed = position[0] * 12.9898 + position[2] * 78.233 + (isBlack ? 37.719 : 0);
+      const stableNoise = (offset: number) => {
+        const value = Math.sin(seed + offset) * 43758.5453;
+        return value - Math.floor(value);
+      };
+      return {
+        freq: 0.6 + stableNoise(0.17) * 0.6,
+        phase: stableNoise(1.31) * Math.PI * 2,
+        threshold: 0.45 + stableNoise(2.73) * 0.2,
+      };
+    },
+    [isBlack, position]
   );
 
   // Stable THREE.Color objects so useFrame can lerp in place (no garbage
@@ -503,7 +528,9 @@ function Keycap({
     // a thresholded sine so every key spends most of its time at rest and
     // only jumps briefly when its sine crosses the threshold — creates the
     // Naresh-style "random keys popping" effect without anything global.
-    const isContact = activeSectionRef.current === "contact";
+    const isContact =
+      activeSectionRef.current === "contact" ||
+      activeSectionRef.current === "room";
     contactAmp.current = THREE.MathUtils.lerp(
       contactAmp.current,
       isContact ? 1 : 0,
@@ -624,7 +651,8 @@ function Keyboard({ mobile }: { mobile: boolean }) {
   const ref = useRef<THREE.Group>(null);
   const isMobile = mobile;
   const { palette } = useSeason();
-  const [activeSection, activeSectionRef, highlightsRef] = useActiveSection();
+  const { lang } = useLanguage();
+  const [activeSection, activeSectionRef] = useActiveSection();
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [selectedProjectIndex, setSelectedProjectIndex] = useState<number | null>(null);
   // Mutable holders for the smoothed target — kept off React state so
@@ -688,8 +716,10 @@ function Keyboard({ mobile }: { mobile: boolean }) {
     const target = mobile
       ? MOBILE_STATE
       : SECTION_STATES[activeSectionRef.current] ?? SECTION_STATES.hero;
-    // Frame-rate-independent lerp: ~0.06 per 16ms tick = a satisfying ease.
-    const k = 1 - Math.pow(0.001, delta);
+    // A slower, frame-rate-independent follow keeps section changes fluid:
+    // the keyboard has time to settle into a new composition instead of
+    // snapping across the screen as soon as the observer changes sections.
+    const k = 1 - Math.exp(-3.2 * delta);
     const c = current.current;
     c.yaw = THREE.MathUtils.lerp(c.yaw, target.yaw, k);
     c.pitch = THREE.MathUtils.lerp(c.pitch, target.pitch, k);
@@ -707,25 +737,30 @@ function Keyboard({ mobile }: { mobile: boolean }) {
     // small hop on Y so the flip reads as a tiny jump-and-turn.
     const spinNorm = Math.min(1, Math.abs(spinRef.current) / (Math.PI * 2));
 
-    // Idle motion layered on top. Hero and Contact share a wide cinematic
-    // yoyo so the keyboard "shows itself"; other sections keep a quiet
-    // breathing so the copy is easier to read.
+    // Idle motion layered on top. Hero, contact, and the room-entry boundary
+    // share a wide cinematic yoyo. The two editorial middle sections get a
+    // slower, smaller sway so they feel alive without competing with copy.
+    const sectionId = activeSectionRef.current;
     const isShowcase =
       mobile ||
-      activeSectionRef.current === "hero" ||
-      activeSectionRef.current === "contact";
-    const yawSwing = isShowcase ? 0.5 : 0.025;
-    const pitchSwing = isShowcase ? 0.07 : 0.0;
-    const rollSwing = isShowcase ? 0.05 : 0.0;
-    const period = isShowcase ? 9 : 20; // seconds per full cycle
+      sectionId === "hero" ||
+      sectionId === "contact" ||
+      sectionId === "room";
+    const isEditorial = sectionId === "content" || sectionId === "experience";
+    const yawSwing = isShowcase ? 0.5 : isEditorial ? 0.11 : 0.025;
+    const pitchSwing = isShowcase ? 0.07 : isEditorial ? 0.024 : 0.0;
+    const rollSwing = isShowcase ? 0.05 : isEditorial ? 0.018 : 0.0;
+    const period = isShowcase ? 9 : isEditorial ? 14.5 : 20; // seconds per cycle
     const w = (Math.PI * 2) / period;
     ref.current.rotation.y =
       c.yaw + Math.sin(t * w) * yawSwing + spinRef.current;
     ref.current.rotation.x = c.pitch + Math.sin(t * w * 0.6) * pitchSwing;
     ref.current.rotation.z = c.roll + Math.sin(t * w * 0.8) * rollSwing;
     ref.current.position.x = c.posX;
-    ref.current.position.y =
-      c.posY + Math.sin(t * 0.6) * 0.04 + spinNorm * 0.35;
+    const editorialLift = isEditorial
+      ? Math.sin(t * 0.48) * 0.05 + Math.sin(t * 0.82 + 0.7) * 0.014
+      : Math.sin(t * 0.6) * 0.04;
+    ref.current.position.y = c.posY + editorialLift + spinNorm * 0.35;
     ref.current.position.z = c.posZ;
     ref.current.scale.setScalar(c.scale * (1 - spinNorm * 0.12));
   });
@@ -775,7 +810,8 @@ function Keyboard({ mobile }: { mobile: boolean }) {
       const x = (index - (WHITE_KEY_COUNT - 1) / 2) * WHITE_KEY_STEP;
       const id = `white-${index}`;
       const projectLabel = PIANO_PROJECT_LABELS[index];
-      const abilityLabel = PIANO_ABILITY_LABELS[index];
+      const abilityLabelRaw = PIANO_ABILITY_LABELS[index];
+      const abilityLabel = abilityLabelRaw && lang === "en" ? PIANO_ABILITY_LABELS_EN[abilityLabelRaw] : abilityLabelRaw;
       const abilityIndex = PIANO_ABILITY_INDEXES[index];
       keycaps.push(
         <Keycap
@@ -793,7 +829,6 @@ function Keyboard({ mobile }: { mobile: boolean }) {
                 ? projectLabel ?? undefined
                 : undefined
           }
-          highlightsRef={highlightsRef}
           activeSectionRef={activeSectionRef}
           wavePhase={index * 0.55}
           accent={palette.accent}
@@ -841,7 +876,6 @@ function Keyboard({ mobile }: { mobile: boolean }) {
         isMobile={isMobile}
         isBlack
         hovered={hoveredKey === id}
-        highlightsRef={highlightsRef}
         activeSectionRef={activeSectionRef}
         wavePhase={index * 0.72 + 0.3}
         accent={palette.accent}

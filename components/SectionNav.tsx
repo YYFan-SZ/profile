@@ -18,8 +18,8 @@ export default function SectionNav() {
     { id: "hero", label: t("nav.home") },
     { id: "stack", label: t("nav.stack") },
     { id: "projects", label: t("nav.project") },
-    { id: "experience", label: t("nav.experience") },
     { id: "content", label: t("nav.content") },
+    { id: "experience", label: t("nav.experience") },
     { id: "contact", label: t("nav.contact") },
   ];
 
@@ -28,8 +28,8 @@ export default function SectionNav() {
       "hero",
       "stack",
       "projects",
-      "experience",
       "content",
+      "experience",
       "contact",
     ];
     const els = ids.map((id) =>
