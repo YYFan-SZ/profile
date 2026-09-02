@@ -9,6 +9,19 @@
   <body>
     <main class="room-shell">
       <canvas id="room-canvas" aria-label="3D房间"></canvas>
+      <video
+        id="computer-video-player"
+        class="computer-video-player"
+        controls
+        playsinline
+        preload="metadata"
+        aria-label="电脑屏幕视频播放器"
+      ></video>
+      <button class="computer-video-fullscreen-overlay" id="computer-video-fullscreen" type="button" aria-label="视频全屏" title="视频全屏" hidden>
+        <svg viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M6 12V6h6M20 6h6v6M26 20v6h-6M12 26H6v-6" />
+        </svg>
+      </button>
 
       <div class="loading-card" id="loading-card">
         <div class="loading-garland" aria-hidden="true">
@@ -29,13 +42,30 @@
         <button id="loading-retry" type="button" hidden>重新加载</button>
       </div>
 
-      <aside class="exploration-progress" id="exploration-progress" aria-live="polite">
-        <span>ROOM EXPLORATION</span>
-        <strong id="exploration-progress-label">已发现 <b id="exploration-progress-count">0</b> / 8 个互动</strong>
-        <div class="exploration-progress-track" role="progressbar" aria-label="房间探索进度" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0">
-          <i id="exploration-progress-fill"></i>
+      <aside class="exploration-guide" id="exploration-guide" aria-label="房间探索指南">
+        <div class="exploration-progress" id="exploration-progress" aria-live="polite">
+          <span>ROOM EXPLORATION</span>
+          <strong id="exploration-progress-label">已发现 <b id="exploration-progress-count">0</b> / 8 个互动</strong>
+          <div class="exploration-progress-track" role="progressbar" aria-label="房间探索进度" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0">
+            <i id="exploration-progress-fill"></i>
+          </div>
+        </div>
+        <button class="exploration-guide-trigger" id="exploration-guide-trigger" type="button" aria-expanded="false" aria-controls="exploration-guide-list">
+          <span>房间探索指南</span>
+          <small>点击查看 8 个互动</small>
+        </button>
+        <div class="exploration-guide-list" id="exploration-guide-list" hidden>
+          <p><b>01</b><span>黑胶唱片机</span><small>播放音乐</small></p>
+          <p><b>02</b><span>照片墙</span><small>翻看生活相册</small></p>
+          <p><b>03</b><span>茶几甜点</span><small>查看美食记录</small></p>
+          <p><b>04</b><span>联系邮箱</span><small>查看联系方式</small></p>
+          <p><b>05</b><span>小票机</span><small>打印并保存小票</small></p>
+          <p><b>06</b><span>卡套</span><small>近距离查看</small></p>
+          <p><b>07</b><span>窗户和窗帘</span><small>切换四种天气</small></p>
+          <p><b>08</b><span>电脑屏幕</span><small>靠近后播放视频</small></p>
         </div>
       </aside>
+      <p class="computer-video-status" id="computer-video-status" aria-live="polite"></p>
 
       <div class="weather-status" id="weather-status" aria-live="polite" aria-hidden="true">
         <span>窗外天气</span>

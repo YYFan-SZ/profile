@@ -44,6 +44,11 @@ const explorationProgressLabel = document.querySelector("#exploration-progress-l
 const explorationProgressCount = document.querySelector("#exploration-progress-count");
 const explorationProgressFill = document.querySelector("#exploration-progress-fill");
 const explorationProgressTrack = explorationProgress?.querySelector('[role="progressbar"]');
+const explorationGuideTrigger = document.querySelector("#exploration-guide-trigger");
+const explorationGuideList = document.querySelector("#exploration-guide-list");
+const computerVideoStatus = document.querySelector("#computer-video-status");
+const computerVideoPlayer = document.querySelector("#computer-video-player");
+const computerVideoFullscreenButton = document.querySelector("#computer-video-fullscreen");
 const weatherStatus = document.querySelector("#weather-status");
 const weatherStatusLabel = document.querySelector("#weather-status-label");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -147,6 +152,16 @@ window.setTimeout(() => {
 
 loadingRetry?.addEventListener("click", () => window.location.reload());
 
+explorationGuideTrigger?.addEventListener("click", () => {
+  const isOpen = explorationGuideTrigger.getAttribute("aria-expanded") === "true";
+  explorationGuideTrigger.setAttribute("aria-expanded", String(!isOpen));
+  if (explorationGuideList) explorationGuideList.hidden = isOpen;
+});
+
+computerVideoFullscreenButton?.addEventListener("click", () => {
+  void openComputerVideoFullscreen();
+});
+
 // The loading screen now represents the assets that must be ready for the
 // first complete room view. The weights roughly follow the source file sizes,
 // so one small photo does not move the progress bar as much as a large GLB.
@@ -191,6 +206,14 @@ let profilePreviewRenderer = null;
 let profilePreviewScene = null;
 let profilePreviewCamera = null;
 let computerFocusActive = false;
+let computerFocusTransitioning = false;
+let computerWelcomeDisplay = null;
+let computerVideoElement = computerVideoPlayer;
+let computerVideoTexture = null;
+let computerVideoStatusTimer = 0;
+let computerFullscreenSuppressed = false;
+let computerResumePending = false;
+const computerVideoUrl = "/room-engine/video/zhengyifan-final60-v4-bgm-tech-house.mp4";
 const computerFocusReturnPosition = new THREE.Vector3();
 const computerFocusReturnTarget = new THREE.Vector3();
 let computerFocusReturnFov = 29;
@@ -716,17 +739,6 @@ function createComputerWelcomeTexture() {
   screenCanvas.height = 720;
   const context = screenCanvas.getContext("2d");
 
-  const guideItems = [
-    ["01", "黑胶唱片机", "播放音乐"],
-    ["02", "照片墙", "翻看生活相册"],
-    ["03", "茶几甜点", "查看美食记录"],
-    ["04", "联系邮箱", "查看联系方式"],
-    ["05", "小票机", "打印并保存小票"],
-    ["06", "卡套", "近距离查看"],
-    ["07", "窗帘", "切换四种天气"],
-    ["08", "电脑屏幕", "拉近或返回"],
-  ];
-
   const background = context.createLinearGradient(60, 30, 1220, 690);
   background.addColorStop(0, "#c9bfdf");
   background.addColorStop(0.48, "#e7dfee");
@@ -788,30 +800,26 @@ function createComputerWelcomeTexture() {
   context.fillText("拖动旋转  ·  滚轮缩放", 86, 511);
   context.fillText("点击物件，触发互动", 86, 540);
 
-  guideItems.forEach(([number, title, action], index) => {
-    const column = index < 4 ? 0 : 1;
-    const row = index % 4;
-    const x = 432 + column * 410;
-    const y = 120 + row * 134;
-
-    context.textAlign = "left";
-    context.fillStyle = column === 0 ? "#9c7eae" : "#b67f93";
-    context.font = "750 17px 'Segoe UI', sans-serif";
-    context.fillText(number, x, y);
-
-    context.fillStyle = "#5d4b67";
-    context.font = "700 27px 'Microsoft YaHei', sans-serif";
-    context.fillText(title, x + 46, y);
-    context.fillStyle = "#927f9a";
-    context.font = "500 19px 'Microsoft YaHei', sans-serif";
-    context.fillText(action, x + 46, y + 36);
-    context.strokeStyle = "rgba(101,78,115,.14)";
-    context.lineWidth = 2;
-    context.beginPath();
-    context.moveTo(x, y + 68);
-    context.lineTo(x + 350, y + 68);
-    context.stroke();
-  });
+  context.textAlign = "left";
+  context.fillStyle = "#9c7eae";
+  context.font = "750 18px 'Segoe UI', sans-serif";
+  context.fillText("A SMALL VIDEO NOTE", 470, 150);
+  context.fillStyle = "#5d4b67";
+  context.font = "700 42px 'Microsoft YaHei', sans-serif";
+  context.fillText("电脑里的一分钟", 468, 230);
+  context.fillStyle = "#806e88";
+  context.font = "500 23px 'Microsoft YaHei', sans-serif";
+  context.fillText("点击电脑靠近，再点击一次开始播放。", 470, 292);
+  context.strokeStyle = "rgba(101,78,115,.14)";
+  context.lineWidth = 2;
+  context.beginPath();
+  context.moveTo(470, 340);
+  context.lineTo(1120, 340);
+  context.stroke();
+  context.fillStyle = "#927f9a";
+  context.font = "500 19px 'Microsoft YaHei', sans-serif";
+  context.fillText("一段关于创作、技术和生活的记录", 470, 390);
+  context.fillText("ROOM GUIDE 已移动到左下角", 470, 430);
 
   context.textAlign = "right";
   context.fillStyle = "rgba(91,70,103,.58)";
@@ -838,8 +846,8 @@ function styleComputerWelcomeScreen(room) {
   const screenSize = screenBounds.getSize(new THREE.Vector3());
   const screenCenter = screenBounds.getCenter(new THREE.Vector3());
   const textureAspect = 16 / 9;
-  const maximumWidth = screenSize.x * 0.90;
-  const maximumHeight = screenSize.y * 0.84;
+  const maximumWidth = screenSize.x * 0.98;
+  const maximumHeight = screenSize.y * 0.98;
   let displayWidth = maximumWidth;
   let displayHeight = displayWidth / textureAspect;
   if (displayHeight > maximumHeight) {
@@ -850,14 +858,147 @@ function styleComputerWelcomeScreen(room) {
   const display = new THREE.Mesh(
     new THREE.PlaneGeometry(displayWidth, displayHeight),
     new THREE.MeshBasicMaterial({
-      map: createComputerWelcomeTexture(),
-      color: 0xffffff,
+      color: 0x15121d,
       toneMapped: false,
     }),
   );
   display.name = "Computer_Monitor_Welcome_Display";
   display.position.set(screenCenter.x, screenCenter.y, screenBounds.max.z + 0.006);
   screen.add(display);
+  computerWelcomeDisplay = display;
+  ensureComputerVideo();
+}
+
+function showComputerVideoStatus(message, duration = 0) {
+  if (!computerVideoStatus) return;
+  window.clearTimeout(computerVideoStatusTimer);
+  computerVideoStatus.textContent = message;
+  if (duration > 0) {
+    computerVideoStatusTimer = window.setTimeout(() => {
+      computerVideoStatus.textContent = "";
+    }, duration);
+  }
+}
+
+function updateComputerFullscreenButtonPosition() {
+  if (!computerVideoFullscreenButton || computerVideoFullscreenButton.hidden || !computerFocusActive || !computerWelcomeDisplay) return;
+  if (!computerWelcomeDisplay.geometry.boundingBox) computerWelcomeDisplay.geometry.computeBoundingBox();
+
+  const bounds = computerWelcomeDisplay.geometry.boundingBox;
+  // The overlay is centered on this projected point. Pull it inward slightly
+  // so the circular control sits just inside the monitor's lower-right bezel.
+  const localPoint = new THREE.Vector3(bounds.max.x, bounds.min.y, 0);
+  const worldPoint = computerWelcomeDisplay.localToWorld(localPoint);
+  worldPoint.project(camera);
+  const screenX = (worldPoint.x * 0.5 + 0.5) * innerWidth;
+  const screenY = (-worldPoint.y * 0.5 + 0.5) * innerHeight;
+  computerVideoFullscreenButton.style.left = `${Math.round(screenX - 25)}px`;
+  computerVideoFullscreenButton.style.top = `${Math.round(screenY - 25)}px`;
+}
+
+function setComputerVideoFullscreenButtonVisible(visible) {
+  if (visible && computerFullscreenSuppressed) return;
+  if (computerVideoFullscreenButton) {
+    computerVideoFullscreenButton.hidden = !visible;
+    computerVideoFullscreenButton.classList.remove("is-navigation-active");
+  }
+  if (visible) requestAnimationFrame(updateComputerFullscreenButtonPosition);
+}
+
+function ensureComputerVideo() {
+  if (!computerWelcomeDisplay) return null;
+  if (!computerVideoElement) {
+    computerVideoElement = document.createElement("video");
+    document.body.appendChild(computerVideoElement);
+  }
+  if (!computerVideoElement.dataset.roomVideoReady) {
+    computerVideoElement.src = computerVideoUrl;
+    computerVideoElement.preload = "metadata";
+    computerVideoElement.playsInline = true;
+    computerVideoElement.loop = false;
+    computerVideoElement.controls = true;
+    computerVideoElement.addEventListener("loadeddata", () => {
+      if (computerVideoTexture) computerVideoTexture.needsUpdate = true;
+    });
+    computerVideoElement.addEventListener("canplay", () => {
+      if (computerVideoTexture) computerVideoTexture.needsUpdate = true;
+    });
+    computerVideoElement.addEventListener("ended", () => {
+      setComputerVideoFullscreenButtonVisible(true);
+      showComputerVideoStatus("视频播放结束，再点一次可重新播放", 2600);
+    });
+    computerVideoElement.addEventListener("error", () => {
+      showComputerVideoStatus("视频加载失败，请检查网络后重试", 3200);
+    });
+    computerVideoElement.dataset.roomVideoReady = "true";
+    // Request only metadata and the first frame now; the full file is still
+    // fetched on demand when the visitor starts playback.
+    computerVideoElement.load();
+  }
+  if (!computerVideoTexture) {
+    computerVideoTexture = new THREE.VideoTexture(computerVideoElement);
+    computerVideoTexture.colorSpace = THREE.SRGBColorSpace;
+    computerVideoTexture.minFilter = THREE.LinearFilter;
+    computerVideoTexture.magFilter = THREE.LinearFilter;
+    computerVideoTexture.generateMipmaps = false;
+    computerVideoTexture.anisotropy = 1;
+  }
+  computerWelcomeDisplay.material.map = computerVideoTexture;
+  computerWelcomeDisplay.material.color.set(0xffffff);
+  computerWelcomeDisplay.material.needsUpdate = true;
+  return computerVideoElement;
+}
+
+async function toggleComputerVideo() {
+  const video = ensureComputerVideo();
+  if (!video) return;
+  if (video.ended) video.currentTime = 0;
+  if (video.paused) {
+    const needsInitialLoad = video.readyState === HTMLMediaElement.HAVE_NOTHING;
+    if (needsInitialLoad) {
+      showComputerVideoStatus("视频加载中…");
+      video.load();
+    }
+    try {
+      await video.play();
+      computerFullscreenSuppressed = false;
+      setComputerVideoFullscreenButtonVisible(true);
+      showComputerVideoStatus("视频正在播放，再点击电脑暂停；电脑右下角按钮可全屏", 2600);
+    } catch {
+      // If the browser blocks sound autoplay, keep the user gesture and retry muted.
+      video.muted = true;
+      try {
+        await video.play();
+        computerFullscreenSuppressed = false;
+        setComputerVideoFullscreenButtonVisible(true);
+        showComputerVideoStatus("视频正在播放（浏览器已静音）", 2400);
+      } catch {
+        showComputerVideoStatus("视频暂时无法播放，请再点击一次", 2600);
+      }
+    }
+  } else {
+    video.pause();
+    showComputerVideoStatus("视频已暂停，再点一次继续播放", 1800);
+  }
+}
+
+async function openComputerVideoFullscreen() {
+  const video = ensureComputerVideo();
+  if (!video) return;
+  try {
+    if (video.paused && !video.ended) await video.play();
+    if (document.fullscreenElement === video) {
+      await document.exitFullscreen();
+      return;
+    }
+    if (typeof video.requestFullscreen === "function") {
+      await video.requestFullscreen();
+    } else if (typeof video.webkitEnterFullscreen === "function") {
+      video.webkitEnterFullscreen();
+    }
+  } catch {
+    showComputerVideoStatus("当前浏览器不支持全屏播放", 2200);
+  }
 }
 
 function createFlowerShape(radius = 0.13, petals = 7) {
@@ -2793,7 +2934,31 @@ controls.minAzimuthAngle = -0.15;
 controls.maxAzimuthAngle = 1.38;
 controls.target.copy(panoramaCameraTarget);
 
-function setComputerFocus(active) {
+function hideComputerFullscreenDuringNavigation() {
+  computerFullscreenSuppressed = true;
+  if (!computerVideoFullscreenButton || computerVideoFullscreenButton.hidden) return;
+  computerVideoFullscreenButton.classList.add("is-navigation-active");
+}
+
+function leaveComputerViewForNavigation() {
+  if (!computerFocusActive || computerFocusTransitioning) return;
+  const video = computerVideoElement;
+  if (video && !video.ended && video.currentTime > 0) {
+    computerResumePending = true;
+    if (!video.paused) video.pause();
+  }
+  computerFocusActive = false;
+  computerFocusTransitioning = false;
+  computerFullscreenSuppressed = true;
+  setComputerVideoFullscreenButtonVisible(false);
+  controls.minDistance = 8.5;
+  updateReturnPanoramaButton();
+  showComputerVideoStatus("已离开电脑，视频进度已保留", 1800);
+}
+
+controls.addEventListener("start", hideComputerFullscreenDuringNavigation);
+
+function setComputerFocus(active, afterFocus = null) {
   if (!roomModel || active === computerFocusActive) return;
   const duration = reducedMotion ? 0 : (active ? 1.90 : 1.48);
   gsap.killTweensOf(camera.position);
@@ -2818,6 +2983,7 @@ function setComputerFocus(active) {
     computerFocusReturnTarget.copy(controls.target);
     computerFocusReturnFov = camera.fov;
     computerFocusActive = true;
+    computerFocusTransitioning = true;
     updateReturnPanoramaButton();
     controls.enabled = false;
     controls.minDistance = 0.8;
@@ -2839,6 +3005,8 @@ function setComputerFocus(active) {
       camera.updateProjectionMatrix();
       controls.enabled = true;
       controls.update();
+      computerFocusTransitioning = false;
+      afterFocus?.();
       return;
     }
     gsap.to(camera.position, { x: focusPosition.x, y: focusPosition.y, z: focusPosition.z, duration, ease: "power3.inOut" });
@@ -2851,6 +3019,8 @@ function setComputerFocus(active) {
       onComplete: () => {
         controls.enabled = true;
         controls.update();
+        computerFocusTransitioning = false;
+        afterFocus?.();
       },
     });
     gsap.to(camera, {
@@ -2862,7 +3032,14 @@ function setComputerFocus(active) {
     return;
   }
 
+  if (computerVideoElement && !computerVideoElement.paused) {
+    computerVideoElement.pause();
+    showComputerVideoStatus("视频已暂停，再次点击电脑继续播放", 1800);
+  }
+  computerFullscreenSuppressed = false;
+  setComputerVideoFullscreenButtonVisible(false);
   computerFocusActive = false;
+  computerFocusTransitioning = false;
   updateReturnPanoramaButton();
   controls.enabled = false;
   const restoreControls = () => {
@@ -2901,8 +3078,31 @@ function setComputerFocus(active) {
   });
 }
 
-function toggleComputerFocus() {
-  setComputerFocus(!computerFocusActive);
+function handleComputerClick() {
+  if (!computerFocusActive) {
+    const resumeAfterFocus = computerResumePending;
+    computerResumePending = false;
+    if (resumeAfterFocus) {
+      setComputerFocus(true);
+      showComputerVideoStatus("正在回到电脑，请再点击一次继续播放", 2600);
+    } else {
+      setComputerFocus(true, () => {
+        if (computerFocusActive) void toggleComputerVideo();
+      });
+      showComputerVideoStatus("正在靠近电脑，靠近后自动播放视频", 2600);
+    }
+    return;
+  }
+  if (computerFocusTransitioning) {
+    showComputerVideoStatus("正在靠近电脑，请稍候…", 1500);
+    return;
+  }
+  if (computerVideoElement && !computerVideoElement.paused) {
+    computerVideoElement.pause();
+    showComputerVideoStatus("视频已暂停，再点击电脑继续播放", 1800);
+    return;
+  }
+  void toggleComputerVideo();
 }
 
 function setReceiptFocus(active) {
@@ -3166,6 +3366,8 @@ const zoomPlaneNormal = new THREE.Vector3();
 canvas.addEventListener(
   "wheel",
   (event) => {
+    hideComputerFullscreenDuringNavigation();
+    leaveComputerViewForNavigation();
     event.preventDefault();
     const bounds = canvas.getBoundingClientRect();
     zoomPointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
@@ -3676,6 +3878,7 @@ const pointer = new THREE.Vector2();
 let pointerStart = null;
 
 canvas.addEventListener("pointerdown", (event) => {
+  hideComputerFullscreenDuringNavigation();
   pointerStart = { x: event.clientX, y: event.clientY };
 });
 
@@ -3702,7 +3905,7 @@ canvas.addEventListener("pointerup", (event) => {
       }
       if (current.name.startsWith("Computer_Monitor_")) {
         markInteractionDiscovered("computer");
-        toggleComputerFocus();
+        handleComputerClick();
         return;
       }
       if (current.name.startsWith("Wall_Receipt_Printer") || current.name.startsWith("ReceiptPaper_")) {
@@ -3749,7 +3952,11 @@ canvas.addEventListener("pointerup", (event) => {
 });
 
 canvas.addEventListener("pointermove", (event) => {
-  if (!roomModel || event.buttons) return;
+  if (!roomModel) return;
+  if (event.buttons) {
+    leaveComputerViewForNavigation();
+    return;
+  }
   const bounds = canvas.getBoundingClientRect();
   pointer.x = ((event.clientX - bounds.left) / bounds.width) * 2 - 1;
   pointer.y = -((event.clientY - bounds.top) / bounds.height) * 2 + 1;
@@ -3831,6 +4038,7 @@ function render() {
       note.material.rotation = bounce * 0.12;
     });
   }
+  updateComputerFullscreenButtonPosition();
   renderer.render(scene, camera);
   requestAnimationFrame(render);
 }
@@ -3843,4 +4051,5 @@ addEventListener("resize", () => {
   else camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.8));
+  updateComputerFullscreenButtonPosition();
 });
