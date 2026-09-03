@@ -14,6 +14,7 @@ import type { ProjectDetail } from "@/components/ProjectModal";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useIsMobile } from "@/lib/useIsMobile";
 import type { Lang } from "@/lib/i18n";
+import { siX, siXiaohongshu } from "simple-icons";
 
 const EMAIL = "2388598618@qq.com";
 const WECHAT = "zhengyyff123";
@@ -1212,6 +1213,33 @@ export default function Home() {
                       </svg>
                     </span>
                   </CopyContact>
+                </div>
+                <div className="contact-socials pointer-events-auto" aria-label={lang === "en" ? "Social links" : "社交主页"}>
+                  <span className="contact-socials__note">{lang === "en" ? "Exploring AI content creation · Welcome to follow" : "AI 自媒体探索中 · 欢迎支持"}</span>
+                  <div className="contact-socials__links">
+                    <a
+                      className="contact-social-link contact-social-link--xiaohongshu"
+                      href="https://www.xiaohongshu.com/user/profile/60975a44000000000100a85d"
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={lang === "en" ? "Open Xiaohongshu profile" : "打开小红书主页"}
+                      title={lang === "en" ? "Xiaohongshu" : "小红书"}
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d={siXiaohongshu.path} /></svg>
+                      <span>{lang === "en" ? "Xiaohongshu" : "小红书"}</span>
+                    </a>
+                    <a
+                      className="contact-social-link contact-social-link--x"
+                      href="https://x.com/ZhengYiFan12345"
+                      target="_blank"
+                      rel="noreferrer"
+                      aria-label={lang === "en" ? "Open X profile" : "打开 X 主页"}
+                      title="X"
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d={siX.path} /></svg>
+                      <span>X</span>
+                    </a>
+                  </div>
                 </div>
               </Reveal>
             </div>

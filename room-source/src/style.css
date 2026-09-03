@@ -1333,7 +1333,104 @@ body.is-ready .lamp-switch {
   line-height: 1.8;
 }
 
-.contact-card a,
+.contact-social-support {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  margin: -4px 0 15px;
+  padding: 2px 0;
+}
+
+.contact-social-copy {
+  color: rgba(91, 66, 101, 0.82);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.contact-social-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contact-social-link {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  color: #2d2932;
+  background: transparent;
+  box-shadow: none;
+  text-decoration: none;
+  transition: transform 160ms ease, opacity 160ms ease, background 160ms ease;
+}
+
+.contact-social-link svg {
+  width: 21px;
+  height: 21px;
+  fill: currentColor;
+}
+
+.contact-social-link--xiaohongshu {
+  color: #fff;
+  background: #ff2442;
+}
+
+.contact-social-link--xiaohongshu:hover,
+.contact-social-link--xiaohongshu:focus-visible {
+  color: #fff;
+  background: #ff2442;
+  outline: none;
+  transform: translateY(-1px) scale(1.03);
+}
+
+.contact-social-link--x {
+  color: #fff;
+  background: #000;
+}
+
+.contact-social-link--x:hover,
+.contact-social-link--x:focus-visible {
+  color: #fff;
+  background: #000;
+  outline: none;
+  opacity: 1;
+  transform: translateY(-1px) scale(1.03);
+}
+
+body.is-night .contact-social-copy {
+  color: rgba(244, 235, 250, 0.86);
+}
+
+body.is-night .contact-social-link--xiaohongshu {
+  color: #fff;
+  background: #ff2442;
+}
+
+body.is-night .contact-social-link--x {
+  color: #fff;
+  background: #000;
+}
+
+/* Keep icon-only social links compact on small screens. */
+@media (max-width: 700px) {
+  .contact-social-support {
+    justify-content: flex-start;
+    gap: 11px;
+  }
+
+  .contact-social-copy {
+    font-size: 10px;
+  }
+}
+
+.contact-card > a:not(.contact-social-link),
 .contact-wechat {
   display: block;
   padding: 12px 14px;
@@ -1455,6 +1552,10 @@ body.is-ready .lamp-switch {
     left: 16px;
     width: auto;
     transform: translateY(18px) scale(0.97);
+  }
+
+  .contact-social-support {
+    gap: 9px;
   }
 
   .contact-card.is-open {
