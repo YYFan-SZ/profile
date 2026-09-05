@@ -1,6 +1,6 @@
 "use client";
 
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Environment,
   Html,
@@ -16,6 +16,8 @@ import {
 import { useSeason } from "@/components/SeasonProvider";
 import { useLanguage } from "@/components/LanguageProvider";
 import * as THREE from "three";
+import { ExhibitionStage, useExhibitionMotion, type ExhibitionMotion } from "@/components/ExhibitionStage";
+import GrandPianoShell from "@/components/GrandPianoShell";
 
 // Per-section keyboard "states" — same idea as Naresh's animated-background-
 // config.ts, but for our R3F keyboard. Values are tweened toward via lerp
@@ -315,16 +317,16 @@ const PIANO_ABILITY_INDEXES: readonly (number | null)[] = [
   null,
 ];
 
-const WHITE_KEY_COUNT = 10;
-const WHITE_KEY_WIDTH = 0.32;
-const WHITE_KEY_DEPTH = 1.42;
-const WHITE_KEY_HEIGHT = 0.16;
-const WHITE_KEY_GAP = 0.018;
+const WHITE_KEY_COUNT = 52;
+const WHITE_KEY_WIDTH = 0.063;
+const WHITE_KEY_DEPTH = 0.86;
+const WHITE_KEY_HEIGHT = 0.08;
+const WHITE_KEY_GAP = 0.0016;
 const WHITE_KEY_STEP = WHITE_KEY_WIDTH + WHITE_KEY_GAP;
-const BLACK_KEY_WIDTH = 0.18;
-const BLACK_KEY_DEPTH = 0.88;
-const BLACK_KEY_HEIGHT = 0.25;
-const BLACK_KEY_Z = -0.18;
+const BLACK_KEY_WIDTH = 0.034;
+const BLACK_KEY_DEPTH = 0.54;
+const BLACK_KEY_HEIGHT = 0.12;
+const BLACK_KEY_Z = -0.12;
 const BASE_WIDTH = WHITE_KEY_COUNT * WHITE_KEY_STEP - WHITE_KEY_GAP + 0.16;
 const BASE_DEPTH = 1.65;
 const BASE_HEIGHT = 0.26;
@@ -332,7 +334,8 @@ const PRESS_DEPTH = 0.075;
 
 // A compact piano-like layout: black keys sit between white keys, while the
 // existing skill icons remain on the white keys only.
-const BLACK_KEY_AFTER_WHITE = [0, 1, 3, 4, 5, 7, 8] as const;
+const BLACK_KEY_AFTER_WHITE = Array.from({ length: 51 }, (_, i) => i)
+  .filter(i => [0, 2, 3, 5, 6].includes(i % 7));
 
 // Mechanical keyboard "tock" synthesized on the fly. Mixes a short bandpass-
 // filtered noise burst (the click) with a fast low-frequency thump. One
@@ -443,6 +446,7 @@ function Keycap({
   activeSectionRef,
   wavePhase,
   accent,
+  sceneMotion,
 }: {
   geometry: THREE.BufferGeometry;
   position: [number, number, number];
@@ -462,13 +466,14 @@ function Keycap({
   // Season accent colour — highlighted keys glow in this colour, so the
   // bouncing keys feel "part of" the current theme.
   accent: string;
+  sceneMotion?: React.RefObject<ExhibitionMotion>;
 }) {
   const pressRef = useRef<THREE.Group>(null);
   const pressY = useRef(0);
   const liftAmp = useRef(0); // smoothed 0..1 gate for the bounce + glow
   const contactAmp = useRef(0); // smoothed 0..1 gate for the random idle bob
   const matRef = useRef<THREE.MeshPhysicalMaterial>(null);
-  const baseEmissive = 0.3;
+  const baseEmissive = sceneMotion ? .06 : .3;
 
   // Derive a stable pseudo-random rhythm from the key position. This keeps
   // neighbouring keycaps independent without changing values during render.
@@ -492,8 +497,8 @@ function Keycap({
   // per-tick). Recomputed whenever the season accent changes.
   const whiteColor = useMemo(() => new THREE.Color("#ffffff"), []);
   const keyBaseColor = useMemo(
-    () => new THREE.Color(isBlack ? "#2a2521" : "#fffdf5"),
-    [isBlack]
+    () => new THREE.Color(sceneMotion ? (isBlack ? "#29251f" : "#fff8e9") : (isBlack ? "#2a2521" : "#fffdf5")),
+    [isBlack, sceneMotion]
   );
   const accentColor = useMemo(() => new THREE.Color(accent), [accent]);
   // Tinted white for the plastic body — keeps the "white keycap with a
@@ -521,7 +526,7 @@ function Keycap({
     // Piano keys should breathe without climbing over the raised black keys.
     // White keys get a tiny musical lift; black keys stay almost still.
     const bobAmplitude = isBlack ? 0.008 : 0.028;
-    const bob =
+    const bob = sceneMotion ? 0 :
       Math.sin(t * 2.2 + wavePhase) * bobAmplitude * liftAmp.current;
 
     // Contact idle: each keycap pops up at its own random cadence. We use
@@ -540,11 +545,11 @@ function Keycap({
     const popRaw = Math.max(0, sineRaw - randomBob.threshold);
     // Normalise the pop so keys with higher thresholds don't end up flat.
     const popNorm = popRaw / (1 - randomBob.threshold);
-    const randomPop =
+    const randomPop = sceneMotion ? 0 :
       popNorm * (isBlack ? 0.004 : 0.012) * contactAmp.current;
 
     const target = pressed + bob + randomPop;
-    pressY.current = THREE.MathUtils.lerp(pressY.current, target, 0.22);
+    pressY.current = THREE.MathUtils.lerp(pressY.current, target, sceneMotion?.current.reduced ? 1 : .22);
     pressRef.current.position.y = pressY.current;
 
     if (matRef.current) {
@@ -604,6 +609,8 @@ function Keycap({
       <group ref={pressRef}>
         <mesh
           geometry={geometry}
+          castShadow
+          receiveShadow
           onPointerOver={isMobile ? undefined : handleOver}
           onPointerOut={isMobile ? undefined : handleOut}
           onPointerDown={isMobile ? handleDown : undefined}
@@ -613,7 +620,7 @@ function Keycap({
         >
           <meshPhysicalMaterial
             ref={matRef}
-            color={isBlack ? "#2a2521" : "#fffdf5"}
+            color={keyBaseColor}
             transmission={0}
             roughness={isBlack ? 0.24 : 0.32}
             clearcoat={isMobile ? 0 : isBlack ? 0.22 : 0.5}
@@ -623,20 +630,20 @@ function Keycap({
             emissiveIntensity={0.3}
           />
         </mesh>
-        {label && (
+        {label && !sceneMotion && (
           <Html
             position={[0, iconY + 0.012, 0.38]}
             center
-            distanceFactor={5}
+            distanceFactor={sceneMotion ? 12 : 5}
             style={{
               pointerEvents: "none",
-              color: "#8b6048",
+              color: sceneMotion ? "#876338" : "#8b6048",
               fontFamily: "var(--font-geist-sans), sans-serif",
-              fontSize: "8px",
+              fontSize: sceneMotion ? "14px" : "8px",
               fontWeight: 600,
               letterSpacing: "0.02em",
               whiteSpace: "nowrap",
-              textShadow: "0 1px 0 rgba(255, 250, 239, 0.85)",
+              textShadow: "0 1px 0 rgba(255, 255, 255, 0.85)",
             }}
           >
             {label}
@@ -647,7 +654,7 @@ function Keycap({
   );
 }
 
-function Keyboard({ mobile }: { mobile: boolean }) {
+function Keyboard({ mobile, motion }: { mobile: boolean; motion?: React.RefObject<ExhibitionMotion> }) {
   const ref = useRef<THREE.Group>(null);
   const isMobile = mobile;
   const { palette } = useSeason();
@@ -658,6 +665,7 @@ function Keyboard({ mobile }: { mobile: boolean }) {
   // Mutable holders for the smoothed target — kept off React state so
   // useFrame can read them every tick without triggering re-renders.
   const current = useRef<KeyboardState>({ ...SECTION_STATES.hero });
+  const positioned = useRef(false);
 
   useEffect(() => {
     const onProjectSelect = (event: Event) => {
@@ -682,6 +690,7 @@ function Keyboard({ mobile }: { mobile: boolean }) {
   // When scrolling between two project sections, kick off a spin. Direction
   // alternates per target project so consecutive flips don't look identical.
   useEffect(() => {
+    if (motion) return;
     if (mobile) return; // no project→project flips on mobile (hero-only)
     const prev = prevSectionId.current;
     prevSectionId.current = activeSection;
@@ -692,7 +701,7 @@ function Keyboard({ mobile }: { mobile: boolean }) {
     const n = parseInt(activeSection.replace("project", ""), 10) || 0;
     const dir = n % 2 === 0 ? 1 : -1;
     spinRef.current += Math.PI * 2 * dir;
-  }, [activeSection, mobile]);
+  }, [activeSection, mobile, motion]);
 
   // Drive global cursor + click SFX from the single Keyboard instance.
   useEffect(() => {
@@ -712,15 +721,17 @@ function Keyboard({ mobile }: { mobile: boolean }) {
 
   useFrame((state, delta) => {
     if (!ref.current) return;
+    if (motion && !motion.current.visible) return;
     const t = state.clock.elapsedTime;
-    const target = mobile
+    const target = motion ? motion.current.piano : mobile
       ? MOBILE_STATE
       : SECTION_STATES[activeSectionRef.current] ?? SECTION_STATES.hero;
     // A slower, frame-rate-independent follow keeps section changes fluid:
     // the keyboard has time to settle into a new composition instead of
     // snapping across the screen as soon as the observer changes sections.
-    const k = 1 - Math.exp(-3.2 * delta);
+    const k = motion?.current.reduced ? 1 : 1 - Math.exp(-3.2 * delta);
     const c = current.current;
+    if (!positioned.current) { Object.assign(c, target); positioned.current = true; }
     c.yaw = THREE.MathUtils.lerp(c.yaw, target.yaw, k);
     c.pitch = THREE.MathUtils.lerp(c.pitch, target.pitch, k);
     c.roll = THREE.MathUtils.lerp(c.roll, target.roll, k);
@@ -747,10 +758,11 @@ function Keyboard({ mobile }: { mobile: boolean }) {
       sectionId === "contact" ||
       sectionId === "room";
     const isEditorial = sectionId === "content" || sectionId === "experience";
-    const yawSwing = isShowcase ? 0.5 : isEditorial ? 0.11 : 0.025;
-    const pitchSwing = isShowcase ? 0.07 : isEditorial ? 0.024 : 0.0;
-    const rollSwing = isShowcase ? 0.05 : isEditorial ? 0.018 : 0.0;
-    const period = isShowcase ? 9 : isEditorial ? 14.5 : 20; // seconds per cycle
+    const still = motion?.current.reduced;
+    const yawSwing = still ? 0 : motion ? .008 : isShowcase ? 0.5 : isEditorial ? 0.11 : 0.025;
+    const pitchSwing = still ? 0 : motion ? 0 : isShowcase ? 0.07 : isEditorial ? 0.024 : 0.0;
+    const rollSwing = still ? 0 : motion ? 0 : isShowcase ? 0.05 : isEditorial ? 0.018 : 0.0;
+    const period = motion ? 22 : isShowcase ? 9 : isEditorial ? 14.5 : 20;
     const w = (Math.PI * 2) / period;
     ref.current.rotation.y =
       c.yaw + Math.sin(t * w) * yawSwing + spinRef.current;
@@ -760,7 +772,7 @@ function Keyboard({ mobile }: { mobile: boolean }) {
     const editorialLift = isEditorial
       ? Math.sin(t * 0.48) * 0.05 + Math.sin(t * 0.82 + 0.7) * 0.014
       : Math.sin(t * 0.6) * 0.04;
-    ref.current.position.y = c.posY + editorialLift + spinNorm * 0.35;
+    ref.current.position.y = c.posY + (still || motion ? 0 : editorialLift) + spinNorm * 0.35;
     ref.current.position.z = c.posZ;
     ref.current.scale.setScalar(c.scale * (1 - spinNorm * 0.12));
   });
@@ -771,8 +783,8 @@ function Keyboard({ mobile }: { mobile: boolean }) {
         WHITE_KEY_WIDTH,
         WHITE_KEY_DEPTH,
         WHITE_KEY_HEIGHT,
-        0.035,
-        0.008,
+        0.003,
+        0.002,
         0.98
       ),
     []
@@ -783,8 +795,8 @@ function Keyboard({ mobile }: { mobile: boolean }) {
         BLACK_KEY_WIDTH,
         BLACK_KEY_DEPTH,
         BLACK_KEY_HEIGHT,
-        0.035,
-        0.009,
+        0.002,
+        0.001,
         0.92
       ),
     []
@@ -809,10 +821,12 @@ function Keyboard({ mobile }: { mobile: boolean }) {
   for (let index = 0; index < WHITE_KEY_COUNT; index++) {
       const x = (index - (WHITE_KEY_COUNT - 1) / 2) * WHITE_KEY_STEP;
       const id = `white-${index}`;
-      const projectLabel = PIANO_PROJECT_LABELS[index];
-      const abilityLabelRaw = PIANO_ABILITY_LABELS[index];
+      const slot = Math.min(4, Math.floor(index / (WHITE_KEY_COUNT / 5)));
+      const showLabel = index === Math.floor((slot + .5) * WHITE_KEY_COUNT / 5);
+      const projectLabel = PIANO_PROJECT_LABELS[slot];
+      const abilityLabelRaw = PIANO_ABILITY_LABELS[slot * 2];
       const abilityLabel = abilityLabelRaw && lang === "en" ? PIANO_ABILITY_LABELS_EN[abilityLabelRaw] : abilityLabelRaw;
-      const abilityIndex = PIANO_ABILITY_INDEXES[index];
+      const abilityIndex = PIANO_ABILITY_INDEXES[slot * 2];
       keycaps.push(
         <Keycap
           key={id}
@@ -821,17 +835,18 @@ function Keyboard({ mobile }: { mobile: boolean }) {
           isMobile={isMobile}
           isBlack={false}
           hovered={hoveredKey === id}
-          selected={selectedProjectIndex === index}
+          selected={selectedProjectIndex === slot && showLabel}
           label={
-            activeSection === "stack"
+            !showLabel ? undefined : activeSection === "stack"
               ? abilityLabel ?? undefined
               : activeSection === "projects"
                 ? projectLabel ?? undefined
                 : undefined
           }
           activeSectionRef={activeSectionRef}
+          sceneMotion={motion}
           wavePhase={index * 0.55}
-          accent={palette.accent}
+          accent={motion ? "#c49c62" : palette.accent}
           onHoverChange={(h) =>
             setHoveredKey((prev) => (h ? id : prev === id ? null : prev))
           }
@@ -855,9 +870,9 @@ function Keyboard({ mobile }: { mobile: boolean }) {
               setSelectedProjectIndex(null);
               return;
             }
-            setSelectedProjectIndex(index);
+            setSelectedProjectIndex(slot);
             window.dispatchEvent(
-              new CustomEvent("portfolio:focus", { detail: { index } })
+              new CustomEvent("portfolio:focus", { detail: { index: slot } })
             );
           }}
         />
@@ -877,8 +892,9 @@ function Keyboard({ mobile }: { mobile: boolean }) {
         isBlack
         hovered={hoveredKey === id}
         activeSectionRef={activeSectionRef}
+        sceneMotion={motion}
         wavePhase={index * 0.72 + 0.3}
-        accent={palette.accent}
+        accent={motion ? "#c49c62" : palette.accent}
         onHoverChange={(h) =>
           setHoveredKey((prev) => (h ? id : prev === id ? null : prev))
         }
@@ -890,16 +906,20 @@ function Keyboard({ mobile }: { mobile: boolean }) {
   return (
     <>
       <group ref={ref}>
-        <mesh geometry={baseGeom}>
+        <mesh geometry={baseGeom} castShadow receiveShadow>
           {/* Solid matte plastic — color prop controls the tone directly.
               No transmission/clearcoat so the white environment doesn't
               wash it out to grey. */}
           <meshStandardMaterial
-            color={palette.keyboardBase}
-            roughness={0.6}
-            metalness={0}
+            color={motion ? "#fff4de" : palette.keyboardBase}
+            roughness={motion ? 0.36 : 0.6}
+            metalness={motion ? 0.22 : 0}
           />
         </mesh>
+        {motion && <mesh geometry={baseGeom} position={[0, -.115, 0]} scale={[1.018, .09, 1.018]} castShadow>
+          <meshStandardMaterial color="#c8a66a" roughness={.32} metalness={.68} />
+        </mesh>}
+        {motion && <GrandPianoShell />}
         {keycaps}
       </group>
       {/* Callout lives OUTSIDE the animated keyboard group so the keyboard's
@@ -910,35 +930,75 @@ function Keyboard({ mobile }: { mobile: boolean }) {
   );
 }
 
+function CanvasActivity({ mobile }: { mobile: boolean }) {
+  const { gl, setFrameloop } = useThree();
+  useEffect(() => {
+    let inView = true;
+    const update = () => setFrameloop(!document.hidden && inView ? "always" : "never");
+    const observer = mobile ? new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      update();
+    }, { rootMargin: "150px" }) : null;
+    observer?.observe(gl.domElement);
+    document.addEventListener("visibilitychange", update);
+    update();
+    return () => {
+      observer?.disconnect();
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [gl, mobile, setFrameloop]);
+  return null;
+}
+
+function ExhibitionWorld({ mobile, backgroundOnly, pianoOnly }: {
+  mobile: boolean; backgroundOnly: boolean; pianoOnly: boolean;
+}) {
+  const motion = useExhibitionMotion(mobile, backgroundOnly);
+  return <>
+    <ExhibitionStage motion={motion} mobile={mobile} backgroundOnly={backgroundOnly} pianoOnly={pianoOnly} />
+    {!backgroundOnly && <Keyboard mobile={mobile} motion={motion} />}
+  </>;
+}
+
 export default function FrozenKeyboard({
   mobile = false,
+  exhibition = false,
+  backgroundOnly = false,
+  pianoOnly = false,
 }: {
   mobile?: boolean;
+  exhibition?: boolean;
+  backgroundOnly?: boolean;
+  pianoOnly?: boolean;
 }) {
   return (
     <Canvas
+      shadows={exhibition && !mobile ? "percentage" : false}
       // Portrait gets a pulled-back, centered, less top-down camera so the
       // keyboard reads as a front-facing hero centerpiece instead of the
       // off-axis desktop composition.
       camera={
-        mobile
+        exhibition
+          ? { position: [0, 1.8, 13.2], fov: mobile ? (backgroundOnly ? 46 : 32) : 31 }
+          : mobile
           ? { position: [0, 2.0, 9.0], fov: 26 }
           : { position: [1.5, 3.6, 11], fov: 22 }
       }
-      dpr={mobile ? [1, 1.5] : [1, 2]}
+      dpr={mobile ? (backgroundOnly ? 1 : [1, 1.25]) : [1, 1.6]}
       gl={{
         antialias: true,
         alpha: true,
         powerPreference: "high-performance",
       }}
     >
+      <CanvasActivity mobile={mobile} />
       {/* Canvas is transparent so the FrozenBackground (snow + aurora) shows
           through behind/around the keyboard. */}
 
       {/* Local environment map built from Lightformer quads — no external
           HDR fetch, so the scene works offline. Gives the glass keycaps
           soft icy highlights without relying on drei's CDN. */}
-      <Environment resolution={128} environmentIntensity={0.25}>
+      <Environment resolution={128} environmentIntensity={exhibition ? .55 : .25}>
         <Lightformer
           intensity={1.1}
           color="#ffffff"
@@ -972,6 +1032,7 @@ export default function FrozenKeyboard({
           upper-left gives crisp top-bright / sides-shadowed contrast. The
           hemisphere adds a subtle sky-ground gradient so the darkest faces
           still read as "the lower faces" instead of pitch-black. */}
+      {!exhibition && <>
       <ambientLight intensity={0.15} />
       <directionalLight position={[-5, 8, 3]} intensity={2.2} />
       <hemisphereLight
@@ -981,6 +1042,8 @@ export default function FrozenKeyboard({
       />
 
       <Keyboard mobile={mobile} />
+      </>}
+      {exhibition && <ExhibitionWorld mobile={mobile} backgroundOnly={backgroundOnly} pianoOnly={pianoOnly} />}
 
     </Canvas>
   );

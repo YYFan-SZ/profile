@@ -17,9 +17,6 @@ room-source/         3D 房间的 Vite 源码与资源
 public/room-engine/  构建时自动生成，不提交到 Git
 ```
 
-`_archive/`、`_backups/`、`_room-source/`、`_room-work/` 和
-`reference-3d-portfolio/` 只用于本地备份或历史留档，不参与网站构建和发布。
-
 ## 本地运行
 
 首次运行：

@@ -1,5 +1,7 @@
 "use client";
 
+import "./exhibition.css";
+
 import { useEffect, useState } from "react";
 import { useLenis } from "lenis/react";
 import FrozenKeyboard from "@/components/FrozenKeyboard";
@@ -713,6 +715,16 @@ export default function Home() {
     return () => window.removeEventListener("portfolio:ability", onAbilitySelect);
   }, []);
 
+  useEffect(() => {
+    if (focusedProject === null) return;
+    const section = document.querySelector<HTMLElement>('[data-kb-section="projects"]');
+    if (!section) return;
+    const panel = section.firstElementChild as HTMLElement | null;
+    if (panel) panel.scrollTop = 0;
+    if (lenis) lenis.scrollTo(section, { duration: .65, offset: 0 });
+    else section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [focusedProject, lenis]);
+
   const chooseProject = (index: number) => {
     setFocusedProject(index);
     window.dispatchEvent(
@@ -723,15 +735,12 @@ export default function Home() {
 
   return (
     <SmoothScroll>
-      <div className="relative">
-        {/* Desktop: persistent 3D scene fullscreen behind content. On mobile
-            the canvas lives inside the hero instead (see below) so it scrolls
-            away and the rest of the page is clean, fast 2D. */}
-        {!isMobile && (
-          <div className="keyboard-scene fixed inset-0 z-0">
-            <FrozenKeyboard />
-          </div>
-        )}
+      <div className="infinite-exhibition relative">
+        {/* All screens get chapter backgrounds. Mobile keeps its interactive
+            piano in the content flow and uses a simpler fixed backdrop. */}
+        <div className="keyboard-scene fixed inset-0 z-0">
+          <FrozenKeyboard exhibition mobile={isMobile} backgroundOnly={isMobile} />
+        </div>
 
         {/* Header */}
         <header className="fixed top-0 inset-x-0 z-50 px-6 sm:px-10 md:px-14 py-5 flex items-center justify-between pointer-events-none">
@@ -761,10 +770,10 @@ export default function Home() {
                 with it) and takes pointer events so keycaps are tappable. */}
             {isMobile && (
               <div className="hero-mobile-keyboard pointer-events-auto">
-                <FrozenKeyboard mobile />
+                <FrozenKeyboard mobile exhibition pianoOnly />
               </div>
             )}
-            <div className="hero-profile mt-2 md:mt-20">
+            <div className="hero-profile mt-2 md:mt-8">
               <p
                 className="hero-profile__eyebrow fade-in-up"
                 style={{ ["--d" as string]: "0ms" }}
@@ -815,7 +824,7 @@ export default function Home() {
             className="section-space section-space--stack order-2 relative md:min-h-[150vh] p-6 sm:p-10 md:p-14"
           >
             <div className="relative md:h-[120vh] pt-16 md:pt-24">
-              <div className="md:sticky md:top-28 text-center">
+              <div className="ability-panel md:sticky md:top-28 text-center">
                 <Reveal>
                   <p className="section-heading__kicker">01 / CAPABILITIES</p>
                   <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98]" style={{ color: "var(--ice-50)" }}>
@@ -828,6 +837,20 @@ export default function Home() {
                     <span className="md:hidden">{t("stack.hintMobile")}</span>
                   </p>
                 </Reveal>
+                <div className="ability-keyboard pointer-events-auto">
+                  {abilityDetails.map((ability, index) => (
+                    <button key={ability.label} type="button"
+                      className="ability-key"
+                      aria-pressed={selectedAbilityIndex === index}
+                      onClick={() => {
+                        setSelectedAbilityIndex(index);
+                        window.dispatchEvent(new CustomEvent("portfolio:select", { detail: { index } }));
+                      }}>
+                      <span className="ability-key__number">{String(index + 1).padStart(2, "0")}</span>
+                      <span>{ability.label}</span>
+                    </button>
+                  ))}
+                </div>
                 <div className="ability-note" aria-live="polite">
                   {selectedAbilityIndex === null ? (
                     <span>{lang === "en" ? "Choose a key to see my focus" : "选择一枚琴键，查看我的能力侧重"}</span>
@@ -840,7 +863,7 @@ export default function Home() {
                 </div>
                 {isMobile && (
                   <div className="ability-mobile-keyboard" aria-label="移动端能力琴键">
-                    <FrozenKeyboard mobile />
+                    <FrozenKeyboard mobile exhibition pianoOnly />
                   </div>
                 )}
               </div>
@@ -1056,13 +1079,6 @@ export default function Home() {
           <section
             data-kb-section="content"
             className="content-section order-4 relative min-h-screen flex items-center p-6 sm:p-10 md:p-14"
-            style={isMobile ? undefined : {
-              height: "100svh",
-              minHeight: "100svh",
-              paddingTop: "clamp(4.5rem, 7vh, 5.75rem)",
-              paddingBottom: "clamp(2.25rem, 4vh, 3.5rem)",
-              overflow: "hidden",
-            }}
           >
             <div className="content-archive relative z-10 w-full max-w-5xl md:w-[58%] md:mr-auto md:ml-0 pointer-events-auto">
               <Reveal>
