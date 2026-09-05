@@ -9,7 +9,6 @@ import SmoothScroll from "@/components/smooth-scroll";
 import Reveal from "@/components/Reveal";
 import SectionNav from "@/components/SectionNav";
 import CopyContact from "@/components/CopyContact";
-import SeasonPicker from "@/components/SeasonPicker";
 import LanguagePicker from "@/components/LanguagePicker";
 import ContentSkillModal from "@/components/ContentSkillModal";
 import type { ProjectDetail } from "@/components/ProjectModal";
@@ -753,7 +752,6 @@ export default function Home() {
             </span>
           </div>
           <div className="flex items-center gap-2 pointer-events-auto">
-            <SeasonPicker />
             <LanguagePicker />
           </div>
         </header>
