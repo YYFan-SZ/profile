@@ -40,6 +40,10 @@ export type ProjectDetail = {
   // modal falls back to stylised placeholder slides.
   media?: string[];
   mediaLayout?: "portrait" | "portrait-still" | "utility" | "web" | "web-gallery";
+  // Native aspect ratio of the hero media (e.g. "9 / 20" for a tall phone
+  // recording). Applied to the portrait frame so object-fit: cover never
+  // crops meaningful content — each video displays at its own ratio.
+  mediaAspect?: string;
   sections?: ProjectSection;
   subprojects?: ProjectSubproject[];
   qr?: string;

@@ -98,6 +98,7 @@ const projectCatalog: Project[] = [
     },
     media: ["/projects/zhengyifan/mayday-intro.jpg"],
     mediaLayout: "portrait-still",
+    mediaAspect: "3 / 4",
     qr: "/projects/zhengyifan/mayday-qr.jpg",
     highlights: ["html5"],
   },
@@ -132,6 +133,7 @@ const projectCatalog: Project[] = [
     downloadLabel: { es: "下载安装包", en: "Download APK" },
     media: ["/projects/zhengyifan/tusuo-demo.mp4"],
     mediaLayout: "portrait",
+    mediaAspect: "9 / 20",
     highlights: ["html5", "python"],
   },
   {
@@ -200,6 +202,7 @@ const projectCatalog: Project[] = [
     },
     media: ["/projects/zhengyifan/mengxiaodu.mp4"],
     mediaLayout: "portrait",
+    mediaAspect: "9 / 16",
     highlights: ["html5"],
   },
   {
@@ -425,10 +428,25 @@ function pick<T>(loc: { es: T; en: T }, lang: Lang): T {
 
 function ProjectMedia({ project }: { project: Project }) {
   const media = project.media ?? [];
-  const qrItems = project.subprojects?.filter((item) => item.qr) ?? [];
-  const showQr = Boolean(project.qr) || project.showQrPlaceholder || qrItems.length > 0;
+  const subQrItems = project.subprojects?.filter((item) => item.qr) ?? [];
+  // Only the project-level (single) QR is shown next to the media for projects
+  // that don't carry a QR-grid (subprojects). Five-mini fans' cards use the
+  // two-image vertical layout — both media[0] and the QR render as equal
+  // frames so the right column fills cleanly with no whitespace.
+  const isPortraitStillWithQr =
+    project.mediaLayout === "portrait-still" && Boolean(project.qr);
+  const showQr =
+    (Boolean(project.qr) || project.showQrPlaceholder || subQrItems.length > 0) &&
+    !isPortraitStillWithQr;
   const mediaLayout = project.mediaLayout ?? "default";
   const isPortrait = mediaLayout === "portrait" || mediaLayout === "portrait-still";
+
+  // For 五迷小记 (portrait-still + qr) we render the QR image as a second
+  // media frame so the right column shows two stacked, full-width images
+  // instead of a media+qr side-by-side that left whitespace.
+  const extraItems: Array<{ src: string; caption: string }> = isPortraitStillWithQr
+    ? [{ src: project.qr!, caption: "小程序二维码" }]
+    : [];
 
   return (
     <div
@@ -441,42 +459,64 @@ function ProjectMedia({ project }: { project: Project }) {
               height: "min(40rem, calc(100vh - 11rem))",
             }
           : mediaLayout === "portrait-still"
-            ? { gridTemplateColumns: "minmax(0, 1fr) 7rem", alignItems: "center" }
+            ? {
+                gridTemplateColumns: "minmax(0, 1fr)",
+                gridTemplateRows: "minmax(0, 1fr) auto",
+                alignItems: "stretch",
+                gap: ".7rem",
+                height: "100%",
+              }
             : undefined
       }
     >
-      {media.length > 0 ? (
-        media.map((src, index) => (
-          <div
-            className={`project-detail-media-frame${isPortrait ? " project-detail-media-frame--portrait" : ""}`}
-            style={
-              mediaLayout === "web-gallery"
-                ? { width: "min(100%, 17rem)", height: "100%", minHeight: 0, aspectRatio: "1920 / 922", marginInline: "auto", padding: 0, border: 0, boxShadow: "none" }
-                : undefined
-            }
-            key={src}
-          >
-            {src.toLowerCase().endsWith(".mp4") ? (
-              <video
-                src={src}
-                className="project-detail-media-image project-detail-media-image--video"
-                controls
-                muted
-                playsInline
-                preload="metadata"
-                aria-label={`${project.name.es}预览 ${index + 1}`}
-              />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
+      {media.length > 0 || extraItems.length > 0 ? (
+        <>
+          {media.map((src, index) => (
+            <div
+              className={`project-detail-media-frame${isPortrait ? " project-detail-media-frame--portrait" : ""}`}
+              style={
+                mediaLayout === "web-gallery"
+                  ? { width: "min(100%, 17rem)", height: "100%", minHeight: 0, aspectRatio: "1920 / 922", marginInline: "auto", padding: 0, border: 0, boxShadow: "none" }
+                  : project.mediaAspect
+                    ? { aspectRatio: project.mediaAspect }
+                    : undefined
+              }
+              key={src}
+            >
+              {src.toLowerCase().endsWith(".mp4") ? (
+                <video
+                  src={src}
+                  className="project-detail-media-image project-detail-media-image--video"
+                  controls
+                  muted
+                  playsInline
+                  preload="metadata"
+                  aria-label={`${project.name.es}预览 ${index + 1}`}
+                />
+              ) : (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={src}
+                  alt={`${project.name.es}预览 ${index + 1}`}
+                  className="project-detail-media-image project-detail-media-image--still"
+                  loading="lazy"
+                />
+              )}
+            </div>
+          ))}
+          {extraItems.map((item) => (
+            <figure className="project-detail-media-frame project-detail-media-frame--portrait project-detail-media-frame--qr" key={`qr-${item.src}`}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={src}
-                alt={`${project.name.es}预览 ${index + 1}`}
+                src={item.src}
+                alt={item.caption}
                 className="project-detail-media-image project-detail-media-image--still"
                 loading="lazy"
               />
-            )}
-          </div>
-        ))
+              <figcaption>{item.caption}</figcaption>
+            </figure>
+          ))}
+        </>
       ) : (
         <div className="project-detail-media-placeholder">
           <span>{project.name.es} · 预览图待补充</span>
@@ -495,7 +535,7 @@ function ProjectMedia({ project }: { project: Project }) {
               <span>小程序二维码</span>
             </div>
           )}
-          {qrItems.map((item) => (
+          {subQrItems.map((item) => (
             <div className="project-detail-qr-item" key={item.name.es}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={item.qr} alt={`${item.name.es}二维码`} />
@@ -836,6 +876,12 @@ export default function Home() {
                   </p>
                 </Reveal>
                 <div className="ability-keyboard pointer-events-auto">
+                  {/* Decorative black "sharp" keys — a real C-D-E-F-G run has
+                      sharps between keys 1-2, 2-3 and 4-5 only. Positioned
+                      on the white-key seams by CSS, purely visual. */}
+                  <span className="ability-sharp ability-sharp--c" aria-hidden="true" />
+                  <span className="ability-sharp ability-sharp--d" aria-hidden="true" />
+                  <span className="ability-sharp ability-sharp--f" aria-hidden="true" />
                   {abilityDetails.map((ability, index) => (
                     <button key={ability.label} type="button"
                       className="ability-key"
@@ -1031,14 +1077,7 @@ export default function Home() {
                                     <p>{pick(p.sections.solved, lang)}</p>
                                   </div>
                                 )}
-                                {p.sections.technical && (
-                                  <div className="project-detail__section-card project-detail__tech-card">
-                                    <h4>{lang === "en" ? "Technology & implementation" : "技术与实现"}</h4>
-                                    <div className="project-detail__tech-list">
-                                      {p.sections.technical.split(" · ").map((tech) => <span key={tech}>{label(tech, lang)}</span>)}
-                                    </div>
-                                  </div>
-                                )}
+                                {/* tech-card is rendered outside, in the bottom-right grid cell. */}
                               </div>
                             )}
 
@@ -1063,6 +1102,15 @@ export default function Home() {
                           <div className="practice-detail__media">
                             <ProjectMedia project={p} />
                           </div>
+
+                          {p.sections?.technical && (
+                            <div className="project-detail__section-card project-detail__tech-card">
+                              <h4>{lang === "en" ? "Technology & implementation" : "技术与实现"}</h4>
+                              <div className="project-detail__tech-list">
+                                {p.sections.technical.split(" · ").map((tech) => <span key={tech}>{label(tech, lang)}</span>)}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </Reveal>

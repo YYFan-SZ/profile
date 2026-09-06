@@ -11,11 +11,13 @@ export type PianoPose = {
 };
 
 const CHAPTERS = EXHIBITION_CHAPTERS;
-const POSES: PianoPose[] = [2.7, 2.9, 1.1, 1.1, 1.1, 1.1].map((posX, index) => ({
-  yaw: index === 0 ? -.27 : -.42, pitch: 0, roll: 0, posX, posY: .2, posZ: index === 0 ? .65 : 0, scale: 1.32,
+const POSES: PianoPose[] = Array.from({length:6}, () => ({
+  yaw: -.27, pitch: 0, roll: 0, posX: 2.7, posY: .65, posZ: .65, scale: 1.32,
 }));
-const CAMERAS = [[0, 4, 18.5], [1.6, 3.9, 11.8], [8.5, 4.8, 13.5], [40, 6, -12], [44, 6, -34], [36, 5, -59]];
-const TARGETS = [[0, 1.9, -3], [1.1, .9, -1.3], [6.4, 1.1, -3], [32, 2.5, -30], [36, 2.7, -50], [36, 3.4, -78]];
+// One-way route: overview, keyboard, piano side, promenade, successive islands.
+const CAMERAS = [[0,2.8,20.5],[2.7,3.5,11.8],[10.2,3.3,1.5],[13,3,-6],[22,3.2,-14],[30,3.6,-19],[35,3.8,-40],[36,3.8,-66]];
+const CAMERA_KNOTS = [0,1,2,5,6,7];
+const TARGETS = [[0,3,-3],[.8,1,-1],[4.5,1,-1],[14,1.8,-20],[24,2,-28],[32,2,-33],[33,2,-50],[36,3,-79]];
 
 export type ExhibitionMotion = {
   piano: PianoPose;
@@ -35,6 +37,9 @@ export function useExhibitionMotion(mobile: boolean, backgroundOnly = false) {
   const anchors = useRef<number[]>([]);
   const progress = useRef(0);
   const lookAt = useMemo(() => new THREE.Vector3(0, 1, 0), []);
+  const cameraPath = useMemo(() => new THREE.CatmullRomCurve3(CAMERAS.map(p=>new THREE.Vector3(p[0],p[1],p[2]))), []);
+  const gazePath = useMemo(() => new THREE.CatmullRomCurve3(TARGETS.map(p=>new THREE.Vector3(p[0],p[1],p[2]))), []);
+  const aim = useMemo(() => new THREE.Object3D(), []);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -96,19 +101,21 @@ export function useExhibitionMotion(mobile: boolean, backgroundOnly = false) {
       }
       return;
     }
-    const ca = motion.current.reduced ? CAMERAS[0] : CAMERAS[a];
-    const cb = motion.current.reduced ? CAMERAS[0] : CAMERAS[b];
-    camera.position.set(
-      THREE.MathUtils.lerp(ca[0], cb[0], t),
-      THREE.MathUtils.lerp(ca[1], cb[1], t),
-      THREE.MathUtils.lerp(ca[2], cb[2], t),
-    );
-    lookAt.set(
-      THREE.MathUtils.lerp(TARGETS[a][0], TARGETS[b][0], t),
-      THREE.MathUtils.lerp(TARGETS[a][1], TARGETS[b][1], t),
-      THREE.MathUtils.lerp(TARGETS[a][2], TARGETS[b][2], t),
-    );
-    camera.lookAt(lookAt);
+    // Monotone Hermite timing keeps speed continuous between unequal route spans.
+    const span=CAMERA_KNOTS[b]-CAMERA_KNOTS[a];
+    const previous=a>0?CAMERA_KNOTS[a]-CAMERA_KNOTS[a-1]:span;
+    const next=b<CAMERA_KNOTS.length-1?CAMERA_KNOTS[b+1]-CAMERA_KNOTS[b]:span;
+    const m0=span+previous?2*span*previous/(span+previous):0;
+    const m1=span+next?2*span*next/(span+next):0;
+    const t2=t*t,t3=t2*t;
+    const route=(2*t3-3*t2+1)*CAMERA_KNOTS[a]+(t3-2*t2+t)*m0+(-2*t3+3*t2)*CAMERA_KNOTS[b]+(t3-t2)*m1;
+    const travel = motion.current.reduced ? 0 : route/(CAMERAS.length-1);
+    cameraPath.getPoint(travel,camera.position);
+    gazePath.getPoint(travel,lookAt);
+    aim.position.copy(camera.position);
+    // Object3D looks along +Z, whereas a camera looks along -Z.
+    aim.lookAt(camera.position.clone().multiplyScalar(2).sub(lookAt));
+    camera.quaternion.slerp(aim.quaternion,motion.current.reduced?1:1-Math.exp(-9*Math.min(delta,.05)));
   }, -2);
   return motion;
 }

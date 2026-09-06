@@ -10,8 +10,7 @@ export function chapterAtScroll(scroll: number, anchors: readonly number[]): num
   while (index < anchors.length - 1 && scroll >= anchors[index + 1]) index++;
   if (index === anchors.length - 1) return index;
   const raw = clamp((scroll - anchors[index]) / Math.max(1, anchors[index + 1] - anchors[index]));
-  const t = raw;
-  return index + t * t * (3 - 2 * t);
+  return index + raw;
 }
 
 // Legacy normalized chapter grouping; architecture stays in one shared world.

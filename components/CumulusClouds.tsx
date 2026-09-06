@@ -29,7 +29,7 @@ function Cloud({ position, size, motion }: {position:[number,number,number];size
           float alpha=smoothstep(.18,.48,d+detail)*smoothstep(-.65,-.3,p.y);if(alpha<.003)discard;
           float light=clamp(.65+p.y*.35+(density(p+vec2(-.04,.05))-d)*1.3,0.,1.);
           vec3 color=mix(vec3(.87,.91,.94),vec3(1.,.99,.97),light);color=mix(color,vec3(1.),pow(1.-alpha,2.)*.4);
-          gl_FragColor=vec4(color,alpha*.34);
+          gl_FragColor=vec4(color,alpha*.22);
           #include <colorspace_fragment>
         }`}/>
   </mesh>;

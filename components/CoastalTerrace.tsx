@@ -16,10 +16,6 @@ export default function CoastalTerrace({ motion }: { motion: RefObject<Exhibitio
     if(birds.current)birds.current.rotation.y+=Math.min(delta,.05)*.008;
   });
   return <group>
-    {/* Low distant land provides scale without filling the horizon. */}
-    {[[-38,-112,15,1.5],[2,-128,22,2.1],[64,-143,17,1.2]].map(([x,z,s,h])=><mesh key={x} position={[x,-2.65,z]} scale={[s,h,5]}>
-      <sphereGeometry args={[1,28,12]} /><meshStandardMaterial color="#c1d0cd" roughness={1} />
-    </mesh>)}
     <group ref={boat} position={[-15,-2.01,-51]} rotation={[0,.3,0]} scale={.6}>
       <mesh scale={[2.6,.35,.8]}><sphereGeometry args={[1,24,12]} /><meshStandardMaterial color="#f8f1e4" roughness={.5} /></mesh>
       <mesh position={[0,2.3,0]}><cylinderGeometry args={[.027,.035,4.8,10]} /><meshStandardMaterial color="#bba782" roughness={.5} /></mesh>

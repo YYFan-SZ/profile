@@ -18,17 +18,21 @@ function ribbon(curve: THREE.Curve<THREE.Vector3>, width: number, depth: number,
 export default function GalleryConnections() {
   const parts = useMemo(() => {
     const promenade = new THREE.CatmullRomCurve3([[2,-1.98,-9.8],[2,-1.98,-17],[11,-1.77,-23],[25,-1.77,-25],[36,-1.77,-28],[35,-1.77,-39],[32,-1.77,-47],[34,-1.77,-62],[38,-1.77,-77]].map(p => new THREE.Vector3(p[0],p[1],p[2])));
-    const steps=Array.from({length:4},(_,i)=>{
-      const inner=7.4+i*.4,outer=inner+.48,s=new THREE.Shape();
-      s.absarc(0,0,outer,.85,2.3,false);s.lineTo(Math.cos(2.3)*inner,Math.sin(2.3)*inner);
-      s.absarc(0,0,inner,2.3,.85,true);s.closePath();
-      const geo=new THREE.ExtrudeGeometry(s,{depth:.09,bevelEnabled:true,bevelSize:.014,bevelThickness:.01,bevelSegments:2,curveSegments:40});
-      geo.rotateX(-Math.PI/2);geo.translate(2,-1.89-i*.06,-1);return geo;
+    const steps=Array.from({length:1},()=>{
+      // A single flowing pool edge leaves a narrow water channel beside the dais.
+      const inner=8.1,outer=9.65,start=.38*Math.PI,end=1.44*Math.PI,s=new THREE.Shape();
+      s.absarc(0,0,outer,start,end,false);s.lineTo(Math.cos(end)*inner,Math.sin(end)*inner);
+      s.absarc(0,0,inner,end,start,true);s.closePath();
+      const geo=new THREE.ExtrudeGeometry(s,{depth:.17,bevelEnabled:true,bevelSize:.055,bevelThickness:.035,bevelSegments:4,curveSegments:100});
+      geo.rotateX(-Math.PI/2);geo.translate(2,-2.07,-1);return geo;
     });
     return {path:ribbon(promenade,3.1,.16),steps};
   },[]);
   useEffect(()=>()=>{parts.path.dispose();parts.steps.forEach(g=>g.dispose());},[parts]);
   return <group>
-    {[parts.path,...parts.steps].map((g,i)=><mesh key={i} geometry={g} castShadow receiveShadow><meshStandardMaterial color="#f7ecd9" roughness={.48} side={THREE.DoubleSide}/></mesh>)}
+    {[parts.path,...parts.steps].map((g,i)=><mesh key={i} geometry={g} castShadow receiveShadow><meshPhysicalMaterial color="#f8eee0" roughness={.24} clearcoat={.6} clearcoatRoughness={.2} side={THREE.DoubleSide}/></mesh>)}
+    <mesh position={[9.2,-1.96,-2.2]} receiveShadow castShadow>
+      <cylinderGeometry args={[1.8,1.88,.25,80]}/><meshPhysicalMaterial color="#f8eee0" roughness={.24} clearcoat={.6} clearcoatRoughness={.2}/>
+    </mesh>
   </group>;
 }

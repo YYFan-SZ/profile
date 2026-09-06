@@ -6,7 +6,7 @@
     "room-source"
   ],
   "scripts": {
-    "dev": "npm run build:room && next dev",
+    "dev": "npm run build:room && next dev --webpack",
     "build:room": "npm --workspace room-source run build",
     "build": "npm run build:room && next build",
     "start": "next start",

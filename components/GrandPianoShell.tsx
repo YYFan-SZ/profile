@@ -39,7 +39,9 @@ export default function GrandPianoShell() {
       vertices.push(x, .23, -.98, x + .12, .23, -.98 - length);
     }
     strings.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
-    return { body, lid, soundboard, strings };
+    const propTop = new THREE.Vector3(2.75,0,-1.65).applyAxisAngle(new THREE.Vector3(0,0,1),.53).add(new THREE.Vector3(-1.77,.22,0));
+    const prop = new THREE.TubeGeometry(new THREE.LineCurve3(new THREE.Vector3(.8,.20,-1.65),propTop),1,.025,12,false);
+    return { body, lid, soundboard, strings, prop };
   }, []);
   useEffect(() => () => Object.values(geometry).forEach(g => g.dispose()), [geometry]);
   const ivory = "#fff4de";
@@ -69,14 +71,16 @@ export default function GrandPianoShell() {
           <meshStandardMaterial color={brass} metalness={.68} roughness={.3} />
         </mesh>
       </group>
-      <mesh position={[.65, .84, -1.65]} rotation={[0, 0, -.12]}>
-        <cylinderGeometry args={[.022, .022, 1.45, 12]} />
+      <mesh geometry={geometry.prop} castShadow>
         <meshStandardMaterial color={brass} metalness={.65} roughness={.28} />
       </mesh>
-      {[[-1.48, .38], [1.48, .38], [-.9, -3.42]].map(([x, z]) => (
+      {[[-1.48, .18], [1.48, .18], [-1.05, -3.55]].map(([x, z]) => (
         <group key={`${x}/${z}`} position={[x, -.25, z]}>
-          <mesh position={[0, -.54, 0]} castShadow>
-            <cylinderGeometry args={[.13, .075, 1.08, 8]} />
+          <RoundedBox args={[.28,.16,.28]} radius={.035} smoothness={3} position={[0,-.06,0]} castShadow>
+            <meshPhysicalMaterial color={ivory} roughness={.25} clearcoat={.65}/>
+          </RoundedBox>
+          <mesh position={[0, -.56, 0]} rotation={[0,Math.PI/4,0]} castShadow>
+            <cylinderGeometry args={[.15, .085, 1.04, 4]} />
             <meshPhysicalMaterial color={ivory} roughness={.27} clearcoat={.6} />
           </mesh>
           <mesh position={[0, -1.08, 0]}>
@@ -89,17 +93,20 @@ export default function GrandPianoShell() {
           </mesh>
         </group>
       ))}
-      {[-.19, .19].map(x => (
-        <RoundedBox key={x} args={[.055, .8, .055]} radius={.012} smoothness={2}
-          position={[x, -.65, -.06]} rotation={[-.13, 0, 0]}>
-          <meshStandardMaterial color={ivory} roughness={.3} />
+      <RoundedBox args={[.62,.14,.23]} radius={.035} smoothness={3} position={[0,-.31,-.19]} castShadow>
+        <meshPhysicalMaterial color={ivory} roughness={.25} clearcoat={.6}/>
+      </RoundedBox>
+      {[-.17, .17].map(x => (
+        <RoundedBox key={x} args={[.09, .84, .09]} radius={.025} smoothness={3}
+          position={[x, -.77, -.18]} rotation={[-.07, 0, -Math.sign(x)*.12]} castShadow>
+          <meshPhysicalMaterial color={ivory} clearcoat={.6} roughness={.25} />
         </RoundedBox>
       ))}
-      <RoundedBox args={[.66, .1, .2]} radius={.025} smoothness={2} position={[0, -1.02, .03]}>
+      <RoundedBox args={[.52, .12, .22]} radius={.035} smoothness={3} position={[0, -1.21, -.10]} castShadow>
         <meshStandardMaterial color={ivory} roughness={.3} />
       </RoundedBox>
-      {[-.2, 0, .2].map(x => (
-        <RoundedBox key={x} args={[.11, .035, .3]} radius={.035} smoothness={3} position={[x, -1.12, .18]}>
+      {[-.16, 0, .16].map(x => (
+        <RoundedBox key={x} args={[.095, .04, .23]} radius={.018} smoothness={3} position={[x, -1.29, .045]} rotation={[-.08,0,0]} castShadow>
           <meshStandardMaterial color={brass} metalness={.7} roughness={.24} />
         </RoundedBox>
       ))}

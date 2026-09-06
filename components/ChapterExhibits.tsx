@@ -4,8 +4,8 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { ExhibitionMotion } from "./ExhibitionStage";
 
-const SKY = ["#80bee9", "#a5cbe5", "#a8cfcf", "#b7cbe6", "#e9c6b4", "#91cfee"];
-const HORIZON = ["#fff3d8", "#fff0d9", "#eff7ea", "#faf0ee", "#fff0df", "#f5fcff"];
+const SKY = ["#a9c7df", "#c3c5e1", "#d9bcd5", "#e5b5c9", "#eac1cb", "#b6d3e5"];
+const HORIZON = ["#f4dfdd", "#f4dddd", "#f3d5de", "#f8d9df", "#f8e1d8", "#f8e8e5"];
 export function ChapterSky({ motion }: { motion: RefObject<ExhibitionMotion> }) {
   const shader = useRef<THREE.ShaderMaterial>(null);
   const fog = useRef<THREE.Fog>(null);
@@ -28,9 +28,9 @@ export function ChapterSky({ motion }: { motion: RefObject<ExhibitionMotion> }) 
         fragmentShader={`varying vec3 v; uniform vec3 sky; uniform vec3 horizon; uniform float time;
           float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
           float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1)),f.x),f.y);}
-          void main(){vec3 d=normalize(v);float h=d.y;vec3 c=mix(horizon,sky,smoothstep(-.03,.22,h));
+          void main(){vec3 d=normalize(v);float h=d.y;vec3 c=mix(horizon,sky,smoothstep(-.08,.3,h));
           vec2 q=d.xz/max(.16,h)*2.8+vec2(time*.004,0.);float n=noise(q)*.58+noise(q*2.1)*.27+noise(q*4.2)*.15;
-          float cloud=smoothstep(.7,.9,n)*smoothstep(.05,.2,h)*.06;c=mix(c,vec3(1.,.99,.96),cloud);
+          float cloud=smoothstep(.55,.82,n)*smoothstep(.02,.16,h)*.18;c=mix(c,vec3(1.,.95,.95),cloud);
           float sun=pow(max(0.,dot(d,normalize(vec3(-.4,.28,-1.)))),320.);c=mix(c,vec3(1.,.98,.88),sun*.75);
           gl_FragColor=vec4(c,1.);
           #include <colorspace_fragment>
@@ -43,7 +43,7 @@ export function ChapterSky({ motion }: { motion: RefObject<ExhibitionMotion> }) 
 export function ChapterExhibits({ motion }: { motion: RefObject<ExhibitionMotion> }) {
   const reel = useRef<THREE.Group>(null);
   const reelStand = useRef<THREE.Group>(null);
-  const reelCenter = useMemo(() => new THREE.Vector3(38, .3, -28), []);
+  const reelCenter = useMemo(() => new THREE.Vector3(36.2, -.1, -31), []);
   const mailCenter = useMemo(() => new THREE.Vector3(40.2, 3.4, -77), []);
   const mail = useRef<THREE.Group>(null);
   const geometry = useMemo(() => {
@@ -56,7 +56,7 @@ export function ChapterExhibits({ motion }: { motion: RefObject<ExhibitionMotion
   }, []);
   useEffect(() => () => Object.values(geometry).forEach(g => g.dispose()), [geometry]);
   useFrame((state, delta) => {
-    if (reelStand.current) reelStand.current.visible = state.camera.position.distanceToSquared(reelCenter) < 34 * 34;
+    if (reelStand.current) reelStand.current.visible = motion.current.progress > .48 && motion.current.progress < .79 && state.camera.position.distanceToSquared(reelCenter) < 34 * 34;
     if (mail.current) mail.current.visible = state.camera.position.distanceToSquared(mailCenter) < 34 * 34;
     if (motion.current.reduced) return;
     if (reel.current) reel.current.rotation.z += Math.min(delta, .05) * .09;
@@ -64,7 +64,7 @@ export function ChapterExhibits({ motion }: { motion: RefObject<ExhibitionMotion
   });
   return <>
     <pointLight position={[39, 8, -67]} intensity={60} distance={25} decay={2} color="#fffdf3" />
-    <group ref={reelStand} position={[38, .3, -28]} rotation={[0, .6, 0]}>
+    <group ref={reelStand} position={[36.2, -.1, -31]} rotation={[0, .14, 0]}>
       <mesh position={[0, -1.65, 0]} receiveShadow><cylinderGeometry args={[2.25, 2.45, .3, 64]} /><meshStandardMaterial color="#f7ecd9" roughness={.5} /></mesh>
       <mesh position={[0, .1, 0]} castShadow><cylinderGeometry args={[.16, .26, 3.3, 20]} /><meshStandardMaterial color="#c8ae7f" metalness={.45} roughness={.3} /></mesh>
       <group ref={reel} position={[0, 2.35, 0]}>

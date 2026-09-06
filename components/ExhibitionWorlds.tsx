@@ -11,7 +11,6 @@ import CoastalTerrace from "./CoastalTerrace";
 import CurvedMusicStair from "./CurvedMusicStair";
 import GardenPortal from "./GardenPortal";
 import ColonnadeIsland from "./ColonnadeIsland";
-import CumulusClouds from "./CumulusClouds";
 
 const IVORY = "#f4e5cc";
 const GOLD = "#c8ae7f";
@@ -24,16 +23,16 @@ function Stone({ color = IVORY }: { color?: string }) {
 function Orrery({ motion }: { motion: RefObject<ExhibitionMotion> }) {
   const rings = useRef<THREE.Group>(null);
   const exhibit = useRef<THREE.Group>(null);
-  const center = useMemo(() => new THREE.Vector3(30, 2.7, -47), []);
-  useFrame(({ camera }, delta) => { if (exhibit.current) exhibit.current.visible = camera.position.distanceToSquared(center) < 34 * 34; if (rings.current && !motion.current.reduced && motion.current.visible) rings.current.rotation.y += Math.min(delta, .05) * .12; });
-  return <group ref={exhibit} position={[30, 2.7, -47]}>
+  const center = useMemo(() => new THREE.Vector3(27.8, 1.42, -54), []);
+  useFrame(({ camera }, delta) => { if (exhibit.current) exhibit.current.visible = motion.current.progress > .7 && camera.position.distanceToSquared(center) < 34 * 34; if (rings.current && !motion.current.reduced && motion.current.visible) rings.current.rotation.y += Math.min(delta, .05) * .12; });
+  return <group ref={exhibit} position={[27.8, 1.42, -54]} scale={.72}>
     <mesh position={[0, -4.4, 0]} receiveShadow><cylinderGeometry args={[3.7, 4, .3, 80]} /><Stone /></mesh>
     <mesh position={[0, -2.8, 0]} castShadow><cylinderGeometry args={[.35, .6, 3, 24]} /><Stone /></mesh>
     <group ref={rings} rotation={[.22, 0, .16]}>
       {[0, 1, 2].map(i => <mesh key={i} rotation={[Math.PI / 2 + i * .55, i * .8, .2]} castShadow>
-        <torusGeometry args={[2.4 + i * .18, .035, 10, 100]} /><meshStandardMaterial color={GOLD} metalness={.85} roughness={.22} />
+        <torusGeometry args={[2.4 + i * .18, .052, 14, 120]} /><meshStandardMaterial color="#ccb68b" metalness={.55} roughness={.32} />
       </mesh>)}
-      <mesh><sphereGeometry args={[.68, 32, 24]} /><meshPhysicalMaterial color="#e6d3ad" metalness={.45} roughness={.22} clearcoat={1} /></mesh>
+      <mesh><sphereGeometry args={[.82, 48, 32]} /><meshPhysicalMaterial color="#eee0c8" metalness={.22} roughness={.36} clearcoat={.45} /></mesh>
       <mesh position={[2.48, .35, 0]}><sphereGeometry args={[.18, 16, 12]} /><meshStandardMaterial color="#fff2d7" metalness={.3} roughness={.25} /></mesh>
     </group>
   </group>;
@@ -58,9 +57,9 @@ function Water({ motion, mobile }: { motion: RefObject<ExhibitionMotion>; mobile
   });
   return <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, FLOOR - .38, -30]} receiveShadow>
     <planeGeometry args={[380, 380]} />
-    {mobile ? <meshStandardMaterial ref={material} color="#d6e6e4" metalness={.35} roughness={.32} normalMap={normal} normalScale={new THREE.Vector2(.25, .25)} /> :
-      <MeshReflectorMaterial resolution={384} mirror={.45} mixStrength={.65} blur={[180, 60]} mixBlur={.65}
-        color="#d6e6e4" metalness={.3} roughness={.3} normalMap={normal} normalScale={new THREE.Vector2(.22, .22)} />}
+    {mobile ? <meshStandardMaterial ref={material} color="#94b6c7" fog={false} metalness={.18} roughness={.26} normalMap={normal} normalScale={new THREE.Vector2(.17, .12)} /> :
+      <MeshReflectorMaterial resolution={384} mirror={.32} mixStrength={.8} blur={[90, 30]} mixBlur={.45}
+        color="#94b6c7" fog={false} metalness={.18} roughness={.24} normalMap={normal} normalScale={new THREE.Vector2(.16, .11)} />}
   </mesh>;
 }
 
@@ -68,23 +67,30 @@ export function ExhibitionStage({ motion, mobile, pianoOnly = false }: {
   motion: RefObject<ExhibitionMotion>; mobile: boolean; backgroundOnly: boolean; pianoOnly?: boolean;
 }) {
   return <>
-    <ambientLight intensity={.95} color="#fff3dc" />
-    <hemisphereLight intensity={1.3} color="#f5fbff" groundColor="#d6c6a9" />
-    <directionalLight position={[-12, 24, 8]} intensity={3.2} color="#fff0d1" castShadow={!mobile}
+    <ambientLight intensity={.85} color="#fff8ef" />
+    <hemisphereLight intensity={1.2} color="#edf5ff" groundColor="#e0d2c3" />
+    <directionalLight position={[-12, 24, 8]} intensity={3.1} color="#fff0dd" castShadow={!mobile}
       shadow-mapSize={[1024, 1024]} shadow-bias={-.001} shadow-normalBias={.025}
       shadow-camera-left={-25} shadow-camera-right={25} shadow-camera-top={20} shadow-camera-bottom={-30} shadow-camera-far={90} />
     <directionalLight position={[10, 10, -15]} intensity={1.2} color="#ffffff" />
     {!pianoOnly && <>
       <ChapterSky motion={motion} />
-      <CumulusClouds motion={motion} />
       <ChapterExhibits motion={motion} />
       <Water motion={motion} mobile={mobile} />
       {/* One connected terrace stays in world coordinates throughout the scroll. */}
-      <group position={[2, FLOOR, -1]}>
-        {[0, 1, 2].map(i => <mesh key={i} position={[0, -.12 - i * .12, 0]} receiveShadow castShadow>
-          <cylinderGeometry args={[7.5 + i * .35, 7.5 + i * .35, .16, 100]} /><Stone color={i === 0 ? "#f8edd9" : IVORY} />
-        </mesh>)}
-        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -.025, 0]}><ringGeometry args={[6.9, 6.925, 100]} /><meshStandardMaterial color={GOLD} metalness={.5} roughness={.4} /></mesh>
+      <group position={[2.7, FLOOR, -.7]}>
+        <mesh position={[0,.173,0]} receiveShadow castShadow>
+          <cylinderGeometry args={[5.7,5.7,.48,160,1,true]}/>
+          <meshPhysicalMaterial color="#eee3d7" roughness={.28} clearcoat={.45} clearcoatRoughness={.22}/>
+        </mesh>
+        <mesh rotation={[-Math.PI/2,0,0]} position={[0,.413,0]} receiveShadow>
+          <circleGeometry args={[5.7,160]}/>
+          <meshPhysicalMaterial color="#fff4ea" roughness={.3} metalness={0} clearcoat={.4} clearcoatRoughness={.28}/>
+        </mesh>
+        <mesh position={[0,-.19,0]} receiveShadow>
+          <cylinderGeometry args={[5.55,5.60,.25,160]}/>
+          <meshStandardMaterial color="#d5cbbf" roughness={.38}/>
+        </mesh>
       </group>
       <GalleryConnections />
       <CoastalTerrace motion={motion} />
@@ -92,7 +98,7 @@ export function ExhibitionStage({ motion, mobile, pianoOnly = false }: {
       <GardenPortal />
       <ColonnadeIsland />
       <Orrery motion={motion} />
-      {[[36, -28, 7], [32, -47, 7]].map(([x, z, radius]) => (
+      {[[36, -28, 7], [32, -54, 7]].map(([x, z, radius]) => (
         <mesh key={z} position={[x, FLOOR - .14, z]} receiveShadow><cylinderGeometry args={[radius, radius, .3, 80]} /><Stone color="#fff9eb" /></mesh>
       ))}
     </>}
