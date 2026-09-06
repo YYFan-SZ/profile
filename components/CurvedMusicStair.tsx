@@ -2,10 +2,12 @@
 import { useEffect, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { portalRadius, portalGalleryJoin } from "@/lib/exhibition-architecture";
+import { portalRadius } from "@/lib/exhibition-architecture";
+import { useEntranceLayout } from "@/lib/use-entrance-layout";
 
 export default function CurvedMusicStair() {
   const aspect = useThree(s => s.size.width / Math.max(1, s.size.height));
+  const {join:portalJoin}=useEntranceLayout();
   const parts = useMemo(() => {
     const stepCount = 48;
     // A broad architectural sweep stays on the right, with no spiral return.
@@ -51,14 +53,14 @@ export default function CurvedMusicStair() {
     const rails=[...curves.map(c=>new THREE.TubeGeometry(c,420,.032,10,false)),new THREE.TubeGeometry(finish,4,.032,10,false)];
     const posts=curves.flatMap(c=>{const n=Math.ceil(c.getLength()/.72);return Array.from({length:n+1},(_,i)=>c.getPointAt(i/n));});
     posts.push(...[.25,.5,.75].map(t=>finish.getPoint(t)));
-    const join = new THREE.Vector3(portalGalleryJoin(aspect),4.97,-9.75);
+    const join = new THREE.Vector3(portalJoin,4.97,-9.75);
     const shoulder = gallery.getPoint(.075);
     const span = join.clone().sub(shoulder);
     return {deck,steps,rails,posts,join,
       shoulderCenter: shoulder.clone().add(join).multiplyScalar(.5),
       shoulderLength: span.length()+.5, shoulderYaw: -Math.atan2(span.z,span.x),
       columns:[.43,.64,.83,1].map(t=>gallery.getPoint(t))};
-  },[aspect]);
+  },[aspect,portalJoin]);
   useEffect(()=>()=>[parts.deck,...parts.steps,...parts.rails].forEach(g=>g.dispose()),[parts]);
   return <group>
     {/* The landing bears into a solid pier that physically meets the arch. */}
@@ -68,6 +70,12 @@ export default function CurvedMusicStair() {
     <mesh position={[parts.join.x,1.68,parts.join.z]} castShadow receiveShadow>
       <boxGeometry args={[1.05,6.86,2.1]}/><meshStandardMaterial color="#fff2dc" roughness={.4}/>
     </mesh>
+    {[-1.42,4.62].map(y=><mesh key={y} position={[parts.join.x,y,parts.join.z]}>
+      <boxGeometry args={[1.12,.055,2.17]}/><meshStandardMaterial color="#d5c29e" metalness={.3} roughness={.42}/>
+    </mesh>)}
+    {[-.32,0,.32].map(x=><mesh key={x} position={[parts.join.x+x,1.6,parts.join.z+1.054]}>
+      <boxGeometry args={[.065,5.65,.035]}/><meshStandardMaterial color="#c4af8d" roughness={.48}/>
+    </mesh>)}
     {[parts.deck,...parts.steps].map((g,i)=><mesh key={i} geometry={g} castShadow receiveShadow><meshStandardMaterial color="#f8edd9" roughness={.42} side={THREE.DoubleSide}/></mesh>)}
     {parts.rails.map((g,i)=><mesh key={i} geometry={g}><meshStandardMaterial color="#c8ae7f" metalness={.48} roughness={.32}/></mesh>)}
     {parts.posts.map((p,i)=><mesh key={i} position={[p.x,p.y-.52,p.z]}><cylinderGeometry args={[.017,.017,1.04,6]}/><meshStandardMaterial color="#c8ae7f" metalness={.42} roughness={.35}/></mesh>)}
@@ -75,6 +83,14 @@ export default function CurvedMusicStair() {
       <mesh position={[0,3.12,0]} castShadow receiveShadow><cylinderGeometry args={[.29,.37,6.24,24]}/><meshStandardMaterial color="#fff1dc" roughness={.48}/></mesh>
       <mesh position={[0,6.28,0]}><cylinderGeometry args={[.58,.29,.32,32]}/><meshStandardMaterial color="#fff1dc" roughness={.48}/></mesh>
       <mesh position={[0,.09,0]}><cylinderGeometry args={[.53,.64,.18,32]}/><meshStandardMaterial color="#f5e5cb" roughness={.5}/></mesh>
+      {Array.from({length:12},(_,j)=><group key={`flute-${j}`} rotation={[0,j*Math.PI/6,0]}>
+        <mesh position={[.343,3.12,0]} rotation={[0,0,.01282]}>
+          <cylinderGeometry args={[.032,.032,5.55,8]}/><meshStandardMaterial color="#c4af8d" roughness={.48}/>
+        </mesh>
+      </group>)}
+      {[.3,6.08].map(y=><mesh key={y} position={[0,y,0]} rotation={[Math.PI/2,0,0]}>
+        <torusGeometry args={[y<1?.37:.3,.022,8,40]}/><meshStandardMaterial color="#d5c29e" metalness={.3} roughness={.42}/>
+      </mesh>)}
     </group>)}
   </group>;
 }

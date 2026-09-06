@@ -56,36 +56,41 @@ body:has(.infinite-exhibition) .cursor-halo { opacity: .18; filter: blur(15px); 
 .infinite-exhibition main > [data-kb-section="hero"] {
   position: relative;
   min-height: max(740px, 105svh);
-  padding-top: max(12rem, 21.5svh);
+  padding-top: max(13rem, 22.5svh);
   padding-bottom: 5rem;
   justify-content: flex-start;
 }
 .infinite-exhibition .hero-profile {
   width: 46%;
-  max-width: 43rem;
+  max-width: 38rem;
   margin-top: 0;
+  /* Nudged right: base-level rule so nothing downstream can zero it out. */
+  margin-left: clamp(7.5rem, 10vw, 12rem);
 }
 .infinite-exhibition .hero-profile::before {
   content: "";
   position: absolute;
-  inset: -3rem -2rem -2rem -5rem;
+  /* Kept tight + faint so the 3D garden portal arch behind the section
+     stays visible — the old oversized glow (inset -3/-5rem, opacity .7)
+     was washing out the whole left half of the arch. */
+  inset: -1.25rem -1rem -1rem -1.5rem;
   z-index: -1;
   pointer-events: none;
   background: radial-gradient(ellipse, var(--exhibition-paper), transparent 72%);
   filter: blur(28px);
-  opacity: .7;
+  opacity: .4;
 }
 .infinite-exhibition .hero-profile__eyebrow {
   margin-bottom: 1.65rem;
   color: var(--ice-400);
-  font-size: .875rem;
+  font-size: clamp(.9rem, 1.05vw, 1.5rem);
   letter-spacing: .22em;
 }
 .infinite-exhibition .hero-profile__name {
   width: 100%;
   max-width: none;
   font-family: "Helvetica Neue", Arial, sans-serif;
-  font-size: clamp(4rem, 5.7vw, 6.6rem);
+  font-size: clamp(4rem, 5.5vw, 7rem);
   font-weight: 500;
   line-height: 1.04;
   letter-spacing: -.065em;
@@ -96,7 +101,7 @@ body:has(.infinite-exhibition) .cursor-halo { opacity: .18; filter: blur(15px); 
 .infinite-exhibition .hero-profile__name .hero-word > span { white-space: normal; }
 .infinite-exhibition .hero-profile__content {
   width: 100%;
-  grid-template-columns: clamp(5rem, 7.5vw, 8rem) minmax(0, 1fr);
+  grid-template-columns: clamp(5rem, 7vw, 9rem) minmax(0, 1fr);
   gap: clamp(1.2rem, 2vw, 2rem);
   margin-top: clamp(2rem, 4vh, 3rem);
   align-items: start;
@@ -118,18 +123,18 @@ body:has(.infinite-exhibition) .cursor-halo { opacity: .18; filter: blur(15px); 
   flex-wrap: wrap;
   gap: .35rem;
   margin-top: .6rem;
-  font-size: .625rem;
+  font-size: clamp(.65rem, .75vw, 1rem);
   letter-spacing: .09em;
 }
 .infinite-exhibition .hero-profile__role {
   color: var(--ice-100);
-  font-size: .875rem;
+  font-size: clamp(.9rem, 1.05vw, 1.5rem);
   line-height: 1.6;
   font-weight: 600;
   letter-spacing: .01em;
 }
 .infinite-exhibition .hero-profile__intro {
-  font-size: 1rem;
+  font-size: clamp(1rem, 1.2vw, 1.7rem);
   line-height: 1.85;
   margin-bottom: 1.5rem;
   max-width: 27rem;
@@ -137,7 +142,7 @@ body:has(.infinite-exhibition) .cursor-halo { opacity: .18; filter: blur(15px); 
 .infinite-exhibition .hero-profile__facts { display: flex; gap: 1.7rem; padding-top: .85rem; }
 .infinite-exhibition .hero-profile__facts > div { display: flex; gap: .75rem; min-height: 1.5rem; border: 0; }
 .infinite-exhibition .hero-profile__facts dt,
-.infinite-exhibition .hero-profile__facts dd { font-size: .875rem; }
+.infinite-exhibition .hero-profile__facts dd { font-size: clamp(.9rem, 1.05vw, 1.5rem); }
 .infinite-exhibition .section-heading__kicker {
   font-size: .75rem;
   line-height: 1.5;
@@ -257,7 +262,7 @@ body:has(.infinite-exhibition) .cursor-halo { opacity: .18; filter: blur(15px); 
 .infinite-exhibition a:focus-visible { outline: 2px solid var(--ice-500); outline-offset: 6px; }
 
 @media (min-width: 768px) {
-  .infinite-exhibition .hero-profile { margin-left: clamp(6.5rem, 9vw, 11rem); }
+  .infinite-exhibition .hero-profile { margin-left: clamp(7.5rem, 10vw, 12rem); }
 }
 
 @media (min-width: 768px) and (max-width: 1100px) {
@@ -794,4 +799,87 @@ body:has(.infinite-exhibition) .cursor-halo { opacity: .18; filter: blur(15px); 
 @media (max-width: 767px) {
   .infinite-exhibition .section-space--stack > div > .ability-panel { width: 100%; padding: 1.35rem; border-radius: 20px; }
   .infinite-exhibition .ability-key { min-height: 48px; }
+}
+
+/* Shared with the measured entrance opening: bounded copy, responsive whitespace. */
+.infinite-exhibition .hero-profile {
+  position: relative; isolation: isolate; min-width: 0;
+}
+.infinite-exhibition .hero-profile::before {
+  content: ""; display: block; position: absolute;
+  inset: -2.5rem -3rem; z-index: -1; pointer-events: none;
+  background: transparent;
+  opacity: 1; filter: none;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  -webkit-mask-image: radial-gradient(ellipse, #000 45%, transparent 75%);
+  mask-image: radial-gradient(ellipse, #000 45%, transparent 75%);
+}
+.infinite-exhibition .hero-profile__eyebrow {
+  font-size: clamp(.875rem, .85vw, 1.05rem); margin-bottom: 1.35rem; color: #79634b;
+}
+.infinite-exhibition .hero-profile__name {
+  font-size: clamp(3rem, 4.8vw, 5.5rem); line-height: 1.08;
+  letter-spacing: -.065em; overflow-wrap: normal;
+}
+.infinite-exhibition .hero-profile__content {
+  display: grid; grid-template-columns: clamp(5rem, 6.5vw, 7.5rem) minmax(0,1fr);
+  gap: clamp(1rem, 1.6vw, 1.75rem); margin-top: clamp(1.5rem, 3vh, 2.25rem);
+}
+.infinite-exhibition .hero-profile__details {
+  min-width: 0; position: relative; isolation: isolate;
+  text-shadow: 0 1px 3px rgba(248,248,244,.8);
+}
+.infinite-exhibition .hero-profile__details::before {
+  content: ""; position: absolute; inset: -.8rem -1rem -1rem;
+  z-index: -1; pointer-events: none; border-radius: 24px;
+  background: transparent; filter: none;
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  -webkit-mask-image: radial-gradient(ellipse, #000 55%, transparent 100%);
+  mask-image: radial-gradient(ellipse, #000 55%, transparent 100%);
+}
+.infinite-exhibition .hero-profile__role { font-size: clamp(.95rem, 1vw, 1.1rem); color: #514432; }
+.infinite-exhibition .hero-profile__intro {
+  max-width: none; font-size: clamp(.95rem, 1.05vw, 1.1rem);
+  line-height: 1.85; color: #665440; margin-bottom: 1rem; overflow-wrap: break-word;
+}
+.infinite-exhibition .hero-profile__portrait figcaption { font-size: .7rem; }
+.infinite-exhibition .hero-profile__facts { flex-wrap: wrap; gap: .7rem 1.5rem; }
+.infinite-exhibition .hero-profile__facts dt,
+.infinite-exhibition .hero-profile__facts dd { font-size: .95rem; }
+@media (min-width: 768px) {
+  .infinite-exhibition main > [data-kb-section="hero"] {
+    padding-left: clamp(2rem, 14.5vw, 16.5rem);
+    padding-top: clamp(10rem, 28.5svh, 21rem);
+    padding-bottom: 4rem; min-height: max(720px, 100svh);
+  }
+  .infinite-exhibition .hero-profile {
+    display: block; width: min(46vw, 42rem); max-width: 42rem; margin: 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  .infinite-exhibition main > [data-kb-section="hero"] { padding-left: 9vw; }
+  .infinite-exhibition .hero-profile { width: 53vw; }
+  .infinite-exhibition .hero-profile__name { font-size: clamp(2.75rem, 5.2vw, 3.6rem); }
+  .infinite-exhibition .hero-profile__content { grid-template-columns: 4.75rem minmax(0,1fr); }
+}
+@media (min-width: 768px) and (max-height: 720px) {
+  .infinite-exhibition main > [data-kb-section="hero"] { padding-top: 8rem; }
+  .infinite-exhibition .hero-profile__name { font-size: clamp(3rem, 4.6vw, 4.5rem); }
+  .infinite-exhibition .hero-profile__content { margin-top: 1.25rem; }
+}
+@media (max-width: 767px) {
+  .infinite-exhibition .hero-profile { display: contents; margin: 0; }
+  .infinite-exhibition .hero-profile::before { display: none; }
+  .infinite-exhibition .hero-profile__name { font-size: clamp(2.6rem, 8.7vw, 4.2rem); }
+  .infinite-exhibition .hero-profile__content {
+    grid-template-columns: 4.5rem minmax(0,1fr); gap: 1rem; margin-top: 0;
+    padding: 1rem .5rem;
+    background: transparent;
+  }
+}
+@media (max-width: 420px) {
+  .infinite-exhibition .hero-profile__content { grid-template-columns: 1fr; }
+  .infinite-exhibition .hero-profile__portrait { width: 5rem; }
 }

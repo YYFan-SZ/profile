@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
+import { heroCameraPosition } from "@/lib/exhibition-architecture";
 import * as THREE from "three";
 import { EXHIBITION_CHAPTERS, chapterAtScroll, sceneAtChapter } from "@/lib/exhibition-timeline";
 
@@ -30,6 +31,7 @@ export type ExhibitionMotion = {
 // Real document positions are measured again after project details, language,
 // images, fonts or viewport size change. CSS visual order is respected.
 export function useExhibitionMotion(mobile: boolean, backgroundOnly = false) {
+  const aspect=useThree(s=>s.size.width/Math.max(1,s.size.height));
   const motion = useRef<ExhibitionMotion>({
     piano: { ...POSES[0] }, progress: 0, scene: 0, reduced: false, visible: true,
   });
@@ -37,7 +39,7 @@ export function useExhibitionMotion(mobile: boolean, backgroundOnly = false) {
   const anchors = useRef<number[]>([]);
   const progress = useRef(0);
   const lookAt = useMemo(() => new THREE.Vector3(0, 1, 0), []);
-  const cameraPath = useMemo(() => new THREE.CatmullRomCurve3(CAMERAS.map(p=>new THREE.Vector3(p[0],p[1],p[2]))), []);
+  const cameraPath = useMemo(() => new THREE.CatmullRomCurve3([heroCameraPosition(aspect),...CAMERAS.slice(1)].map(p=>new THREE.Vector3(p[0],p[1],p[2]))), [aspect]);
   const gazePath = useMemo(() => new THREE.CatmullRomCurve3(TARGETS.map(p=>new THREE.Vector3(p[0],p[1],p[2]))), []);
   const aim = useMemo(() => new THREE.Object3D(), []);
 

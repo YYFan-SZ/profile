@@ -10,6 +10,8 @@ export default function CoastalTerrace({ motion }: { motion: RefObject<Exhibitio
   const boatSail=useMemo(()=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([.03,.35,0,.03,4.6,0,2.2,.35,.08],3));g.computeVertexNormals();return g;},[]);
   useEffect(()=>()=>boatSail.dispose(),[boatSail]);
   useFrame(({clock},delta)=>{
+    if(boat.current)boat.current.visible=motion.current.progress>.2;
+    if(birds.current)birds.current.visible=motion.current.progress>.2;
     if(motion.current.reduced || !motion.current.visible)return;
     const t=clock.elapsedTime;
     if(boat.current){boat.current.position.y=-2.01+Math.sin(t*.6)*.08;boat.current.rotation.z=Math.sin(t*.45)*.018;}
