@@ -1,4 +1,4 @@
-export const EXHIBITION_CHAPTERS = ["hero", "stack", "projects", "content", "experience", "contact"] as const;
+export const EXHIBITION_CHAPTERS = ["hero", "stack", "stairs", "content", "descent", "projects", "experience", "weekly", "contact"] as const;
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 

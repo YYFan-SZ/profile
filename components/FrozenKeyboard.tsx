@@ -285,6 +285,7 @@ function createExtrudedBox(
 }
 
 const PIANO_PROJECT_LABELS: readonly (string | null)[] = ["五迷", "途说", "梦小渡", "Reset", "工具", null, null, null, null, null];
+const PIANO_PROJECT_LABELS_EN: readonly (string | null)[] = ["Mayday", "Tusuo", "Meng Xiaodu", "Reset", "Utilities", null, null, null, null, null];
 const PIANO_ABILITY_LABELS: readonly (string | null)[] = [
   "产品开发",
   null,
@@ -823,7 +824,7 @@ function Keyboard({ mobile, motion }: { mobile: boolean; motion?: React.RefObjec
       const id = `white-${index}`;
       const slot = Math.min(4, Math.floor(index / (WHITE_KEY_COUNT / 5)));
       const showLabel = index === Math.floor((slot + .5) * WHITE_KEY_COUNT / 5);
-      const projectLabel = PIANO_PROJECT_LABELS[slot];
+      const projectLabel = lang === "en" ? PIANO_PROJECT_LABELS_EN[slot] : PIANO_PROJECT_LABELS[slot];
       const abilityLabelRaw = PIANO_ABILITY_LABELS[slot * 2];
       const abilityLabel = abilityLabelRaw && lang === "en" ? PIANO_ABILITY_LABELS_EN[abilityLabelRaw] : abilityLabelRaw;
       const abilityIndex = PIANO_ABILITY_INDEXES[slot * 2];
@@ -906,7 +907,7 @@ function Keyboard({ mobile, motion }: { mobile: boolean; motion?: React.RefObjec
   return (
     <>
       <group ref={ref}>
-        <mesh geometry={baseGeom} castShadow receiveShadow>
+        {!motion && <mesh geometry={baseGeom} castShadow receiveShadow>
           {/* Solid matte plastic — color prop controls the tone directly.
               No transmission/clearcoat so the white environment doesn't
               wash it out to grey. */}
@@ -915,9 +916,6 @@ function Keyboard({ mobile, motion }: { mobile: boolean; motion?: React.RefObjec
             roughness={motion ? 0.36 : 0.6}
             metalness={motion ? 0.22 : 0}
           />
-        </mesh>
-        {motion && <mesh geometry={baseGeom} position={[0, -.115, 0]} scale={[1.018, .09, 1.018]} castShadow>
-          <meshStandardMaterial color="#c8a66a" roughness={.32} metalness={.68} />
         </mesh>}
         {motion && <GrandPianoShell />}
         {keycaps}
@@ -984,7 +982,7 @@ export default function FrozenKeyboard({
           ? { position: [0, 2.0, 9.0], fov: 26 }
           : { position: [1.5, 3.6, 11], fov: 22 }
       }
-      dpr={mobile ? (backgroundOnly ? 1 : [1, 1.25]) : [1, 1.6]}
+      dpr={mobile ? (backgroundOnly ? 1 : [1, 1.25]) : [1, 1.25]}
       gl={{
         antialias: true,
         alpha: true,

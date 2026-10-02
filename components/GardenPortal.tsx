@@ -13,13 +13,13 @@ export default function GardenPortal() {
     outline.absellipse(center,spring,outerX,outerY,Math.PI,0,true,0);
     outline.lineTo(center+outerX,0);outline.lineTo(center+innerX,0);outline.lineTo(center+innerX,spring);
     outline.absellipse(center,spring,innerX,innerY,0,Math.PI,false,0);outline.lineTo(center-innerX,0);outline.closePath();
-    const arch=new THREE.ExtrudeGeometry(outline,{depth:2.1,bevelEnabled:true,bevelSize:.32,bevelThickness:.22,bevelSegments:10,curveSegments:144});
+    const arch=new THREE.ExtrudeGeometry(outline,{depth:2.1,bevelEnabled:true,bevelSize:.4,bevelThickness:.28,bevelSegments:12,curveSegments:160});
     return {arch,center,z,rx};
   },[radius,innerX,innerY]);
   useEffect(()=>()=>parts.arch.dispose(),[parts]);
   return <group>
     <group position={[0,-1.75,parts.z]}>
-      <mesh geometry={parts.arch} castShadow receiveShadow><meshStandardMaterial color="#fff2dc" roughness={.36}/></mesh>
+      <mesh geometry={parts.arch} castShadow receiveShadow><meshPhysicalMaterial color="#f7f0e5" roughness={.32} clearcoat={.28} clearcoatRoughness={.4}/></mesh>
       {[parts.center-parts.rx+.9,parts.center+parts.rx-.9].map(x=><group key={x} position={[x,0,1]}>
         <mesh position={[0,.16,0]} castShadow><boxGeometry args={[2,.3,2.65]}/><meshStandardMaterial color="#f1e4cd" roughness={.5}/></mesh>
       </group>)}

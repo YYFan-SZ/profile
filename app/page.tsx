@@ -1,16 +1,20 @@
 "use client";
 
 import "./exhibition.css";
+import "./exhibition-transition.css";
+import "./content-orbit.css";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLenis } from "lenis/react";
 import FrozenKeyboard from "@/components/FrozenKeyboard";
 import SmoothScroll from "@/components/smooth-scroll";
 import Reveal from "@/components/Reveal";
 import SectionNav from "@/components/SectionNav";
+import { StairApproach, TerraceDescent, WeeklyIsland } from "@/components/WritingTerrace";
 import CopyContact from "@/components/CopyContact";
 import LanguagePicker from "@/components/LanguagePicker";
 import ContentSkillModal from "@/components/ContentSkillModal";
+import ContentOrbit from "@/components/ContentOrbit";
 import type { ProjectDetail } from "@/components/ProjectModal";
 import { useLanguage } from "@/components/LanguageProvider";
 import { useIsMobile } from "@/lib/useIsMobile";
@@ -47,6 +51,7 @@ const EN_LABELS: Record<string, string> = {
   "社群运营": "Community operations",
   "学习成长": "Learning & growth",
   "微信小程序": "WeChat Mini Program",
+  "微信原生小程序": "Native WeChat Mini Program",
   "3000+ 用户": "3,000+ users",
   "互动内容": "Interactive content",
   "语音转写": "Speech transcription",
@@ -54,6 +59,24 @@ const EN_LABELS: Record<string, string> = {
   "AI 陪伴": "AI companion",
   "行动规划": "Action planning",
   "日常工具": "Everyday utilities",
+  "产品开发": "Product development",
+  "流程自动化": "Workflow automation",
+  "视觉表达": "Visual communication",
+  "沟通协作": "Communication & collaboration",
+  "主包 / 分包模块化架构": "Modular main-package / sub-package architecture",
+  "微信云开发数据存储与云函数": "WeChat Cloud storage and cloud functions",
+  "本地缓存与数据持久化": "Local caching and data persistence",
+  "Canvas 动态证书生成": "Canvas certificate generation",
+  "七牛云数据存储": "Qiniu Cloud storage",
+  "火山引擎豆包语音 ASR": "Volcengine Doubao speech ASR",
+  "DeepSeek API 文案生成": "DeepSeek API copy generation",
+  "NextAuth 邮箱登录": "NextAuth email login",
+  "DeepSeek API 方案生成": "DeepSeek API plan generation",
+  "Creem 支付与订阅": "Creem payments and subscriptions",
+  "DeepSeek API 梦境分析": "DeepSeek API dream analysis",
+  "端云开发": "Cloud-device development",
+  "邮箱登录认证": "Email authentication",
+  "Widget 卡片组件": "Widget card components",
 };
 
 function label(value: string, lang: Lang) {
@@ -360,65 +383,26 @@ const experiences: Array<{
   },
 ];
 
-const abilityDetails = [
+const abilityDetails: Array<{ label: Localised; detail: Localised }> = [
   {
-    label: "产品开发",
-    detail: "从具体需求和使用场景出发，梳理功能与交互流程，将想法实现为可体验、可持续迭代的产品。",
+    label: { es: "产品开发", en: "Product development" },
+    detail: { es: "从具体需求和使用场景出发，梳理功能与交互流程，将想法实现为可体验、可持续迭代的产品。", en: "Starting from a real need and usage context, I map the feature and interaction flow and turn the idea into a product people can experience and improve." },
   },
   {
-    label: "内容运营",
-    detail: "围绕目标和主题进行选题、资料整理、文案组织与内容跟进，让信息更清晰、更有价值，也更适合传播。",
+    label: { es: "内容运营", en: "Content operations" },
+    detail: { es: "围绕目标和主题进行选题、资料整理、文案组织与内容跟进，让信息更清晰、更有价值，也更适合传播。", en: "I shape topics, organise source material, structure copy and follow the content through so the message becomes clearer, more useful and easier to share." },
   },
   {
-    label: "流程自动化",
-    detail: "识别重复、分散的工作环节，借助工具将其串联成稳定、可复用的流程，减少重复操作和信息遗漏。",
+    label: { es: "流程自动化", en: "Workflow automation" },
+    detail: { es: "识别重复、分散的工作环节，借助工具将其串联成稳定、可复用的流程，减少重复操作和信息遗漏。", en: "I identify repetitive, scattered steps and connect them into a stable, reusable workflow that reduces manual work and missed information." },
   },
   {
-    label: "视觉表达",
-    detail: "通过版式、色彩和信息层级，将抽象内容转化为清晰、有吸引力且具有统一感的视觉表达。",
+    label: { es: "视觉表达", en: "Visual communication" },
+    detail: { es: "通过版式、色彩和信息层级，将抽象内容转化为清晰、有吸引力且具有统一感的视觉表达。", en: "I use layout, colour and information hierarchy to turn abstract material into a clear, engaging and coherent visual language." },
   },
   {
-    label: "沟通协作",
-    detail: "在多人协作和任务并行的环境中，主动同步信息、跟进关键节点、协调各方行动，推动事情顺利落地。",
-  },
-];
-
-const contentWorkflow: Array<{ num: string; title: Localised; accent: Localised; body: Localised }> = [
-  {
-    num: "01",
-    title: { es: "需求洞察与选题", en: "Demand insight & topics" },
-    accent: { es: "考试节点、搜索与反馈", en: "Timing, search & feedback" },
-    body: {
-      es: "判断真实需求，筛选有明确使用场景、可持续交付的内容方向。",
-      en: "Identify real demand and prioritise topics with a clear use case and repeatable delivery.",
-    },
-  },
-  {
-    num: "02",
-    title: { es: "内容产品化", en: "Turn content into a product" },
-    accent: { es: "结构、标题、封面与标签", en: "Structure, title, cover & tags" },
-    body: {
-      es: "把选题整理为清楚、可购买的内容产品。",
-      en: "Turn each topic into clear, purchasable content.",
-    },
-  },
-  {
-    num: "03",
-    title: { es: "AI 工作流搭建", en: "AI workflow design" },
-    accent: { es: "Codex + 飞书", en: "Codex + Feishu" },
-    body: {
-      es: "串联素材、文案与归档，减少重复制作。",
-      en: "Connect materials, copy and archiving to reduce repeated work.",
-    },
-  },
-  {
-    num: "04",
-    title: { es: "数据复盘与迭代", en: "Review & iterate" },
-    accent: { es: "点击、成交与售后反馈", en: "Clicks, sales & feedback" },
-    body: {
-      es: "识别值得放大的内容，调整下一轮选题与表达。",
-      en: "Find what to scale and refine the next round of topics and expression.",
-    },
+    label: { es: "沟通协作", en: "Communication & collaboration" },
+    detail: { es: "在多人协作和任务并行的环境中，主动同步信息、跟进关键节点、协调各方行动，推动事情顺利落地。", en: "In multi-person, parallel work, I keep information aligned, follow key milestones and coordinate the next actions that move the work forward." },
   },
 ];
 
@@ -427,6 +411,9 @@ function pick<T>(loc: { es: T; en: T }, lang: Lang): T {
 }
 
 function ProjectMedia({ project }: { project: Project }) {
+  const { lang } = useLanguage();
+  const fullImageDialog = useRef<HTMLDialogElement>(null);
+  const projectName = pick(project.name, lang);
   const media = project.media ?? [];
   const subQrItems = project.subprojects?.filter((item) => item.qr) ?? [];
   // Only the project-level (single) QR is shown next to the media for projects
@@ -445,7 +432,7 @@ function ProjectMedia({ project }: { project: Project }) {
   // media frame so the right column shows two stacked, full-width images
   // instead of a media+qr side-by-side that left whitespace.
   const extraItems: Array<{ src: string; caption: string }> = isPortraitStillWithQr
-    ? [{ src: project.qr!, caption: "小程序二维码" }]
+    ? [{ src: project.qr!, caption: lang === "en" ? "Mini-program QR code" : "小程序二维码" }]
     : [];
 
   return (
@@ -461,10 +448,9 @@ function ProjectMedia({ project }: { project: Project }) {
           : mediaLayout === "portrait-still"
             ? {
                 gridTemplateColumns: "minmax(0, 1fr)",
-                gridTemplateRows: "minmax(0, 1fr) auto",
-                alignItems: "stretch",
+                gridTemplateRows: "auto auto",
+                alignItems: "start",
                 gap: ".7rem",
-                height: "100%",
               }
             : undefined
       }
@@ -491,16 +477,26 @@ function ProjectMedia({ project }: { project: Project }) {
                   muted
                   playsInline
                   preload="metadata"
-                  aria-label={`${project.name.es}预览 ${index + 1}`}
+                  aria-label={`${projectName} preview ${index + 1}`}
                 />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={src}
-                  alt={`${project.name.es}预览 ${index + 1}`}
+                  alt={`${projectName} preview ${index + 1}`}
                   className="project-detail-media-image project-detail-media-image--still"
                   loading="lazy"
                 />
+              )}
+              {mediaLayout === "portrait-still" && index === 0 && (
+                <button
+                  type="button"
+                  className="project-detail-media-zoom"
+                  onClick={() => fullImageDialog.current?.showModal()}
+                  aria-label={lang === "en" ? "Zoom the complete project image" : "放大查看五迷小记完整图片"}
+                >
+                  {lang === "en" ? "View full image ↗" : "查看原图 ↗"}
+                </button>
               )}
             </div>
           ))}
@@ -519,7 +515,7 @@ function ProjectMedia({ project }: { project: Project }) {
         </>
       ) : (
         <div className="project-detail-media-placeholder">
-          <span>{project.name.es} · 预览图待补充</span>
+          <span>{projectName} · {lang === "en" ? "Preview coming soon" : "预览图待补充"}</span>
         </div>
       )}
 
@@ -531,23 +527,35 @@ function ProjectMedia({ project }: { project: Project }) {
           {project.qr && (
             <div className="project-detail-qr-item" key="project-qr">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={project.qr} alt={`${project.name.es}二维码`} />
-              <span>小程序二维码</span>
+              <img src={project.qr} alt={`${projectName} QR code`} />
+              <span>{lang === "en" ? "Mini-program QR code" : "小程序二维码"}</span>
             </div>
           )}
           {subQrItems.map((item) => (
             <div className="project-detail-qr-item" key={item.name.es}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={item.qr} alt={`${item.name.es}二维码`} />
-              <span>{item.name.es}二维码</span>
+              <img src={item.qr} alt={`${pick(item.name, lang)} QR code`} />
+              <span>{pick(item.name, lang)} {lang === "en" ? "QR code" : "二维码"}</span>
             </div>
           ))}
           {project.showQrPlaceholder && !project.qr && (
             <div className="project-detail-qr-item project-detail-qr-placeholder">
-              <span>小程序二维码<br />待补充</span>
+              <span>{lang === "en" ? <>Mini-program QR code<br />Coming soon</> : <>小程序二维码<br />待补充</>}</span>
             </div>
           )}
         </div>
+      )}
+      {isPortraitStillWithQr && media[0] && (
+        <dialog ref={fullImageDialog} className="project-image-dialog" onClick={(event) => {
+          if (event.target === event.currentTarget) event.currentTarget.close();
+        }}>
+          <div className="project-image-dialog__toolbar">
+            <span>{projectName} · {lang === "en" ? "Full image" : "原图"}</span>
+            <button type="button" onClick={() => fullImageDialog.current?.close()} aria-label={lang === "en" ? "Close full image" : "关闭原图"}>{lang === "en" ? "Close ×" : "关闭 ×"}</button>
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={media[0]} alt={`${projectName} full image`} />
+        </dialog>
       )}
     </div>
   );
@@ -641,12 +649,12 @@ function PracticeMedia({
           </div>
         ) : (
           <div className="practice-media-long-wrap">
-            <div className="practice-long-media" aria-label={`${material.label}长图`}>
+            <div key={material.src} className="practice-long-media" data-lenis-prevent role="region" tabIndex={0} aria-label={lang === "en" ? `${material.label} long image` : `${material.label}长图`}>
               <figure>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={material.src}
-                  alt={`${material.label}长图`}
+                  alt={lang === "en" ? `${material.label} long image` : `${material.label}长图`}
                   loading="eager"
                   onClick={() => setZoomedSrc(material.src)}
                 />
@@ -670,7 +678,7 @@ function PracticeMedia({
             className="practice-media-lightbox"
             role="dialog"
             aria-modal="true"
-            aria-label="查看大图"
+            aria-label={lang === "en" ? "View large image" : "查看大图"}
             onClick={() => setZoomedSrc(null)}
           >
             <div className="practice-media-lightbox__panel" onClick={(event) => event.stopPropagation()}>
@@ -678,12 +686,12 @@ function PracticeMedia({
                 type="button"
                 className="practice-media-lightbox__close"
                 onClick={() => setZoomedSrc(null)}
-                aria-label="关闭大图"
+                aria-label={lang === "en" ? "Close large image" : "关闭大图"}
               >
                 ×
               </button>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="practice-media-lightbox__image" src={zoomedSrc} alt="创业协会物料大图" />
+              <img className="practice-media-lightbox__image" src={zoomedSrc} alt={lang === "en" ? "Entrepreneurship association material" : "创业协会物料大图"} />
             </div>
           </div>
         )}
@@ -694,7 +702,7 @@ function PracticeMedia({
   return (
     <div className={`practice-entry-image relative aspect-[4/3] overflow-hidden bg-[#e9e0d5]${isPortraitEntry ? " practice-entry-image--portrait" : ""}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={entry.image} alt={entry.title} className="h-full w-full object-contain" loading="eager" />
+      <img src={entry.image} alt={lang === "en" ? `${label(entry.title, lang)} image` : entry.title} className="h-full w-full object-contain" loading="eager" />
     </div>
   );
 }
@@ -725,23 +733,31 @@ export default function Home() {
   const [practiceIndex, setPracticeIndex] = useState(0);
   const [selectedAbilityIndex, setSelectedAbilityIndex] = useState<number | null>(null);
   const [batchSkillOpen, setBatchSkillOpen] = useState(false);
+  const projectTransitionPending = useRef<"open" | "close" | null>(null);
+
+  const scrollToProjects = useCallback((immediate = false) => {
+    const section = document.querySelector<HTMLElement>('[data-kb-section="projects"]');
+    if (!section) return;
+    const top = section.getBoundingClientRect().top + window.scrollY;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (lenis) lenis.scrollTo(top, { duration: .65, immediate: immediate || reducedMotion });
+    else window.scrollTo({ top, behavior: "auto" });
+  }, [lenis]);
 
   useEffect(() => {
     const onKeyboardFocus = (event: Event) => {
       const index = (event as CustomEvent<{ index?: number }>).detail?.index;
       if (typeof index !== "number" || !projects[index]) return;
-      setFocusedProject(index);
-      const target = document.querySelector<HTMLElement>('[data-kb-section="projects"]');
-      if (!target) return;
-      if (lenis) {
-        lenis.scrollTo(target, { duration: 1.2, offset: -24 });
-      } else {
-        target.scrollIntoView({ behavior: "auto", block: "start" });
+      if (index === focusedProject) {
+        scrollToProjects();
+        return;
       }
+      projectTransitionPending.current = "open";
+      setFocusedProject(index);
     };
     window.addEventListener("portfolio:focus", onKeyboardFocus);
     return () => window.removeEventListener("portfolio:focus", onKeyboardFocus);
-  }, [lenis]);
+  }, [focusedProject, scrollToProjects]);
 
   useEffect(() => {
     const onAbilitySelect = (event: Event) => {
@@ -755,16 +771,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (focusedProject === null) return;
+    const transition = projectTransitionPending.current;
+    if (!transition) return;
+    projectTransitionPending.current = null;
     const section = document.querySelector<HTMLElement>('[data-kb-section="projects"]');
     if (!section) return;
     const panel = section.firstElementChild as HTMLElement | null;
     if (panel) panel.scrollTop = 0;
-    if (lenis) lenis.scrollTo(section, { duration: .65, offset: 0 });
-    else section.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, [focusedProject, lenis]);
+    scrollToProjects(transition === "close");
+  }, [focusedProject, scrollToProjects]);
 
   const chooseProject = (index: number) => {
+    projectTransitionPending.current = "open";
     setFocusedProject(index);
     window.dispatchEvent(
       new CustomEvent("portfolio:select", { detail: { index } })
@@ -825,7 +843,7 @@ export default function Home() {
               <div className="hero-profile__content fade-in-up" style={{ ["--d" as string]: "420ms" }}>
                 <figure className="hero-profile__portrait">
                   <div className="hero-profile__portrait-frame">
-                    <img src="/profile-avatar.jpg" alt="ZhengYifan 个人照片" />
+                    <img src="/profile-avatar.jpg" alt={lang === "en" ? "ZhengYifan portrait" : "ZhengYifan 个人照片"} />
                   </div>
                   <figcaption>
                     <span>PROFILE</span>
@@ -883,7 +901,7 @@ export default function Home() {
                   <span className="ability-sharp ability-sharp--d" aria-hidden="true" />
                   <span className="ability-sharp ability-sharp--f" aria-hidden="true" />
                   {abilityDetails.map((ability, index) => (
-                    <button key={ability.label} type="button"
+                    <button key={ability.label.es} type="button"
                       className="ability-key"
                       aria-pressed={selectedAbilityIndex === index}
                       onClick={() => {
@@ -891,7 +909,7 @@ export default function Home() {
                         window.dispatchEvent(new CustomEvent("portfolio:select", { detail: { index } }));
                       }}>
                       <span className="ability-key__number">{String(index + 1).padStart(2, "0")}</span>
-                      <span>{ability.label}</span>
+                      <span>{pick(ability.label, lang)}</span>
                     </button>
                   ))}
                 </div>
@@ -900,13 +918,13 @@ export default function Home() {
                     <span>{lang === "en" ? "Choose a key to see my focus" : "选择一枚琴键，查看我的能力侧重"}</span>
                   ) : (
                     <>
-                      <strong>{abilityDetails[selectedAbilityIndex].label}</strong>
-                      <span>{abilityDetails[selectedAbilityIndex].detail}</span>
+                      <strong>{pick(abilityDetails[selectedAbilityIndex].label, lang)}</strong>
+                      <span>{pick(abilityDetails[selectedAbilityIndex].detail, lang)}</span>
                     </>
                   )}
                 </div>
                 {isMobile && (
-                  <div className="ability-mobile-keyboard" aria-label="移动端能力琴键">
+                  <div className="ability-mobile-keyboard" aria-label={lang === "en" ? "Mobile ability keys" : "移动端能力琴键"}>
                     <FrozenKeyboard mobile exhibition pianoOnly />
                   </div>
                 )}
@@ -920,7 +938,7 @@ export default function Home() {
             data-kb-section="experience"
             className="section-space section-space--experience order-5 relative min-h-screen flex items-center p-6 sm:p-8 md:p-10 pt-24 md:pt-28 pb-12"
           >
-            <div className="relative z-10 w-full max-w-5xl md:w-[56%] lg:w-[56%] md:ml-auto md:mr-0 pointer-events-auto">
+            <div role="region" aria-label={lang === "en" ? "Experience details" : "实践经历详情"} tabIndex={0} className="experience-scroll-panel relative z-10 w-full max-w-5xl md:w-[56%] lg:w-[56%] md:ml-auto md:mr-0 pointer-events-auto">
               <Reveal>
                 <div className="mb-4 max-w-xl">
                   <p className="section-heading__kicker">04 / EXPERIENCE</p>
@@ -978,6 +996,8 @@ export default function Home() {
             </div>
           </section>
 
+          <WeeklyIsland />
+
           {/* Portfolio exhibition — the piano occupies the left stage and the
               work previews live on the right without card borders. The first
               view is an overview; selecting a key reveals one work in detail. */}
@@ -985,7 +1005,7 @@ export default function Home() {
             data-kb-section="projects"
             className="section-space section-space--projects order-3 relative py-24 md:min-h-screen flex items-start p-6 sm:p-10 md:p-14"
           >
-            <div className="relative w-full max-w-6xl mx-auto md:ml-auto md:mr-0 md:w-[68%] lg:w-[68%]">
+            <div className={`code-island-panel ${focusedProject === null ? "code-island-panel--overview" : "code-island-panel--detail"} relative w-full max-w-6xl mx-auto`}>
               {focusedProject === null ? (
                 <>
                   <Reveal>
@@ -998,33 +1018,42 @@ export default function Home() {
                         {t("projects.subtitle")}
                       </p>
                       <p className="mt-2 font-mono text-[11px] tracking-[0.14em] text-ice-400">
-                        {lang === "en" ? "Click a key to open a project" : "点击琴键，查看对应作品"}
+                        {lang === "en" ? "Select a project to explore" : "点击作品，查看详情"}
                       </p>
                     </div>
                   </Reveal>
 
-                  <div className="project-overview-list pointer-events-auto">
-                    {projects.map((p, idx) => (
-                      <Reveal key={p.num} delay={idx * 60} as="button" type="button" dataProjectIndex={idx} onClick={() => chooseProject(idx)} className="project-overview-row group text-left cursor-pointer">
-                        <span className="project-overview-row__num">{p.num}</span>
+                  <div className="project-overview-list code-island-windows pointer-events-auto">
+                    {projects.map((p, idx) => {
+                      const preview = p.media?.[0];
+                      return <Reveal key={p.num} delay={idx * 60} as="button" type="button" dataProjectIndex={idx} onClick={() => chooseProject(idx)} className="project-overview-row group text-left cursor-pointer">
+                        <span className="project-overview-row__num"><i aria-hidden="true" />{p.num}</span>
+                        <span className="project-overview-row__preview" aria-hidden="true">
+                          {preview && (preview.endsWith(".mp4") ? (
+                            <video src={`${preview}#t=0.1`} muted playsInline preload="metadata" />
+                          ) : (
+                            <img src={preview} alt="" loading="lazy" />
+                          ))}
+                        </span>
                         <span className="project-overview-row__body">
                           <span className="project-overview-row__title">{pick(p.name, lang)}</span>
                           <span className="project-overview-row__desc">{pick(p.desc, lang)}</span>
                         </span>
                         <span className="project-overview-row__arrow" aria-hidden>↗</span>
-                      </Reveal>
-                    ))}
+                      </Reveal>;
+                    })}
                   </div>
                 </>
               ) : (
                 (() => {
                   const p = projects[focusedProject];
                   return (
-                    <Reveal key={p.num} dataProjectIndex={focusedProject}>
+                    <div key={p.num} data-project-index={focusedProject} className="project-detail-view">
                       <div className="pointer-events-auto">
                         <button
                           type="button"
                           onClick={() => {
+                            projectTransitionPending.current = "close";
                             setFocusedProject(null);
                             window.dispatchEvent(new CustomEvent("portfolio:clear"));
                           }}
@@ -1113,94 +1142,24 @@ export default function Home() {
                           )}
                         </div>
                       </div>
-                    </Reveal>
+                    </div>
                   );
                 })()
               )}
             </div>
           </section>
 
-          {/* Content archive — a compact editorial spread for the real
-              Xiaohongshu shop and media experiments from the original site. */}
+          <StairApproach />
+
+          {/* The four content-commerce exhibits sit on the rooftop landing. */}
           <section
             data-kb-section="content"
-            className="content-section order-4 relative min-h-screen flex items-center p-6 sm:p-10 md:p-14"
+            className="content-section content-section--rooftop order-4 relative min-h-screen flex items-center p-6 sm:p-10 md:p-14"
           >
-            <div className="content-archive relative z-10 w-full max-w-5xl md:w-[58%] md:mr-auto md:ml-0 pointer-events-auto">
-              <Reveal>
-                <div className="content-archive__masthead mb-3">
-                  <div>
-                    <p className="section-heading__kicker">
-                      03 / CONTENT PRACTICE
-                    </p>
-                  </div>
-                  <h2 className="mt-2 text-3xl sm:text-4xl font-semibold tracking-tight text-[color:var(--ice-50)] leading-[0.98]" style={{ color: "var(--ice-50)" }}>
-                    {t("content.title")}
-                  </h2>
-                  <div className="content-archive__intro">
-                    <p className="text-sm text-ice-300">{t("content.subtitle")}</p>
-                    <p className="mt-2 max-w-2xl text-xs sm:text-sm text-ice-200 leading-relaxed">{t("content.intro")}</p>
-                  </div>
-                </div>
-              </Reveal>
-
-              <div className="content-archive__spread">
-                <Reveal delay={90}>
-                  <div className="content-archive__primary-grid" style={{ gap: "1rem" }}>
-                    <section className="content-archive__workflow" aria-label={lang === "en" ? "Content commerce workflow" : "内容商业化闭环"}>
-                      <div className="content-archive__section-label">
-                        <span>01—04</span>
-                        <strong>{lang === "en" ? "CONTENT COMMERCE LOOP" : "内容商业化闭环"}</strong>
-                      </div>
-                      <div className="content-archive__workflow-grid">
-                        {contentWorkflow.map((step) => (
-                          <article className="content-archive__step" key={step.num} style={{ minHeight: "6.8rem", padding: ".68rem .75rem" }}>
-                            <span>{step.num}</span>
-                            <h3>{pick(step.title, lang)}</h3>
-                            <p><strong style={{ color: "var(--ice-600)", fontWeight: 700 }}>{pick(step.accent, lang)}</strong>，{pick(step.body, lang)}</p>
-                          </article>
-                        ))}
-                      </div>
-                    </section>
-
-                    <aside className="content-archive__result" aria-label={lang === "en" ? "E-commerce results" : "电商实践成果"}>
-                      <div className="content-archive__result-label">ECOMMERCE / {lang === "en" ? "RESULTS" : "实践成果"}</div>
-                      <h3>{t("content.storeTitle")}</h3>
-                      <p className="content-archive__result-meta">{t("content.storeMeta")}</p>
-                      <div className="content-archive__gmv">
-                        <strong>&gt;50K</strong>
-                        <span>{lang === "en" ? "cumulative GMV" : "累计成交额"}</span>
-                      </div>
-                      <p className="content-archive__result-body">{t("content.storeBody")}</p>
-                      <button type="button" className="content-archive__workflow-link" onClick={() => setBatchSkillOpen(true)}>
-                        {lang === "en" ? "Xiaohongshu batch-production Skill" : "小红书笔记批量制作 Skill"} <span aria-hidden>↗</span>
-                      </button>
-                    </aside>
-                  </div>
-                </Reveal>
-
-                <Reveal delay={150}>
-                  <article className="content-archive__experiment" style={{ marginTop: ".65rem", paddingTop: ".65rem" }}>
-                    <div>
-                      <p>SIDE EXPERIMENT / {lang === "en" ? "CONTENT TESTS" : "内容实验"}</p>
-                      <h3>{t("content.mediaTitle")}</h3>
-                      <p className="content-archive__experiment-body">{t("content.mediaBody")}</p>
-                    </div>
-                    <div className="content-archive__metrics">
-                      <div>
-                        <strong>500+</strong>
-                        <span>{lang === "en" ? "public-account followers" : "公众号粉丝"}</span>
-                      </div>
-                      <div>
-                        <strong>1000+</strong>
-                        <span>{lang === "en" ? "video-account followers" : "视频号粉丝"}</span>
-                      </div>
-                    </div>
-                  </article>
-                </Reveal>
-              </div>
-            </div>
+            <ContentOrbit onOpenBatchSkill={() => setBatchSkillOpen(true)} />
           </section>
+
+          <TerraceDescent />
 
           {/* Contact keeps the 3D-room invitation. The global canvas stays in
               place while its keyboard eases into this section's own pose. */}
@@ -1253,7 +1212,7 @@ export default function Home() {
                   <CopyContact
                     value={WECHAT}
                     toastText={t("contact.wechatToast")}
-                    ariaLabel={`复制微信号 ${WECHAT}`}
+                    ariaLabel={`${lang === "en" ? "Copy WeChat ID" : "复制微信号"} ${WECHAT}`}
                     className="contact-method contact-method--wechat"
                   >
                     <span className="contact-method__main">
@@ -1305,7 +1264,7 @@ export default function Home() {
                 </div>
               </Reveal>
             </div>
-            <Reveal delay={280}>
+            <Reveal delay={80}>
               <div data-kb-section="room" className="life-room-entry pointer-events-auto">
                 <span className="life-room-kicker">LIFE OUTSIDE WORK / {lang === "en" ? "EVERYDAY LIFE" : "生活日常"}</span>
                 <a

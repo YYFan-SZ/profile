@@ -1,0 +1,1074 @@
+/* Original right-hand staircase, upper gallery, new rear descent, then islands. */
+.infinite-exhibition .content-archive,
+.infinite-exhibition .section-space--projects > div,
+.infinite-exhibition .section-space--experience > div,
+.infinite-exhibition .writing-terrace__panel {
+  background: rgb(255 250 241 / 96%);
+  border-color: rgb(133 103 63 / 18%);
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgb(71 56 36 / 7%);
+}
+.infinite-exhibition .writing-terrace__subtitle,
+.infinite-exhibition .writing-terrace__empty { color: #71604b; }
+.infinite-exhibition .weekly-report summary { padding-block: 1.35rem; }
+.infinite-exhibition .weekly-report__body { max-width: 65ch; }
+.infinite-exhibition .content-archive__step,
+.infinite-exhibition .content-archive__result { box-shadow: none; }
+.infinite-exhibition main > [data-kb-section="stairs"] { order: 3; }
+.infinite-exhibition main > [data-kb-section="content"] { order: 4; }
+.infinite-exhibition main > [data-kb-section="descent"] { order: 5; }
+.infinite-exhibition main > [data-kb-section="projects"] { order: 6; }
+.infinite-exhibition main > [data-kb-section="experience"] { order: 7; }
+.infinite-exhibition main > [data-kb-section="weekly"] { order: 8; }
+.infinite-exhibition main > [data-kb-section="contact"] { order: 9; }
+@media (min-width: 768px) {
+  .infinite-exhibition main > .section-space--stack {
+    min-height: 170svh;
+    padding-top: 12svh;
+    padding-bottom: 0;
+  }
+  .infinite-exhibition .section-space--stack > div {
+    min-height: 0;
+    height: auto;
+    display: block;
+  }
+  .infinite-exhibition .section-space--stack > div > .ability-panel {
+    position: relative;
+    top: 0;
+  }
+  .infinite-exhibition .ability-panel,
+  .infinite-exhibition .content-archive {
+    will-change: opacity;
+  }
+  .infinite-exhibition .content-archive {
+    background: rgb(255 249 239 / 98%);
+    border-color: rgb(133 103 63 / 20%);
+    box-shadow: 0 18px 50px rgb(71 56 36 / 8%);
+  }
+  .infinite-exhibition .terrace-approach {
+    min-height: 185svh;
+    padding-top: 15svh;
+  }
+  .infinite-exhibition [data-kb-section="descent"].terrace-approach { min-height: 240svh; }
+  .infinite-exhibition .terrace-approach > p {
+    background: rgb(255 249 239 / 85%);
+    font-size: .8rem;
+  }
+  .infinite-exhibition main > .section-space--projects,
+  .infinite-exhibition main > .section-space--experience { min-height: 165svh; }
+}
+@media (min-width: 768px) and (prefers-reduced-motion: reduce) {
+  .infinite-exhibition main > .section-space--stack { min-height: 100svh; }
+  .infinite-exhibition .terrace-approach { min-height: 40svh; }
+}
+
+/* Reading bays and a separate, unhurried stretch of water between exhibits. */
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .infinite-exhibition .section-space--projects > div { z-index: 10; }
+  .infinite-exhibition .section-space--projects > div > .reveal,
+  .infinite-exhibition .section-space--projects .project-overview-row.reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+@media (min-width: 768px) {
+  .infinite-exhibition main > [data-kb-section="content"],
+  .infinite-exhibition main > .section-space--projects,
+  .infinite-exhibition main > .section-space--experience {
+    align-items: flex-start;
+    padding-top: 14svh;
+    padding-bottom: 170svh;
+  }
+  .infinite-exhibition .section-space--projects > div,
+  .infinite-exhibition .section-space--experience > div {
+    width: 64%;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: 3%;
+  }
+  .infinite-exhibition .contact-copy {
+    margin-left: 3%;
+    width: min(46%, 37rem);
+  }
+}
+.infinite-exhibition .project-overview-row {
+  grid-template-columns: 1.5rem 6rem minmax(0, 1fr) 1.8rem;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 1rem;
+}
+.infinite-exhibition .project-overview-row__preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 6.5rem;
+  overflow: hidden;
+  background: #eee8db;
+  border-radius: 6px;
+}
+.infinite-exhibition .project-overview-row__preview img,
+.infinite-exhibition .project-overview-row__preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.infinite-exhibition .project-overview-row__body { min-width: 0; }
+.infinite-exhibition .writing-terrace__columns { grid-template-columns: minmax(0,1fr); gap: 2rem; }
+.infinite-exhibition .writing-terrace__articles { border-left: 0; border-top: 1px solid #ded2bf; padding: 1.5rem 0 0; }
+.infinite-exhibition .content-archive__workflow-grid { grid-template-columns: minmax(0,1fr); }
+@media (min-width: 768px) {
+  .infinite-exhibition .content-archive,
+  .infinite-exhibition .writing-terrace__panel {
+    width: min(56%, 860px);
+    margin-left: auto;
+    margin-right: 3%;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+  }
+  .infinite-exhibition .content-archive__primary-grid { grid-template-columns: minmax(0,1fr); }
+  .infinite-exhibition .content-archive__workflow-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: .75rem;
+  }
+  .infinite-exhibition .content-archive__step { border: 0; border-bottom: 1px solid #ded2bf; }
+}
+.infinite-exhibition .project-overview-row__desc { color: #73634f; }
+.infinite-exhibition .section-space--experience .practice-long-media {
+  display: block;
+  height: clamp(28rem, 74svh, 52rem);
+  max-height: none;
+  padding: .5rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  scrollbar-color: #b5a080 #f4ecdf;
+  background: #f2ebdf;
+}
+.infinite-exhibition .section-space--experience .practice-long-media figure {
+  width: 100%;
+  min-height: 0;
+  border: 0;
+  box-shadow: none;
+}
+.infinite-exhibition .section-space--experience .practice-detail__media .practice-long-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+}
+.infinite-exhibition .section-space--experience .practice-long-media:focus-visible {
+  outline: 2px solid #8d714a;
+  outline-offset: 3px;
+}
+@media (max-width: 767px) {
+  .infinite-exhibition .section-space--experience .practice-long-media { height: 65svh; }
+}
+@media (min-width: 1024px) {
+  .infinite-exhibition .section-space--experience > div {
+    width: 68%;
+    max-width: 1120px;
+    margin-right: 1%;
+    padding: clamp(1.5rem, 2.4vw, 2.75rem);
+  }
+  .infinite-exhibition .section-space--experience .practice-detail:not(.project-detail) {
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+    gap: 1.5rem;
+  }
+  .infinite-exhibition .section-space--experience .practice-detail__media img { max-height: 24rem; }
+  .infinite-exhibition .section-space--experience .practice-detail__copy > p.text-ice-200,
+  .infinite-exhibition .section-space--experience .practice-detail__copy > ul { font-size: .95rem; line-height: 1.8; }
+}
+.infinite-exhibition .project-overview-row:focus-visible {
+  outline: 2px solid #8d714a;
+  outline-offset: 4px;
+}
+@media (max-width: 767px) {
+  .infinite-exhibition .project-overview-row {
+    grid-template-columns: 4.5rem minmax(0, 1fr) 1.8rem;
+    gap: .75rem;
+  }
+  .infinite-exhibition .project-overview-row__num { display: none; }
+  .infinite-exhibition .project-overview-row__preview { height: 5.5rem; }
+}
+@media (min-width: 768px) and (prefers-reduced-motion: reduce) {
+  .infinite-exhibition main > [data-kb-section="content"],
+  .infinite-exhibition main > .section-space--projects,
+  .infinite-exhibition main > .section-space--experience { padding-bottom: 15svh; min-height: 100svh; }
+}
+
+/* Keep experience copy above its artwork; tall images must not create an empty column. */
+.infinite-exhibition .section-space--experience > div {
+  box-sizing: border-box;
+  max-width: min(1120px, 100%);
+  min-width: 0;
+}
+.infinite-exhibition .section-space--experience .practice-detail:not(.project-detail) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+}
+.infinite-exhibition .section-space--experience .practice-detail__copy,
+.infinite-exhibition .section-space--experience .practice-detail__media,
+.infinite-exhibition .section-space--experience .practice-association-media {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.infinite-exhibition .section-space--experience .practice-detail__copy > p.text-ice-200,
+.infinite-exhibition .section-space--experience .practice-detail__copy > ul {
+  font-size: clamp(1rem, 1.1vw, 1.125rem);
+  line-height: 1.85;
+  max-width: 68ch;
+}
+.infinite-exhibition .section-space--experience .practice-detail h3 { font-size: clamp(1.5rem, 2vw, 1.9rem); }
+.infinite-exhibition .section-space--experience .practice-materials__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.infinite-exhibition .section-space--experience .practice-detail__media .practice-poster-flip,
+.infinite-exhibition .section-space--experience .practice-detail__media .practice-long-media {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  height: clamp(26rem, 70svh, 48rem);
+  min-height: 0;
+  max-height: none;
+}
+.infinite-exhibition .section-space--experience .practice-detail__media .practice-poster-flip__face img {
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  object-fit: contain;
+}
+.infinite-exhibition .section-space--experience .practice-long-media figure {
+  width: min(100%, 760px);
+  margin-inline: auto;
+}
+.infinite-exhibition .section-space--experience .practice-media-zoom { right: .75rem; top: .75rem; }
+@media (max-width: 1023px) {
+  .infinite-exhibition .section-space--experience > div { width: 100%; margin-inline: 0; }
+}
+@media (max-width: 767px) {
+  .infinite-exhibition .section-space--experience .practice-detail__media .practice-poster-flip,
+  .infinite-exhibition .section-space--experience .practice-detail__media .practice-long-media { height: 65svh; }
+}
+
+/* Code island: five application windows above an open-air workbench. */
+.infinite-exhibition .section-space--projects > .code-island-panel {
+  width: 100%;
+  max-width: 1380px;
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+.infinite-exhibition .section-space--projects > .code-island-panel--overview {
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.code-island-panel--overview > .reveal > div {
+  max-width: 680px;
+  margin-inline: auto;
+  text-align: center;
+}
+.infinite-exhibition .code-island-windows {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: clamp(.65rem,1.4vw,1.4rem);
+  padding-block: 2rem 7rem;
+  border: 0;
+  align-items: start;
+}
+.infinite-exhibition .code-island-windows .project-overview-row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #c9d3c5;
+  border-radius: 12px;
+  background: #fffaf0;
+  box-shadow: 0 16px 32px rgb(41 63 52 / 12%);
+  transition: box-shadow .2s, border-color .2s;
+}
+.infinite-exhibition .code-island-windows .project-overview-row:nth-child(2),
+.infinite-exhibition .code-island-windows .project-overview-row:nth-child(4) { margin-top: 2rem; }
+.infinite-exhibition .code-island-windows .project-overview-row:nth-child(3) { margin-top: 3.5rem; }
+.infinite-exhibition .code-island-windows .project-overview-row:hover,
+.infinite-exhibition .code-island-windows .project-overview-row:focus-visible {
+  border-color: #698576;
+  box-shadow: 0 20px 38px rgb(41 63 52 / 20%);
+}
+.infinite-exhibition .code-island-windows .project-overview-row__num {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .65rem .8rem;
+  background: #e5ecdf;
+  color: #476151;
+  font-size: .7rem;
+}
+.code-island-windows .project-overview-row__num i { width: 6px; height: 6px; border-radius: 50%; background: #789681; }
+.infinite-exhibition .code-island-windows .project-overview-row__preview {
+  height: clamp(10rem, 24svh, 17rem);
+  border-radius: 0;
+  padding: .6rem;
+  background: #f1f1e8;
+}
+.infinite-exhibition .code-island-windows .project-overview-row__body { padding: .85rem; }
+.infinite-exhibition .code-island-windows .project-overview-row__title { font-size: clamp(.9rem,1.1vw,1.1rem); line-height: 1.5; }
+.infinite-exhibition .code-island-windows .project-overview-row__desc { display: none; }
+.infinite-exhibition .code-island-windows .project-overview-row__arrow { align-self: flex-end; margin: 0 .8rem .8rem; }
+.infinite-exhibition .section-space--projects > .code-island-panel--detail { max-width: 1120px; }
+@media (max-width: 1100px) {
+  .infinite-exhibition .code-island-windows { grid-template-columns: repeat(3,minmax(0,1fr)); padding-bottom: 2rem; }
+  .infinite-exhibition .code-island-windows .project-overview-row:nth-child(n) { margin-top: 0; }
+}
+@media (max-width: 640px) {
+  .infinite-exhibition .code-island-windows { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .infinite-exhibition .code-island-windows .project-overview-row__preview { height: 10rem; }
+}
+
+.infinite-exhibition .section-space--experience > .experience-scroll-panel {
+  position: relative;
+  top: auto;
+  max-height: none;
+  overflow: visible;
+}
+.infinite-exhibition .experience-scroll-panel:focus-visible {
+  outline: 2px solid #8d714a;
+  outline-offset: 3px;
+}
+
+/* Keep the reading bays comfortable at each width while the 3D scene moves. */
+@media (min-width: 768px) {
+  .infinite-exhibition .section-space--stack > div > .ability-panel {
+    width: min(48%, 42rem);
+    margin-left: clamp(2rem, 6vw, 6rem);
+    padding: clamp(1.75rem, 2.7vw, 2.75rem);
+  }
+  .infinite-exhibition .ability-panel h2 { font-size: clamp(2.2rem, 3.2vw, 3.5rem); }
+  .infinite-exhibition .ability-keyboard { margin-top: 1.65rem; }
+  .infinite-exhibition .ability-key {
+    min-height: clamp(3.25rem, 4.8vw, 4rem);
+    padding-inline: 1.1rem;
+    font-size: clamp(.9rem, 1vw, 1.05rem);
+  }
+  .infinite-exhibition .ability-note { font-size: clamp(.94rem, 1vw, 1.08rem); }
+  .infinite-exhibition .content-archive__primary-grid { gap: clamp(1.25rem, 2.4vw, 2rem) !important; }
+  .infinite-exhibition .content-archive__result { margin-top: 0; padding: clamp(1.2rem, 2vw, 1.8rem); }
+  .infinite-exhibition .content-archive__workflow-grid { gap: .75rem; }
+  .infinite-exhibition .content-archive__step {
+    min-height: 0 !important;
+    padding: clamp(.85rem, 1.2vw, 1.1rem) !important;
+  }
+  .infinite-exhibition .content-archive__step h3 { font-size: clamp(.9rem, 1vw, 1.05rem); }
+  .infinite-exhibition .content-archive__step p { font-size: clamp(.82rem, .9vw, .94rem); }
+}
+
+@media (min-width: 768px) and (max-width: 1100px) {
+  .infinite-exhibition .section-space--stack > div > .ability-panel {
+    width: min(53%, 36rem);
+    margin-left: clamp(0rem, 3vw, 2rem);
+  }
+  .infinite-exhibition .content-archive { width: min(76%, 47rem); }
+}
+
+@media (min-width: 1200px) {
+  .infinite-exhibition .section-space--experience > .experience-scroll-panel {
+    width: min(76%, 72rem);
+  }
+  .infinite-exhibition .section-space--experience .practice-detail:not(.project-detail) {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+    gap: clamp(1.75rem, 2.8vw, 3rem);
+    align-items: start;
+  }
+  .infinite-exhibition .section-space--experience .practice-detail__media .practice-entry-image,
+  .infinite-exhibition .section-space--experience .practice-detail__media .practice-poster-flip,
+  .infinite-exhibition .section-space--experience .practice-detail__media .practice-long-media {
+    height: clamp(19rem, 43svh, 29rem);
+  }
+  .infinite-exhibition .section-space--experience .practice-detail__media .practice-entry-image--portrait {
+    height: auto;
+    max-width: 22rem;
+  }
+  .infinite-exhibition .section-space--experience .practice-detail__media .practice-entry-image img {
+    max-height: 100%;
+  }
+}
+
+@media (max-width: 767px) {
+  .infinite-exhibition .section-space--stack > div > .ability-panel {
+    margin-inline: auto;
+    max-width: 34rem;
+  }
+  .infinite-exhibition .ability-key { overflow-wrap: anywhere; }
+  .infinite-exhibition .content-archive__result { margin-top: 0; }
+  .infinite-exhibition .content-archive__primary-grid { gap: 1.5rem !important; }
+  .infinite-exhibition .content-archive__workflow-grid { grid-template-columns: minmax(0, 1fr); }
+  .infinite-exhibition .content-archive__step h3 { font-size: .95rem; }
+  .infinite-exhibition .content-archive__step p { font-size: .875rem; }
+  .infinite-exhibition .section-space--experience > .experience-scroll-panel {
+    position: relative;
+    top: auto;
+    max-height: none;
+    overflow: visible;
+    scrollbar-gutter: auto;
+  }
+  .infinite-exhibition .section-space--experience .practice-detail:not(.project-detail) {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .infinite-exhibition .section-space--experience .practice-switcher {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ad9573 transparent;
+    padding-bottom: .5rem;
+  }
+  .infinite-exhibition .section-space--experience .practice-switcher__item {
+    flex: 0 0 auto;
+    min-height: 2.75rem;
+    white-space: nowrap;
+  }
+  .infinite-exhibition .section-space--experience .practice-detail__media { margin-top: 0; }
+  .infinite-exhibition .section-space--experience .practice-detail__copy > div:first-child {
+    flex-wrap: wrap;
+  }
+}
+
+/* The weekly island now carries the pause between experience and contact. */
+@media (min-width: 768px) {
+  .infinite-exhibition main > section.section-space--experience {
+    padding-bottom: clamp(8rem, 25svh, 16rem) !important;
+  }
+}
+@media (min-width: 768px) and (prefers-reduced-motion: reduce) {
+  .infinite-exhibition main > section.section-space--experience {
+    padding-bottom: 15svh !important;
+  }
+}
+@media (max-width: 767px) {
+  .infinite-exhibition main > section.section-space--experience {
+    padding-bottom: clamp(7rem, 18svh, 10rem) !important;
+  }
+}
+
+/* Project overview and selected work share one chapter origin. Center the
+   selected work so its text and media feel balanced at every screen width. */
+@media (min-width: 768px) {
+  .infinite-exhibition main > section.section-space--projects {
+    min-height: 165svh;
+    padding-top: clamp(6rem, 12svh, 8rem) !important;
+    padding-bottom: clamp(6rem, 12svh, 8rem) !important;
+  }
+  .infinite-exhibition main > section.section-space--projects:has(.project-detail) {
+    justify-content: center;
+  }
+  .infinite-exhibition .section-space--projects > .code-island-panel--detail {
+    width: min(100%, 68rem);
+    max-width: 68rem;
+    margin-inline: auto;
+    padding: clamp(1.4rem, 2.2vw, 2.4rem);
+  }
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  .infinite-exhibition .section-space--projects > .code-island-panel--detail {
+    width: min(100%, 56rem);
+    margin-inline: auto;
+  }
+}
+@media (max-width: 767px) {
+  .infinite-exhibition main > section.section-space--projects {
+    min-height: auto;
+    padding-top: 5.5rem !important;
+    padding-bottom: 5rem !important;
+  }
+  .infinite-exhibition .section-space--projects > .code-island-panel--detail {
+    width: 100%;
+    margin-inline: auto;
+    padding: 1.2rem;
+  }
+}
+
+/* The rooftop holds the content lab; weekly notes live on a separate island. */
+.infinite-exhibition .weekly-island-section {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  min-height: 165svh;
+  padding: clamp(9rem, 24svh, 16rem) 6% clamp(8rem, 22svh, 15rem);
+}
+.infinite-exhibition .life-room-entry {
+  margin-top: clamp(7rem, 30svh, 16rem);
+}
+.infinite-exhibition .weekly-island {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr);
+  gap: clamp(2rem, 4vw, 3.8rem);
+  width: min(48vw, 1000px);
+  margin-left: 3%;
+  padding: clamp(2rem, 3.4vw, 3.6rem);
+  border-radius: 10px;
+  background: #fffaf1;
+  box-shadow: 0 24px 65px rgb(71 56 36 / 13%), 0 3px 9px rgb(71 56 36 / 5%);
+}
+.infinite-exhibition .weekly-island::before {
+  position: absolute;
+  top: 0;
+  right: clamp(2rem, 3.4vw, 3.6rem);
+  left: clamp(2rem, 3.4vw, 3.6rem);
+  height: 2px;
+  background: #b69a6d;
+  content: "";
+}
+.infinite-exhibition .weekly-island__heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.infinite-exhibition .weekly-island__heading h2 {
+  max-width: 7ch;
+  margin: 0;
+  color: #44372a;
+  font-size: clamp(2.2rem, 3.6vw, 3.45rem);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -.03em;
+  text-wrap: balance;
+}
+.infinite-exhibition .weekly-island__heading p {
+  max-width: 27ch;
+  margin-top: 1.5rem;
+  color: #675643;
+  font-size: .95rem;
+  line-height: 1.85;
+}
+.infinite-exhibition .weekly-island__count {
+  display: inline-block;
+  margin-top: auto;
+  padding-top: 2.5rem;
+  color: #765b39;
+  font-size: .8rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .08em;
+}
+.infinite-exhibition .weekly-island__reports {
+  min-width: 0;
+  padding-left: clamp(1.5rem, 2.5vw, 2.4rem);
+  border-left: 1px solid rgb(133 103 63 / 20%);
+}
+.infinite-exhibition .weekly-island .weekly-report { border-color: rgb(133 103 63 / 21%); }
+.infinite-exhibition .weekly-island .weekly-report:first-child { border-top: 0; }
+.infinite-exhibition .weekly-island .weekly-report:last-child { border-bottom: 1px solid rgb(133 103 63 / 21%); }
+.infinite-exhibition .weekly-island .weekly-report summary {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) 1.9rem;
+  align-items: center;
+  gap: .65rem;
+  min-height: 4.5rem;
+  padding: .85rem .25rem;
+  color: #544431;
+  font-size: .96rem;
+  font-weight: 600;
+  transition: color .2s ease, background-color .2s ease;
+}
+.infinite-exhibition .weekly-island .weekly-report summary:hover,
+.infinite-exhibition .weekly-island .weekly-report summary:focus-visible {
+  color: #76572d;
+  background: rgb(183 153 107 / 8%);
+}
+.infinite-exhibition .weekly-island .weekly-report summary:focus-visible {
+  outline: 2px solid #987950;
+  outline-offset: -2px;
+}
+.infinite-exhibition .weekly-island .weekly-report[open] summary { color: #76572d; }
+.infinite-exhibition .weekly-report__index {
+  color: #907a5b;
+  font-size: .78rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .05em;
+}
+.infinite-exhibition .weekly-island .weekly-report[open] .weekly-report__index { color: #76572d; }
+.infinite-exhibition .weekly-island .weekly-report summary > span { transform: none; }
+.infinite-exhibition .weekly-island .weekly-report summary::marker { content: ""; }
+.infinite-exhibition .weekly-island__toggle {
+  position: relative;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid rgb(133 103 63 / 30%);
+  border-radius: 50%;
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.infinite-exhibition .weekly-island__toggle::before,
+.infinite-exhibition .weekly-island__toggle::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: .58rem;
+  height: 1px;
+  background: #76572d;
+  content: "";
+  transform: translate(-50%, -50%);
+}
+.infinite-exhibition .weekly-island__toggle::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+  transition: transform .2s ease;
+}
+.infinite-exhibition .weekly-island .weekly-report[open] .weekly-island__toggle {
+  border-color: #a68b62;
+  background: #eae0cc;
+}
+.infinite-exhibition .weekly-island .weekly-report[open] .weekly-island__toggle::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+.infinite-exhibition .weekly-island .weekly-report__body {
+  max-width: 65ch;
+  padding: .2rem 2.6rem 1.8rem 2.9rem;
+}
+.infinite-exhibition .weekly-island .weekly-report__body article {
+  position: relative;
+}
+.infinite-exhibition .weekly-island .weekly-report__body article::before {
+  position: absolute;
+  top: .52rem;
+  left: -1rem;
+  width: .28rem;
+  height: .28rem;
+  border-radius: 50%;
+  background: #b69a6d;
+  content: "";
+}
+.infinite-exhibition .weekly-island .weekly-report__body article + article { margin-top: 1.55rem; }
+.infinite-exhibition .weekly-island .weekly-report__body h3 {
+  margin-bottom: .45rem;
+  color: #44372a;
+  font-size: .94rem;
+  line-height: 1.5;
+}
+.infinite-exhibition .weekly-island .weekly-report__body ul { padding-left: 1rem; }
+.infinite-exhibition .weekly-island .weekly-report__body li {
+  color: #675643;
+  font-size: .9rem;
+  line-height: 1.8;
+}
+.infinite-exhibition .weekly-island .weekly-report__body li + li { margin-top: .2rem; }
+@media (min-width: 768px) and (max-width: 1200px) {
+  .infinite-exhibition .weekly-island { width: min(68%, 760px); margin-left: 0; }
+}
+@media (max-width: 1100px) {
+  .infinite-exhibition .weekly-island { grid-template-columns: minmax(0, 1fr); gap: 1.8rem; }
+  .infinite-exhibition .weekly-island__heading h2 { max-width: none; }
+  .infinite-exhibition .weekly-island__heading p { max-width: 45ch; }
+  .infinite-exhibition .weekly-island__count { padding-top: 1rem; }
+  .infinite-exhibition .weekly-island__reports { padding-left: 0; border-left: 0; }
+}
+@media (max-width: 767px) {
+  .infinite-exhibition .weekly-island-section { min-height: auto; padding: 5rem 6% 7rem; }
+  .infinite-exhibition .weekly-island { width: 100%; margin: 0; padding: 1.5rem; }
+  .infinite-exhibition .weekly-island::before { right: 1.5rem; left: 1.5rem; }
+  .infinite-exhibition .weekly-island__heading h2 { font-size: clamp(2rem, 9vw, 2.8rem); }
+  .infinite-exhibition .weekly-island .weekly-report__body { padding-right: .3rem; padding-left: 2.55rem; }
+  .infinite-exhibition .life-room-entry { margin-top: clamp(5rem, 22svh, 10rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .infinite-exhibition .weekly-island .weekly-report summary,
+  .infinite-exhibition .weekly-island__toggle,
+  .infinite-exhibition .weekly-island__toggle::after { transition: none; }
+}
+.infinite-exhibition .content-archive {
+  max-width: 1160px;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.infinite-exhibition .content-archive__masthead {
+  max-width: 48rem;
+  margin-bottom: clamp(2rem, 5svh, 4rem) !important;
+  padding: clamp(1.3rem, 2vw, 2rem);
+  border-radius: 14px;
+  background: rgb(255 250 241 / 92%);
+}
+.infinite-exhibition .content-archive__channels {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.6rem);
+}
+.infinite-exhibition .content-archive__channels > * {
+  min-width: 0;
+}
+.infinite-exhibition .content-archive__workflow {
+  grid-column: 1 / -1;
+  padding: clamp(1.4rem, 2.3vw, 2.3rem);
+  border: 1px solid var(--exhibition-line);
+  border-radius: 14px;
+  background: rgb(255 250 241 / 96%);
+}
+.infinite-exhibition .content-archive__workflow .content-archive__workflow-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 1rem;
+  border-left: 0;
+}
+.infinite-exhibition .content-archive__workflow .content-archive__step {
+  border-bottom: 0;
+}
+.infinite-exhibition .content-archive__workflow .content-archive__step:last-child {
+  border-right: 0;
+}
+.infinite-exhibition .content-archive__skill-spotlight,
+.infinite-exhibition .content-archive__product-card {
+  padding: clamp(1.4rem, 2.3vw, 2.3rem);
+  border: 1px solid var(--exhibition-line);
+  border-radius: 14px;
+  background: rgb(255 250 241 / 96%);
+}
+.infinite-exhibition .content-archive__skill-spotlight {
+  grid-column: 1 / span 8;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-content: space-between;
+  background: rgb(248 237 216 / 96%);
+}
+.infinite-exhibition .content-archive__skill-kicker,
+.infinite-exhibition .content-archive__product-card-heading p {
+  margin: 0;
+  color: var(--ice-400);
+  font: 10px/1.25 var(--font-geist-mono), monospace;
+  letter-spacing: .13em;
+}
+.infinite-exhibition .content-archive__skill-spotlight h3,
+.infinite-exhibition .content-archive__product-card h3 {
+  margin-top: .55rem;
+  color: var(--ice-50);
+  font-size: clamp(1.5rem, 2.2vw, 2.1rem);
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -.025em;
+}
+.infinite-exhibition .content-archive__skill-spotlight-copy > p:last-child,
+.infinite-exhibition .content-archive__product-card-body > p {
+  max-width: 62ch;
+  margin-top: .7rem;
+  color: var(--ice-200);
+  font-size: clamp(.9rem, 1vw, 1rem);
+  line-height: 1.8;
+}
+.infinite-exhibition .content-archive__skill-spotlight-side {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .8rem 1rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgb(133 103 63 / 22%);
+}
+.infinite-exhibition .content-archive__skill-spotlight-side > span {
+  color: var(--ice-400);
+  font: 10px/1.65 var(--font-geist-mono), monospace;
+  letter-spacing: .08em;
+}
+.infinite-exhibition .content-archive__skill-spotlight .content-archive__workflow-link {
+  min-height: 2.75rem;
+  margin-top: 0;
+  padding: .65rem 1rem;
+  border: 1px solid rgb(133 103 63 / 35%);
+  border-radius: 999px;
+  background: rgb(255 250 241 / 85%);
+  font-size: .85rem;
+}
+.infinite-exhibition .content-archive__result {
+  grid-column: 9 / -1;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(1.4rem, 2.3vw, 2.3rem);
+  border-radius: 14px;
+  background: rgb(255 250 241 / 96%);
+  box-shadow: none;
+}
+.infinite-exhibition .content-archive__result:hover {
+  transform: none;
+  background: rgb(255 250 241 / 96%);
+  box-shadow: none;
+}
+.infinite-exhibition .content-archive__side-results {
+  margin-top: 1.5rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--exhibition-line);
+}
+.infinite-exhibition .content-archive__side-results > p {
+  color: var(--ice-50);
+  font-size: .9rem;
+  font-weight: 650;
+}
+.infinite-exhibition .content-archive__side-results > span {
+  display: block;
+  margin-top: .45rem;
+  color: var(--ice-200);
+  font-size: .78rem;
+  line-height: 1.7;
+}
+.infinite-exhibition .content-archive__side-results .content-archive__metrics {
+  margin-top: 1rem;
+  padding-top: .9rem;
+  border-top: 1px solid var(--exhibition-line);
+  border-left: 0;
+}
+.infinite-exhibition .content-archive__side-results .content-archive__metrics > div:first-child {
+  padding-left: 0;
+}
+.infinite-exhibition .content-archive__side-results .content-archive__metrics strong {
+  font-size: clamp(1.35rem, 1.6vw, 1.6rem);
+}
+.infinite-exhibition .content-archive__product-card {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(10rem, .58fr) minmax(0, 1.42fr);
+  gap: clamp(1rem, 2.6vw, 2.7rem);
+}
+.infinite-exhibition .content-archive__product-card-heading > span {
+  display: block;
+  margin-top: .7rem;
+  color: var(--ice-400);
+  font-size: .7rem;
+  line-height: 1.6;
+}
+.infinite-exhibition .content-archive__product-card-body h3 {
+  margin-top: 0;
+}
+.infinite-exhibition .content-archive__product-card-proof {
+  color: var(--ice-600) !important;
+  font-weight: 650;
+}
+@media (min-width: 768px) {
+  .infinite-exhibition main > .content-section {
+    min-height: 205svh !important;
+    padding-top: clamp(8rem, 14svh, 11rem) !important;
+    padding-bottom: clamp(9rem, 24svh, 18rem) !important;
+    align-items: flex-start;
+  }
+  .infinite-exhibition .content-archive {
+    width: min(100%, 1160px);
+    margin-inline: auto;
+  }
+  .infinite-exhibition .content-archive__result {
+    margin-top: 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 1050px) {
+  .infinite-exhibition .content-archive__channels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .infinite-exhibition .content-archive__channels > * {
+    grid-column: 1;
+  }
+  .infinite-exhibition .content-archive__workflow .content-archive__workflow-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .infinite-exhibition .content-archive__workflow .content-archive__step:nth-child(2) {
+    border-right: 0;
+  }
+  .infinite-exhibition .content-archive__workflow .content-archive__step:nth-child(-n+2) {
+    border-bottom: 1px solid var(--exhibition-line);
+  }
+}
+@media (max-width: 767px) {
+  .infinite-exhibition main > .content-section {
+    min-height: auto !important;
+    padding-top: 5rem !important;
+    padding-bottom: 6rem !important;
+    align-items: flex-start;
+  }
+  .infinite-exhibition .content-archive {
+    width: 100%;
+  }
+  .infinite-exhibition .content-archive__masthead {
+    padding: 1.25rem;
+  }
+  .infinite-exhibition .content-archive__channels {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .infinite-exhibition .content-archive__channels > * {
+    grid-column: 1;
+  }
+  .infinite-exhibition .content-archive__workflow .content-archive__workflow-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .infinite-exhibition .content-archive__workflow .content-archive__step {
+    border-right: 0;
+    border-bottom: 1px solid var(--exhibition-line);
+  }
+  .infinite-exhibition .content-archive__workflow .content-archive__step:last-child {
+    border-bottom: 0;
+  }
+  .infinite-exhibition .content-archive__skill-spotlight,
+  .infinite-exhibition .content-archive__product-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  .infinite-exhibition .content-archive__skill-spotlight-side {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .infinite-exhibition .content-archive__product-card h3 {
+    font-size: 1.3rem;
+  }
+}
+.infinite-exhibition .project-detail-view { width: 100%; min-width: 0; }
+.infinite-exhibition .project-detail-view > .pointer-events-auto { min-width: 0; }
+.infinite-exhibition .code-island-panel--overview > .reveal,
+.infinite-exhibition .code-island-panel--overview .project-overview-row.reveal {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+/* The work windows unfold in sequence when the terrace comes into view. */
+@media (prefers-reduced-motion: no-preference) {
+  .infinite-exhibition .code-island-panel--overview > .reveal:not(.reveal-in),
+  .infinite-exhibition .code-island-panel--overview .project-overview-row.reveal:not(.reveal-in) {
+    opacity: 0;
+  }
+  .infinite-exhibition .code-island-panel--overview > .reveal.reveal-in {
+    animation: code-island-heading-arrive .7s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .infinite-exhibition .code-island-panel--overview .project-overview-row.reveal-in {
+    animation: code-island-window-arrive .78s cubic-bezier(.2,.75,.22,1) both;
+    animation-delay: var(--reveal-delay);
+    transform-origin: 50% 100%;
+  }
+}
+.infinite-exhibition .code-island-panel--overview > .reveal > div::after {
+  content: "";
+  display: block;
+  width: min(11rem, 35%);
+  height: 1px;
+  margin: 1.65rem auto 0;
+  background: linear-gradient(90deg, transparent, #bfa578 22%, #bfa578 78%, transparent);
+}
+@keyframes code-island-heading-arrive {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes code-island-window-arrive {
+  from { opacity: 0; transform: perspective(900px) rotateX(-9deg) translateY(34px) scale(.96); }
+  to { opacity: 1; transform: perspective(900px) rotateX(0) translateY(0) scale(1); }
+}
+/* Keep the Mayday source image at its natural ratio; the old 60svh cap
+   could crop its lower edge inside a fixed-height portrait frame. */
+.infinite-exhibition .project-detail .project-detail-media-stack--portrait-still {
+  height: auto;
+}
+.infinite-exhibition .project-detail .project-detail-media-stack--portrait-still .project-detail-media-frame--portrait:not(.project-detail-media-frame--qr) {
+  position: relative;
+  aspect-ratio: auto !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible;
+}
+.infinite-exhibition .project-detail .project-detail-media-stack--portrait-still .project-detail-media-frame--portrait:not(.project-detail-media-frame--qr) > img {
+  width: 100%;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+}
+.infinite-exhibition .project-detail-media-zoom {
+  position: absolute;
+  right: .5rem;
+  bottom: .5rem;
+  padding: .45rem .7rem;
+  border: 1px solid rgb(116 88 52 / 28%);
+  border-radius: 999px;
+  background: rgb(255 251 242 / 94%);
+  color: #55432f;
+  font-size: .72rem;
+  line-height: 1.3;
+  box-shadow: 0 3px 12px rgb(45 38 26 / 12%);
+  cursor: pointer;
+}
+.infinite-exhibition .project-detail-media-zoom:focus-visible {
+  outline: 2px solid #795b35;
+  outline-offset: 2px;
+}
+.infinite-exhibition .project-image-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(92vw, 900px);
+  max-width: none;
+  max-height: 86svh;
+  padding: 0;
+  border: 1px solid #d6c7aa;
+  border-radius: 12px;
+  background: #fffaf1;
+  color: #4c3d2d;
+  box-shadow: 0 24px 90px rgb(30 24 34 / 24%);
+  overflow: auto;
+}
+.infinite-exhibition .project-image-dialog::backdrop { background: rgb(30 29 41 / 65%); }
+.infinite-exhibition .project-image-dialog__toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid #e5d9c3;
+  background: rgb(255 250 241 / 96%);
+  font-size: .8rem;
+}
+.infinite-exhibition .project-image-dialog__toolbar button { min-height: 2rem; padding: .2rem .5rem; cursor: pointer; }
+.infinite-exhibition .project-image-dialog > img {
+  display: block;
+  width: min(100%, 760px);
+  height: auto;
+  max-width: 100%;
+  max-height: none !important;
+  margin-inline: auto;
+}
+.infinite-exhibition .project-detail-view > .pointer-events-auto > button:first-child {
+  min-height: 2.75rem;
+  font-size: .8rem;
+}
+.infinite-exhibition main > section.section-space--projects .project-detail .project-detail__title-row h2 {
+  min-width: 0;
+  max-width: 100%;
+  margin-bottom: .25rem;
+  font-size: clamp(1.9rem, 2.6vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.infinite-exhibition .project-detail__title-row {
+  margin-bottom: .3rem;
+}
+@media (max-width: 767px) {
+  .infinite-exhibition main > section.section-space--projects .project-detail .project-detail__title-row h2 {
+    font-size: clamp(1.7rem, 6vw, 2rem);
+  }
+}
+.infinite-exhibition .project-detail .practice-detail__copy > p.text-ice-200,
+.infinite-exhibition .project-detail .practice-detail__copy > p.project-detail__note,
+.infinite-exhibition .project-detail__sections .project-detail__section-card p,
+.infinite-exhibition .project-detail__subprojects p {
+  font-size: clamp(.875rem, 1vw, .975rem);
+  line-height: 1.7;
+}
+.infinite-exhibition .project-detail__sections .project-detail__section-card h4,
+.infinite-exhibition .project-detail__subprojects h4 { font-size: .8rem; }
+.infinite-exhibition .project-detail__meta { font-size: .76rem; line-height: 1.55; }
+.infinite-exhibition .project-detail__tech-list { font-size: .72rem; }

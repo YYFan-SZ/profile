@@ -1,0 +1,218 @@
+/* A single chart and reading surface on the right side of the rooftop. */
+.infinite-exhibition main > .content-section--rooftop {
+  min-height: 145svh !important;
+  align-items: flex-start;
+  padding: clamp(3rem, 8svh, 6rem) 4vw 9svh !important;
+}
+
+.infinite-exhibition .rooftop-lab {
+  position: relative;
+  top: auto;
+  width: min(51vw, 720px);
+  max-width: 100%;
+  margin: 0 4vw 0 auto;
+  padding: clamp(1.2rem, 2vw, 1.8rem);
+  border: 1px solid rgb(174 146 106 / 28%);
+  border-radius: 16px;
+  background: rgb(255 249 239 / 96%);
+  box-shadow: 0 18px 45px rgb(85 62 35 / 12%);
+}
+.infinite-exhibition .rooftop-lab__intro {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+.infinite-exhibition .rooftop-lab__intro h2 { font-size: clamp(1.8rem, 2.45vw, 2.55rem); }
+.infinite-exhibition .rooftop-lab__intro > p {
+  max-width: 55ch;
+  margin: .5rem 0 0;
+  font-size: .86rem;
+  line-height: 1.65;
+}
+.infinite-exhibition .rooftop-lab__hint { margin-top: .35rem; font-size: .71rem; }
+
+.infinite-exhibition .rooftop-lab__navigation {
+  display: grid;
+  grid-template-columns: minmax(9rem, .82fr) minmax(0, 1.18fr);
+  align-items: center;
+  gap: clamp(.65rem, 1.6vw, 1.4rem);
+  margin: 1.05rem 0 0;
+}
+.infinite-exhibition .rooftop-lab__chart {
+  display: block;
+  width: 100%;
+  max-width: 14.5rem;
+  aspect-ratio: 1;
+  overflow: visible;
+  cursor: pointer;
+}
+.infinite-exhibition .rooftop-lab__chart-outer,
+.infinite-exhibition .rooftop-lab__chart-ring,
+.infinite-exhibition .rooftop-lab__chart-inner {
+  fill: none;
+  stroke: #cfb78f;
+  stroke-width: 1.15;
+}
+.infinite-exhibition .rooftop-lab__chart-ring { stroke-dasharray: 2 7; }
+.infinite-exhibition .rooftop-lab__chart-inner { stroke: #decbaa; }
+.infinite-exhibition .rooftop-lab__chart-route {
+  fill: none;
+  stroke: #cbb594;
+  stroke-width: 1.4;
+  stroke-dasharray: 2 5;
+}
+.infinite-exhibition .rooftop-lab__chart-course {
+  fill: none;
+  stroke: #ad8854;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 120;
+  animation: voyage-course .7s cubic-bezier(.16, 1, .3, 1) both;
+}
+@keyframes voyage-course { from { stroke-dashoffset: 120; } to { stroke-dashoffset: 0; } }
+.infinite-exhibition .rooftop-lab__chart-port { fill: #f8eedf; stroke: #aa8c62; stroke-width: 2; }
+.infinite-exhibition .rooftop-lab__chart-port.is-active { fill: #aa8c62; stroke: #fffaf0; stroke-width: 3; }
+.infinite-exhibition .rooftop-lab__chart-hub { fill: #e4d0ad; stroke: #fff8e9; stroke-width: 2; }
+.infinite-exhibition .rooftop-lab__vessel-hull { fill: #f7f0e5; stroke: #a88959; stroke-width: 1.7; }
+.infinite-exhibition .rooftop-lab__vessel-sail { fill: #a9c9af; stroke: #70937f; stroke-width: 1.6; }
+.infinite-exhibition .rooftop-lab__vessel-mast { fill: none; stroke: #aa8b5d; stroke-width: 1.6; }
+
+.infinite-exhibition .rooftop-lab__stations {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+.infinite-exhibition .rooftop-lab__station,
+.infinite-exhibition .rooftop-lab__station:nth-child(2),
+.infinite-exhibition .rooftop-lab__station:nth-child(n+3) {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  min-height: 3.15rem;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  align-items: center;
+  gap: .45rem;
+  padding: .45rem .25rem;
+  border: 0;
+  border-bottom: 1px solid #e3d5c2;
+  background: transparent;
+  box-shadow: none;
+  text-align: left;
+}
+.infinite-exhibition .rooftop-lab__station:last-child { border-bottom: 0; }
+.infinite-exhibition .rooftop-lab__station:hover,
+.infinite-exhibition .rooftop-lab__station:focus-visible,
+.infinite-exhibition .rooftop-lab__station.is-active { background: transparent; }
+.infinite-exhibition .rooftop-lab__station.is-active strong { color: #8b6332; }
+.infinite-exhibition .rooftop-lab__station strong {
+  margin: 0;
+  font-size: clamp(.76rem, .98vw, .93rem);
+  line-height: 1.35;
+}
+.infinite-exhibition .rooftop-lab__station-short { display: none; }
+.infinite-exhibition .rooftop-lab__station-line { right: auto; bottom: 0; left: 2.45rem; width: calc(100% - 2.7rem); height: 2px; }
+
+.infinite-exhibition .rooftop-lab__stage,
+.infinite-exhibition .rooftop-lab__stage--0 {
+  width: 100%;
+  min-height: 0;
+  max-height: none;
+  margin: 1rem 0 0;
+  padding: 1rem 0 0;
+  overflow: visible;
+  border: 0;
+  border-top: 1px solid #d9c6aa;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: none;
+}
+.infinite-exhibition .rooftop-lab__scene { min-height: 0; padding: .35rem 0 0; }
+.infinite-exhibition .rooftop-lab__scene--batch,
+.infinite-exhibition .rooftop-lab__scene--commerce,
+.infinite-exhibition .rooftop-lab__scene--teacher { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+.infinite-exhibition .rooftop-lab__scene h3 { font-size: clamp(1.4rem, 2vw, 1.95rem); }
+.infinite-exhibition .rooftop-lab__figure { margin-top: .85rem; }
+.infinite-exhibition .rooftop-lab__figure strong { font-size: clamp(3.5rem, 6vw, 5rem); }
+.infinite-exhibition .rooftop-lab__commerce-side { padding: 1rem 0 0; border: 0; border-top: 1px solid #d9c6aa; }
+.infinite-exhibition .rooftop-lab__commerce-side > div { margin-top: .7rem; }
+
+/* The existing four chapter texts now read as one open page at a time. */
+.infinite-exhibition .commerce-scroll { padding: .15rem 0 0; }
+.infinite-exhibition .commerce-scroll__heading { text-align: left; }
+.infinite-exhibition .commerce-scroll__heading h3 { font-size: clamp(1.45rem, 2vw, 1.95rem); }
+.infinite-exhibition .commerce-scroll__frame { margin: .75rem 0 0; padding: 0; }
+.infinite-exhibition .commerce-scroll__spool { display: none; }
+.infinite-exhibition .commerce-scroll__viewport {
+  width: 100%;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  scroll-snap-type: none;
+}
+.infinite-exhibition .commerce-scroll__track {
+  display: block;
+  width: 100%;
+  height: auto;
+  transform: none;
+  transition: none;
+  will-change: auto;
+}
+.infinite-exhibition .commerce-scroll__chapter {
+  display: none;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  flex: none;
+  grid-template-columns: minmax(0, 1fr) minmax(9rem, .55fr);
+  gap: 1.2rem;
+  padding: .45rem 0;
+}
+.infinite-exhibition .commerce-scroll__chapter.is-active { display: grid; }
+.infinite-exhibition .commerce-scroll__chapter::before { display: none; }
+.infinite-exhibition .commerce-scroll__copy h4 { margin-top: .4rem; font-size: clamp(1.45rem, 2.25vw, 2.2rem); }
+.infinite-exhibition .commerce-scroll__copy p { margin-top: .55rem; font-size: .84rem; line-height: 1.65; }
+.infinite-exhibition .commerce-scroll__aside { margin-top: .7rem; }
+.infinite-exhibition .commerce-scroll__artifact { min-height: 10rem; max-height: 12rem; }
+.infinite-exhibition .commerce-scroll__steps { margin: .55rem 0 0; }
+.infinite-exhibition .commerce-scroll__footer { margin: .5rem 0 0; }
+
+@media (max-width: 1100px) {
+  .infinite-exhibition .rooftop-lab { width: min(62vw, 680px); margin-right: 1vw; }
+  .infinite-exhibition .commerce-scroll__chapter { grid-template-columns: minmax(0, 1fr); }
+  .infinite-exhibition .commerce-scroll__artifact { display: none; }
+}
+@media (max-width: 767px) {
+  .infinite-exhibition main > .content-section--rooftop { min-height: auto !important; padding: 5rem 1.1rem 6rem !important; }
+  .infinite-exhibition .rooftop-lab { width: 100%; margin: 0; padding: 1rem; }
+  .infinite-exhibition .rooftop-lab__navigation { grid-template-columns: minmax(7.5rem, 38%) minmax(0, 1fr); gap: .5rem; }
+  .infinite-exhibition .rooftop-lab__chart { max-width: 12rem; }
+  .infinite-exhibition .rooftop-lab__station { min-width: 0; }
+  .infinite-exhibition .rooftop-lab__station strong { font-size: .76rem; }
+  .infinite-exhibition .rooftop-lab__stage,
+  .infinite-exhibition .rooftop-lab__stage--0 { min-height: 0; max-height: none; overflow: visible; }
+  .infinite-exhibition .commerce-scroll__viewport { min-height: 0; height: auto; overflow: visible; }
+  .infinite-exhibition .commerce-scroll__track { transform: none; }
+  .infinite-exhibition .commerce-scroll__chapter { grid-template-columns: minmax(0, 1fr); padding: .55rem 0; }
+  .infinite-exhibition .commerce-scroll__artifact { display: block; min-height: 9rem; max-height: 10rem; }
+}
+@media (max-width: 390px) {
+  .infinite-exhibition .rooftop-lab__navigation { grid-template-columns: 7.3rem minmax(0, 1fr); }
+  .infinite-exhibition .rooftop-lab__station { grid-template-columns: 1.35rem minmax(0, 1fr); gap: .3rem; }
+  .infinite-exhibition .rooftop-lab__station-line { left: 1.8rem; width: calc(100% - 2rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .infinite-exhibition .rooftop-lab__chart-course { animation: none; stroke-dashoffset: 0; }
+}

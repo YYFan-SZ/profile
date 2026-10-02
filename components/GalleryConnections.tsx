@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
+import { SEA_ROUTE } from "@/lib/exhibition-route";
 
 // A single solid ribbon, including its underside and edges, rather than loose slabs.
 function ribbon(curve: THREE.Curve<THREE.Vector3>, width: number, depth: number, count = 90) {
@@ -17,7 +18,7 @@ function ribbon(curve: THREE.Curve<THREE.Vector3>, width: number, depth: number,
 
 export default function GalleryConnections() {
   const parts = useMemo(() => {
-    const promenade = new THREE.CatmullRomCurve3([[2,-1.98,-9.8],[2,-1.98,-17],[11,-1.77,-23],[25,-1.77,-25],[36,-1.77,-28],[35,-1.77,-39],[32,-1.77,-47],[34,-1.77,-62],[38,-1.77,-77]].map(p => new THREE.Vector3(p[0],p[1],p[2])));
+    const promenade = new THREE.CatmullRomCurve3(SEA_ROUTE.map(p => new THREE.Vector3(...p)));
     const steps=Array.from({length:1},()=>{
       // A single flowing pool edge leaves a narrow water channel beside the dais.
       const inner=8.1,outer=9.65,start=.38*Math.PI,end=1.44*Math.PI,s=new THREE.Shape();
@@ -31,8 +32,14 @@ export default function GalleryConnections() {
   useEffect(()=>()=>{parts.path.dispose();parts.steps.forEach(g=>g.dispose());},[parts]);
   return <group>
     {[parts.path,...parts.steps].map((g,i)=><mesh key={i} geometry={g} castShadow receiveShadow><meshPhysicalMaterial color="#f8eee0" roughness={.24} clearcoat={.6} clearcoatRoughness={.2} side={THREE.DoubleSide}/></mesh>)}
-    <mesh position={[9.2,-1.96,-2.2]} receiveShadow castShadow>
+    <mesh position={[12,-1.462,-4.8]} receiveShadow castShadow>
       <cylinderGeometry args={[1.8,1.88,.25,80]}/><meshPhysicalMaterial color="#f8eee0" roughness={.24} clearcoat={.6} clearcoatRoughness={.2}/>
+    </mesh>
+    <mesh position={[8.9,-1.5,-4.8]} receiveShadow castShadow>
+      <boxGeometry args={[6,.24,2.5]}/><meshPhysicalMaterial color="#f8eee0" roughness={.24} clearcoat={.6}/>
+    </mesh>
+    <mesh position={[9.1,-1.49,-12.2]} receiveShadow castShadow>
+      <boxGeometry args={[9,.3,5]}/><meshPhysicalMaterial color="#f8eee0" roughness={.24} clearcoat={.6}/>
     </mesh>
   </group>;
 }

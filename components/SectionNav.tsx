@@ -11,15 +11,16 @@ import { useLanguage } from "@/components/LanguageProvider";
 // screens to avoid crowding the keyboard.
 export default function SectionNav() {
   const [active, setActive] = useState<string>("hero");
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const lenis = useLenis();
 
   const SECTIONS = [
     { id: "hero", label: t("nav.home") },
     { id: "stack", label: t("nav.stack") },
-    { id: "projects", label: t("nav.project") },
     { id: "content", label: t("nav.content") },
+    { id: "projects", label: t("nav.project") },
     { id: "experience", label: t("nav.experience") },
+    { id: "weekly", label: lang === "en" ? "Weekly notes" : "周报" },
     { id: "contact", label: t("nav.contact") },
   ];
 
@@ -27,9 +28,10 @@ export default function SectionNav() {
     const ids = [
       "hero",
       "stack",
-      "projects",
       "content",
+      "projects",
       "experience",
+      "weekly",
       "contact",
     ];
     const els = ids.map((id) =>
@@ -62,7 +64,9 @@ export default function SectionNav() {
     // leave the viewport at its old position. Use the active Lenis instance
     // so the section, keyboard and navigation state move together.
     if (lenis) {
-      lenis.scrollTo(target, { duration: 1.4 });
+      // Flex `order` differs from DOM order here, so Lenis' element offset
+      // can land on the preceding chapter. Use its visual document position.
+      lenis.scrollTo(target.getBoundingClientRect().top + window.scrollY, { duration: 1.4 });
     } else {
       target.scrollIntoView({ behavior: "auto", block: "start" });
     }
