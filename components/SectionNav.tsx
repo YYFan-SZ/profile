@@ -11,6 +11,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 // screens to avoid crowding the keyboard.
 export default function SectionNav() {
   const [active, setActive] = useState<string>("hero");
+  const [menuOpen, setMenuOpen] = useState(false);
   const { t, lang } = useLanguage();
   const lenis = useLenis();
 
@@ -54,7 +55,17 @@ export default function SectionNav() {
     return () => obs.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [menuOpen]);
+
   const goTo = (id: string) => {
+    setMenuOpen(false);
     const target = document.querySelector<HTMLElement>(
       `[data-kb-section="${id}"]`
     );
@@ -66,13 +77,15 @@ export default function SectionNav() {
     if (lenis) {
       // Flex `order` differs from DOM order here, so Lenis' element offset
       // can land on the preceding chapter. Use its visual document position.
-      lenis.scrollTo(target.getBoundingClientRect().top + window.scrollY, { duration: 1.4 });
+      const isMobile = window.matchMedia("(max-width: 1023px)").matches;
+      const top = target.getBoundingClientRect().top + window.scrollY - (isMobile ? 72 : 0);
+      lenis.scrollTo(Math.max(0, top), { duration: isMobile ? 0.65 : 1.4 });
     } else {
       target.scrollIntoView({ behavior: "auto", block: "start" });
     }
   };
 
-  return (
+  return (<>
     <nav
       aria-label={t("nav.aria")}
       className="section-nav hidden md:flex fixed right-6 top-1/2 -translate-y-1/2 z-40 pointer-events-auto"
@@ -110,5 +123,28 @@ export default function SectionNav() {
         );
       })}
     </nav>
-  );
+    <nav className="mobile-section-nav" aria-label={t("nav.aria")}>
+      {menuOpen && <button type="button" className="mobile-section-nav__scrim" aria-label={lang === "en" ? "Close section menu" : "关闭章节目录"} onClick={() => setMenuOpen(false)} />}
+      <div id="mobile-section-menu" className="mobile-section-nav__panel" hidden={!menuOpen}>
+        <p>{lang === "en" ? "Explore the portfolio" : "浏览作品集"}</p>
+        {SECTIONS.map((section, index) => <button
+          key={section.id}
+          type="button"
+          onClick={() => goTo(section.id)}
+          aria-current={active === section.id ? "location" : undefined}
+        ><span>{String(index + 1).padStart(2, "0")}</span>{section.label}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></button>)}
+      </div>
+      <button
+        className="mobile-section-nav__trigger"
+        type="button"
+        aria-expanded={menuOpen}
+        aria-controls="mobile-section-menu"
+        onClick={() => setMenuOpen((open) => !open)}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d={menuOpen ? "M5 5l14 14M19 5 5 19" : "M4 7h16M4 12h16M4 17h16"} /></svg>
+        <span>{menuOpen ? (lang === "en" ? "Close" : "关闭") : (SECTIONS.find((section) => section.id === active)?.label ?? t("nav.home"))}</span>
+        <small>{lang === "en" ? "Sections" : "章节"}</small>
+      </button>
+    </nav>
+  </>);
 }

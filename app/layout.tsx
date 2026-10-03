@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
 import FrozenBackground from "@/components/FrozenBackground";
@@ -47,16 +48,12 @@ export default function RootLayout({
       className="h-full antialiased"
       suppressHydrationWarning
     >
-      <head>
-        {/* Run synchronously before hydration to apply the user's stored
-            season + language — avoids a flash of the default values. */}
-        <script dangerouslySetInnerHTML={{ __html: SEASON_BOOT_SCRIPT }} />
-        <script dangerouslySetInnerHTML={{ __html: LANG_BOOT_SCRIPT }} />
-      </head>
       <body
         className="min-h-full flex flex-col"
         suppressHydrationWarning
       >
+        <Script id="season-boot" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: SEASON_BOOT_SCRIPT }} />
+        <Script id="language-boot" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: LANG_BOOT_SCRIPT }} />
         <LanguageProvider>
           <SeasonProvider>
             <FrozenBackground />

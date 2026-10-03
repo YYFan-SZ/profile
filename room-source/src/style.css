@@ -1476,19 +1476,19 @@ body.is-night .contact-social-link--x {
 
 @media (max-width: 700px) {
   .lamp-switch {
-    left: 16px;
-    bottom: 16px;
+    left: calc(16px + env(safe-area-inset-left));
+    bottom: calc(16px + env(safe-area-inset-bottom));
   }
 
   .room-controls {
-    top: 14px;
-    right: 14px;
+    top: calc(14px + env(safe-area-inset-top));
+    right: calc(14px + env(safe-area-inset-right));
     gap: 8px;
   }
 
   .room-control--music {
-    width: 43px;
-    height: 43px;
+    width: 44px;
+    height: 44px;
   }
 
   .music-player {
@@ -1503,27 +1503,32 @@ body.is-night .contact-social-link--x {
 
   .room-control--lighting {
     width: 55px;
-    height: 43px;
+    height: 44px;
   }
 
   .room-control--home,
   .room-control--panorama {
-    width: 43px;
-    height: 43px;
+    width: 44px;
+    height: 44px;
   }
 
   .exploration-progress {
-    left: 14px;
+    left: calc(14px + env(safe-area-inset-left));
     right: auto;
-    bottom: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom));
     width: min(196px, calc(100vw - 28px));
     padding: 4px 2px;
   }
 
   .exploration-guide {
-    left: 14px;
-    bottom: 14px;
+    left: calc(14px + env(safe-area-inset-left));
+    bottom: calc(14px + env(safe-area-inset-bottom));
     width: min(250px, calc(100vw - 28px));
+  }
+
+  .exploration-guide-trigger {
+    min-height: 44px;
+    align-items: center;
   }
 
   .exploration-guide-list {
@@ -1531,9 +1536,9 @@ body.is-night .contact-social-link--x {
   }
 
   .weather-status {
-    left: 14px;
+    left: calc(14px + env(safe-area-inset-left));
     right: auto;
-    bottom: 72px;
+    bottom: calc(72px + env(safe-area-inset-bottom));
   }
 
   .receipt-actions {
@@ -1547,9 +1552,9 @@ body.is-night .contact-social-link--x {
 
   .contact-card {
     top: auto;
-    right: 16px;
-    bottom: 74px;
-    left: 16px;
+    right: calc(16px + env(safe-area-inset-right));
+    bottom: calc(74px + env(safe-area-inset-bottom));
+    left: calc(16px + env(safe-area-inset-left));
     width: auto;
     transform: translateY(18px) scale(0.97);
   }

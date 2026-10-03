@@ -3,6 +3,7 @@
 import "./exhibition.css";
 import "./exhibition-transition.css";
 import "./content-orbit.css";
+import "./mobile.css";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLenis } from "lenis/react";
@@ -738,11 +739,11 @@ export default function Home() {
   const scrollToProjects = useCallback((immediate = false) => {
     const section = document.querySelector<HTMLElement>('[data-kb-section="projects"]');
     if (!section) return;
-    const top = section.getBoundingClientRect().top + window.scrollY;
+    const top = section.getBoundingClientRect().top + window.scrollY - (isMobile ? 72 : 0);
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (lenis) lenis.scrollTo(top, { duration: .65, immediate: immediate || reducedMotion });
-    else window.scrollTo({ top, behavior: "auto" });
-  }, [lenis]);
+    if (lenis) lenis.scrollTo(Math.max(0, top), { duration: .65, immediate: immediate || reducedMotion });
+    else window.scrollTo({ top: Math.max(0, top), behavior: "auto" });
+  }, [isMobile, lenis]);
 
   useEffect(() => {
     const onKeyboardFocus = (event: Event) => {
@@ -795,9 +796,9 @@ export default function Home() {
       <div className="infinite-exhibition relative">
         {/* All screens get chapter backgrounds. Mobile keeps its interactive
             piano in the content flow and uses a simpler fixed backdrop. */}
-        <div className="keyboard-scene fixed inset-0 z-0">
-          <FrozenKeyboard exhibition mobile={isMobile} backgroundOnly={isMobile} />
-        </div>
+        {!isMobile && <div className="keyboard-scene fixed inset-0 z-0">
+          <FrozenKeyboard exhibition />
+        </div>}
 
         {/* Header */}
         <header className="fixed top-0 inset-x-0 z-50 px-6 sm:px-10 md:px-14 py-5 flex items-center justify-between pointer-events-none">

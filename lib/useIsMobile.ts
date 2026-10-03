@@ -7,7 +7,7 @@ import { useSyncExternalStore } from "react";
 // shrink) rather than a one-shot userAgent sniff. SSR snapshot is `false`
 // (desktop) so the server renders the desktop tree; useSyncExternalStore then
 // corrects to mobile on the client after mount without a hydration error.
-const QUERY = "(max-width: 767px)";
+const QUERY = "(max-width: 1023px)";
 
 function subscribe(callback: () => void): () => void {
   if (typeof window === "undefined") return () => {};

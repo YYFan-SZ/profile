@@ -1,0 +1,319 @@
+/* The desktop exhibition is a walkthrough. On phones it becomes a readable
+   sequence with one in-flow 3D moment, while retaining the same chapters. */
+@media (max-width: 1023px) {
+  html { scroll-padding-top: 5.5rem; }
+  body:has(.infinite-exhibition) { overflow-x: clip; }
+  body:has(.infinite-exhibition) .frozen-archive { display: none; }
+  .infinite-exhibition { width: 100%; overflow-x: clip; }
+  .infinite-exhibition main {
+    width: 100%;
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+  .infinite-exhibition main > section {
+    width: 100%;
+    min-width: 0;
+    scroll-margin-top: 5.25rem;
+    padding-inline: clamp(1rem, 5vw, 1.5rem);
+  }
+  .infinite-exhibition > header {
+    top: 0;
+    min-height: 4.5rem;
+    padding: calc(.65rem + env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) .65rem max(1rem, env(safe-area-inset-left));
+    background: linear-gradient(180deg, #fffaf1 70%, rgb(255 250 241 / 0));
+  }
+  .infinite-exhibition > header > div:first-child > span { font-size: .875rem; }
+
+  .infinite-exhibition main > [data-kb-section="hero"] {
+    min-height: 0;
+    padding-top: calc(6rem + env(safe-area-inset-top));
+    padding-bottom: 2.25rem;
+    gap: 1.25rem;
+  }
+  .infinite-exhibition .hero-profile { order: 0; max-width: 34rem; }
+  .infinite-exhibition .hero-profile__name {
+    font-size: clamp(2.55rem, 10.2vw, 3.8rem);
+    line-height: 1.07;
+    letter-spacing: -.04em;
+  }
+  .infinite-exhibition .hero-profile__content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    margin-top: 1.4rem;
+  }
+  .infinite-exhibition .hero-profile__portrait { width: 5.25rem; }
+  .infinite-exhibition .hero-profile__portrait figcaption { font-size: .65rem; }
+  .infinite-exhibition .hero-profile__role { font-size: 1rem; }
+  .infinite-exhibition .hero-profile__intro {
+    max-width: 38ch;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .infinite-exhibition .hero-profile__facts dt,
+  .infinite-exhibition .hero-profile__facts dd { font-size: .9rem; }
+  .infinite-exhibition .hero-mobile-keyboard {
+    position: relative;
+    order: 1;
+    width: 100%;
+    height: clamp(10rem, 25svh, 14rem);
+    margin: .25rem 0 0;
+    border-block: 1px solid rgb(156 125 84 / 21%);
+    background: radial-gradient(ellipse at center, rgb(255 252 246 / 82%), rgb(241 227 204 / 38%) 72%, transparent);
+    mask-image: none;
+  }
+  .infinite-exhibition .hero-mobile-keyboard::after {
+    content: "PIANO / EXPLORE";
+    position: absolute;
+    right: .5rem;
+    bottom: .35rem;
+    color: #947956;
+    font-size: .62rem;
+    letter-spacing: .18em;
+    pointer-events: none;
+  }
+
+  .infinite-exhibition main > .section-space--stack,
+  .infinite-exhibition main > .section-space--projects,
+  .infinite-exhibition main > .section-space--experience,
+  .infinite-exhibition main > .weekly-island-section,
+  .infinite-exhibition main > .section-space--contact {
+    min-height: 0;
+    padding-block: 3.25rem 4rem !important;
+  }
+  .infinite-exhibition .section-space--stack > div > .ability-panel {
+    width: 100%;
+    padding: 1.35rem;
+  }
+  .infinite-exhibition .section-space--stack > div { height: auto; padding-top: 0; }
+  .infinite-exhibition .ability-key { min-height: 3.25rem; font-size: 1rem; }
+  .infinite-exhibition .ability-note { min-height: 0; }
+  .infinite-exhibition .terrace-approach,
+  .infinite-exhibition [data-kb-section="descent"].terrace-approach {
+    min-height: clamp(7rem, 18svh, 10rem);
+    align-items: center;
+    padding-block: 1.5rem;
+  }
+  .infinite-exhibition .terrace-approach > p {
+    max-width: 100%;
+    margin: 0;
+    padding: .7rem 1rem;
+    font-size: .8rem;
+    text-align: center;
+  }
+
+  .infinite-exhibition main > .content-section--rooftop {
+    min-height: 0 !important;
+    padding: 2rem clamp(1rem, 5vw, 1.5rem) 4rem !important;
+  }
+  .infinite-exhibition .content-orbit {
+    width: min(100%, 24rem);
+    max-width: 100%;
+    margin-inline: auto;
+  }
+  .infinite-exhibition .content-orbit__station {
+    width: clamp(3rem, 14vw, 3.75rem);
+    min-height: 3rem;
+    padding: .2rem;
+  }
+  .infinite-exhibition .content-orbit__station span {
+    display: block;
+    font-size: .88rem;
+    font-weight: 650;
+  }
+  .infinite-exhibition .content-orbit__station strong,
+  .infinite-exhibition .content-orbit__station small { display: none; }
+  .infinite-exhibition .content-orbit__mobile-hub { width: 53%; }
+  .infinite-exhibition .content-orbit__mobile-hub span { font-size: .76rem; }
+  .infinite-exhibition .content-orbit__mobile-hub strong { font-size: clamp(1.1rem, 4vw, 1.4rem); }
+  .infinite-exhibition .content-orbit__content { width: 100%; margin-top: 1.7rem; padding: 0; }
+  .infinite-exhibition .content-orbit__overview > p,
+  .infinite-exhibition .content-orbit__reading p { font-size: 1rem; line-height: 1.65; }
+  .infinite-exhibition .content-orbit__mobile-index button { min-height: 3.6rem; align-items: center; }
+  .infinite-exhibition .content-orbit__mobile-index button > strong { font-size: .95rem; }
+  .infinite-exhibition .content-orbit__step-row button { min-width: 2.75rem; min-height: 2.75rem; }
+  .infinite-exhibition .content-orbit__action,
+  .infinite-exhibition .content-orbit__back { min-height: 2.75rem; }
+
+  .infinite-exhibition .section-space--projects > .code-island-panel--overview {
+    width: 100%;
+    padding: 0;
+  }
+  .infinite-exhibition .code-island-windows {
+    grid-template-columns: minmax(0, 1fr);
+    gap: .75rem;
+    padding: 1.5rem 0 0;
+  }
+  .infinite-exhibition .code-island-windows .project-overview-row {
+    display: grid;
+    grid-template-columns: 5.4rem minmax(0, 1fr) 2rem;
+    align-items: center;
+    gap: .8rem;
+    min-height: 6.25rem;
+    padding: .45rem;
+    text-align: left;
+  }
+  .infinite-exhibition .code-island-windows .project-overview-row:nth-child(n) { margin-top: 0; }
+  .infinite-exhibition .code-island-windows .project-overview-row__num { display: none; }
+  .infinite-exhibition .code-island-windows .project-overview-row__preview {
+    grid-column: 1;
+    width: 5.4rem;
+    height: 5.4rem;
+    padding: .25rem;
+    border-radius: 8px;
+  }
+  .infinite-exhibition .code-island-windows .project-overview-row__body { grid-column: 2; min-width: 0; padding: 0; }
+  .infinite-exhibition .code-island-windows .project-overview-row__title { font-size: 1rem; }
+  .infinite-exhibition .code-island-windows .project-overview-row__desc {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: .78rem;
+    line-height: 1.4;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .infinite-exhibition .code-island-windows .project-overview-row__arrow { grid-column: 3; margin: 0; }
+  .infinite-exhibition .section-space--projects > .code-island-panel--detail {
+    width: 100% !important;
+    max-width: 100%;
+    padding: 1.2rem;
+    overflow: visible;
+  }
+  .infinite-exhibition .project-detail { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+  .infinite-exhibition .project-detail > .practice-detail__copy,
+  .infinite-exhibition .project-detail > .practice-detail__media,
+  .infinite-exhibition .project-detail > .project-detail__tech-card {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .infinite-exhibition .project-detail .practice-detail__copy > p,
+  .infinite-exhibition .project-detail__sections .project-detail__section-card p,
+  .infinite-exhibition .project-detail__subprojects p { font-size: 1rem; line-height: 1.65; }
+  .infinite-exhibition .project-detail__sections .project-detail__section-card h4,
+  .infinite-exhibition .project-detail__subprojects h4 { font-size: .9rem; }
+  .infinite-exhibition .project-detail .project-detail-media-image { max-height: 65svh; }
+  .infinite-exhibition .project-detail-view > .pointer-events-auto > button:first-child { min-height: 2.75rem; }
+
+  .infinite-exhibition .section-space--experience > .experience-scroll-panel { width: 100%; }
+  .infinite-exhibition .section-space--experience .practice-switcher {
+    max-width: 100%;
+    scroll-snap-type: x proximity;
+    overscroll-behavior-inline: contain;
+  }
+  .infinite-exhibition .section-space--experience .practice-switcher__item {
+    min-height: 3rem;
+    scroll-snap-align: start;
+  }
+  .infinite-exhibition .section-space--experience .practice-detail__copy > p.text-ice-200,
+  .infinite-exhibition .section-space--experience .practice-detail__copy > ul { font-size: 1rem; line-height: 1.7; }
+  .infinite-exhibition .section-space--experience .practice-detail__media .practice-poster-flip,
+  .infinite-exhibition .section-space--experience .practice-detail__media .practice-long-media { height: min(58svh, 32rem); }
+
+  .infinite-exhibition .weekly-island { width: 100%; padding: 1.35rem; }
+  .infinite-exhibition .weekly-island__heading p { margin-top: .9rem; font-size: 1rem; line-height: 1.65; }
+  .infinite-exhibition .weekly-island__count { padding-top: .75rem; }
+  .infinite-exhibition .weekly-island__reports { margin-top: .5rem; }
+  .infinite-exhibition .weekly-island .weekly-report summary {
+    grid-template-columns: 1.5rem minmax(0, 1fr) 2rem;
+    gap: .35rem;
+    min-height: 3.75rem;
+    font-size: .88rem;
+    line-height: 1.35;
+  }
+  .infinite-exhibition .weekly-island .weekly-report__body { padding: .3rem .2rem 1.4rem 1.25rem; }
+  .infinite-exhibition .weekly-island .weekly-report__body li { font-size: .94rem; line-height: 1.65; }
+
+  .infinite-exhibition .contact-copy { width: 100%; padding: 1.35rem; }
+  .infinite-exhibition .contact-copy > .reveal > p.text-ice-200 { font-size: 1rem; line-height: 1.65; }
+  .infinite-exhibition .contact-method { min-height: 4rem; }
+  .infinite-exhibition .contact-method__value { overflow-wrap: anywhere; }
+  .infinite-exhibition .contact-socials { flex-wrap: wrap; gap: .75rem; }
+  .infinite-exhibition .life-room-entry { margin-top: 2.5rem; }
+  .infinite-exhibition .life-room-link { min-height: 3rem; }
+}
+
+.mobile-section-nav { display: none; }
+@media (max-width: 1023px) {
+  .section-nav { display: none !important; }
+  .mobile-section-nav {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 70;
+    display: block;
+    pointer-events: none;
+  }
+  .mobile-section-nav__scrim {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: rgb(37 29 23 / 32%);
+    pointer-events: auto;
+  }
+  .mobile-section-nav__panel {
+    position: absolute;
+    right: 1rem;
+    bottom: calc(5.5rem + env(safe-area-inset-bottom));
+    left: 1rem;
+    max-height: min(65svh, 31rem);
+    overflow-y: auto;
+    padding: .8rem 1rem;
+    border: 1px solid #d8c6a8;
+    border-radius: 16px;
+    background: #fffaf1;
+    box-shadow: 0 18px 42px rgb(44 32 20 / 22%);
+    pointer-events: auto;
+  }
+  .mobile-section-nav__panel p {
+    padding: .35rem .25rem .75rem;
+    color: #795e3a;
+    font-size: .75rem;
+    letter-spacing: .12em;
+  }
+  .mobile-section-nav__panel button {
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    width: 100%;
+    min-height: 3rem;
+    padding: .55rem .25rem;
+    border: 0;
+    border-top: 1px solid #e9dec9;
+    background: transparent;
+    color: #44372a;
+    font-size: 1rem;
+    text-align: left;
+  }
+  .mobile-section-nav__panel button[aria-current="location"] { color: #865d29; font-weight: 700; }
+  .mobile-section-nav__panel button > span { color: #9a815f; font-size: .75rem; font-variant-numeric: tabular-nums; }
+  .mobile-section-nav__panel button > svg { width: 1.1rem; height: 1.1rem; margin-left: auto; fill: none; stroke: currentColor; stroke-width: 1.5; }
+  .mobile-section-nav__trigger {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    min-width: 11rem;
+    min-height: 3.25rem;
+    margin: 0 auto calc(.7rem + env(safe-area-inset-bottom));
+    padding: .5rem 1rem;
+    border: 1px solid rgb(185 157 113 / 58%);
+    border-radius: 999px;
+    background: #fffaf1;
+    box-shadow: 0 8px 24px rgb(65 48 28 / 18%);
+    color: #44372a;
+    pointer-events: auto;
+  }
+  .mobile-section-nav__trigger > svg { width: 1.1rem; height: 1.1rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  .mobile-section-nav__trigger > span { font-size: .9rem; font-weight: 650; }
+  .mobile-section-nav__trigger > small { margin-left: auto; color: #947957; font-size: .65rem; letter-spacing: .08em; }
+  .mobile-section-nav :is(button, a):focus-visible { outline: 2px solid #865d29; outline-offset: 3px; }
+}
+
+@media (max-width: 360px) {
+  .infinite-exhibition .code-island-windows .project-overview-row { grid-template-columns: 4.5rem minmax(0, 1fr) 1.5rem; gap: .5rem; }
+  .infinite-exhibition .code-island-windows .project-overview-row__preview { width: 4.5rem; height: 4.5rem; }
+  .infinite-exhibition .weekly-island { padding: 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-section-nav__panel,
+  .mobile-section-nav__trigger { scroll-behavior: auto; transition: none; }
+}
