@@ -27,7 +27,7 @@ const STORAGE_KEY = "portfolio-lang";
 
 // Inlined in <head> before hydration so the document lang attribute matches
 // the user's stored preference (avoids FOUC and wrong screen-reader lang).
-export const LANG_BOOT_SCRIPT = `(function(){try{var l=localStorage.getItem(${JSON.stringify(STORAGE_KEY)});var ok=${JSON.stringify(LANGUAGES)};if(l&&ok.indexOf(l)>-1){document.documentElement.lang=l;}}catch(e){}})();`;
+export const LANG_BOOT_SCRIPT = `(function(){try{var l=localStorage.getItem(${JSON.stringify(STORAGE_KEY)});if(l==="es"){l="zh";localStorage.setItem(${JSON.stringify(STORAGE_KEY)},l);}var ok=${JSON.stringify(LANGUAGES)};if(l&&ok.indexOf(l)>-1){document.documentElement.lang=l;}}catch(e){}})();`;
 
 export default function LanguageProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(DEFAULT_LANG);
@@ -37,10 +37,10 @@ export default function LanguageProvider({ children }: { children: ReactNode }) 
     // <html> element. No-op if the boot script didn't find a stored pref.
     const domLang = document.documentElement.lang;
     if (
-      (domLang === "es" || domLang === "en") &&
+      (domLang === "zh" || domLang === "zh-CN" || domLang === "en") &&
       domLang !== lang
     ) {
-      setLangState(domLang);
+      setLangState(domLang === "zh-CN" ? "zh" : domLang);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

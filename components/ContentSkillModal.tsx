@@ -5,7 +5,7 @@ import { useLenis } from "lenis/react";
 import { useLanguage } from "@/components/LanguageProvider";
 import type { Lang } from "@/lib/i18n";
 
-type Localised = { es: string; en: string };
+type Localised = { zh: string; en: string };
 type Mode = "batch" | "review";
 
 type Props = {
@@ -23,41 +23,41 @@ type Step = {
 const BATCH_STEPS: readonly Step[] = [
   {
     eyebrow: "01 / INPUT",
-    title: { es: "收集素材", en: "Collect topics and source material" },
+    title: { zh: "收集素材", en: "Collect topics and source material" },
     body: {
-      es: "选题/资料，存放在本地文件夹",
+      zh: "选题/资料，存放在本地文件夹",
       en: "Gather topics, source files, images, video or product information, then define the batch and its audience.",
     },
   },
   {
     eyebrow: "02 / PLAN",
-    title: { es: "设定规则", en: "Lock the content rules" },
+    title: { zh: "设定规则", en: "Lock the content rules" },
     body: {
-      es: "模板/字段（已提前预设并封装成 Skill）",
+      zh: "模板/字段（已提前预设并封装成 Skill）",
       en: "Set the scope, file order, publishing template, fields and naming rules so the batch can be processed consistently.",
     },
   },
   {
     eyebrow: "03 / PRODUCE",
-    title: { es: "批量制作", en: "Produce the notes in batches" },
+    title: { zh: "批量制作", en: "Produce the notes in batches" },
     body: {
-      es: "Codex 发送指令，即可直接整理：封面、标题、正文、标签",
+      zh: "Codex 发送指令，即可直接整理：封面、标题、正文、标签",
       en: "Use reusable Skills and templates for covers, pages, titles, copy and tags while keeping each note tied to its real source.",
     },
   },
   {
     eyebrow: "04 / PACKAGE",
-    title: { es: "整理发布包", en: "Assemble the publishing package" },
+    title: { zh: "整理发布包", en: "Assemble the publishing package" },
     body: {
-      es: "一篇一记录汇总",
+      zh: "一篇一记录汇总",
       en: "Turn each note into a standalone package with images, copy, tags and source mapping for publishing and tracking.",
     },
   },
   {
     eyebrow: "05 / VERIFY",
-    title: { es: "写入飞书", en: "Write, archive and verify" },
+    title: { zh: "写入飞书", en: "Write, archive and verify" },
     body: {
-      es: "飞书归档：发布素材汇总 / 多账号视图",
+      zh: "飞书归档：发布素材汇总 / 多账号视图",
       en: "Record the content and status in Feishu Base or a table, then check attachment counts, order, names and fields.",
     },
   },
@@ -66,41 +66,41 @@ const BATCH_STEPS: readonly Step[] = [
 const REVIEW_STEPS: readonly Step[] = [
   {
     eyebrow: "01 / COLLECT",
-    title: { es: "整理发布后的数据", en: "Collect post-publication data" },
+    title: { zh: "整理发布后的数据", en: "Collect post-publication data" },
     body: {
-      es: "按笔记记录实际能取得的曝光、阅读、点赞、收藏、评论、关注，以及点击或成交等结果。",
+      zh: "按笔记记录实际能取得的曝光、阅读、点赞、收藏、评论、关注，以及点击或成交等结果。",
       en: "Record available signals such as impressions, reads, likes, saves, comments, follows and downstream clicks or conversions.",
     },
   },
   {
     eyebrow: "02 / MAP",
-    title: { es: "把数据对应到内容", en: "Map data back to the content" },
+    title: { zh: "把数据对应到内容", en: "Map data back to the content" },
     body: {
-      es: "把表现和选题、封面、标题、关键词、发布时间、内容结构等信息放在一起，避免只看孤立的数字。",
+      zh: "把表现和选题、封面、标题、关键词、发布时间、内容结构等信息放在一起，避免只看孤立的数字。",
       en: "Read performance alongside topic, cover, title, keywords, timing and structure instead of looking at isolated numbers.",
     },
   },
   {
     eyebrow: "03 / COMPARE",
-    title: { es: "进行横向比较", en: "Compare the notes" },
+    title: { zh: "进行横向比较", en: "Compare the notes" },
     body: {
-      es: "对比同一批内容，观察哪些选题和表达方式更容易获得阅读、收藏、互动或进一步行动。",
+      zh: "对比同一批内容，观察哪些选题和表达方式更容易获得阅读、收藏、互动或进一步行动。",
       en: "Compare the batch to see which topics and expressions lead to stronger reading, saves, interaction or follow-up actions.",
     },
   },
   {
     eyebrow: "04 / DIAGNOSE",
-    title: { es: "判断表现差异", en: "Diagnose the differences" },
+    title: { zh: "判断表现差异", en: "Diagnose the differences" },
     body: {
-      es: "区分是选题、封面、标题、内容结构、发布节奏还是承接方式造成了差异，形成有依据的判断。",
+      zh: "区分是选题、封面、标题、内容结构、发布节奏还是承接方式造成了差异，形成有依据的判断。",
       en: "Separate the effects of topic, cover, title, structure, timing and follow-up so the conclusions stay evidence-based.",
     },
   },
   {
     eyebrow: "05 / OUTPUT",
-    title: { es: "沉淀复盘结论", en: "Turn the review into findings" },
+    title: { zh: "沉淀复盘结论", en: "Turn the review into findings" },
     body: {
-      es: "把表现较好的方向、需要调整的问题和暂时无法判断的变量分开记录，形成下一轮可以参考的结论。",
+      zh: "把表现较好的方向、需要调整的问题和暂时无法判断的变量分开记录，形成下一轮可以参考的结论。",
       en: "Separate promising directions, problems to adjust and variables that remain uncertain into reusable findings.",
     },
   },

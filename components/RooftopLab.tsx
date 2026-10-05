@@ -4,43 +4,43 @@ import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/components/LanguageProvider";
 import ContentCommerceScroll from "@/components/ContentCommerceScroll";
 
-type Copy = { es: string; en: string };
+type Copy = { zh: string; en: string };
 
 const stations: Array<{ title: Copy; short: Copy; mark: string }> = [
   {
     mark: "01",
-    title: { es: "内容商业化闭环", en: "Content commerce loop" },
-    short: { es: "从需求走到复盘", en: "From demand to review" },
+    title: { zh: "内容商业化闭环", en: "Content commerce loop" },
+    short: { zh: "从需求走到复盘", en: "From demand to review" },
   },
   {
     mark: "02",
-    title: { es: "小红书批量制作 Skill", en: "Xiaohongshu batch Skill" },
-    short: { es: "把资料变成发布包", en: "From material to posts" },
+    title: { zh: "小红书批量制作 Skill", en: "Xiaohongshu batch Skill" },
+    short: { zh: "把资料变成发布包", en: "From material to posts" },
   },
   {
     mark: "03",
-    title: { es: "电商实践成果", en: "E-commerce results" },
-    short: { es: "真实运营与成交", en: "Real operation and sales" },
+    title: { zh: "电商实践成果", en: "E-commerce results" },
+    short: { zh: "真实运营与成交", en: "Real operation and sales" },
   },
   {
     mark: "04",
-    title: { es: "教师备课 Skill", en: "Teacher lesson Skill" },
-    short: { es: "一件已交付的产品", en: "A delivered product" },
+    title: { zh: "教师备课 Skill", en: "Teacher lesson Skill" },
+    short: { zh: "一件已交付的产品", en: "A delivered product" },
   },
 ];
 
 const lessonStages: Array<{ title: Copy; body: Copy }> = [
   {
-    title: { es: "资料整理", en: "Organise" },
-    body: { es: "把讲义、试卷梳理为课堂可用的内容结构。", en: "Turn handouts and papers into a classroom-ready structure." },
+    title: { zh: "资料整理", en: "Organise" },
+    body: { zh: "把讲义、试卷梳理为课堂可用的内容结构。", en: "Turn handouts and papers into a classroom-ready structure." },
   },
   {
-    title: { es: "题目展示", en: "Present" },
-    body: { es: "按教学顺序呈现题目，并处理页面排版。", en: "Present questions in teaching order with readable page layout." },
+    title: { zh: "题目展示", en: "Present" },
+    body: { zh: "按教学顺序呈现题目，并处理页面排版。", en: "Present questions in teaching order with readable page layout." },
   },
   {
-    title: { es: "答案交互", en: "Interact" },
-    body: { es: "让答案按需展开，配合课堂讲解节奏。", en: "Reveal answers when needed to support the pace of teaching." },
+    title: { zh: "答案交互", en: "Interact" },
+    body: { zh: "让答案按需展开，配合课堂讲解节奏。", en: "Reveal answers when needed to support the pace of teaching." },
   },
 ];
 
@@ -185,7 +185,7 @@ export default function RooftopLab({ onOpenBatchSkill }: { onOpenBatchSkill: () 
                 <div className="rooftop-lab__lesson-track" aria-hidden="true" />
                 {lessonStages.map((stage, index) => <button
                   type="button"
-                  key={stage.title.es}
+                  key={stage.title.zh}
                   className={`rooftop-lab__lesson-node rooftop-lab__lesson-node--${index} ${lessonStep === index ? "is-active" : ""}`}
                   aria-pressed={lessonStep === index}
                   onClick={() => setLessonStep(index)}

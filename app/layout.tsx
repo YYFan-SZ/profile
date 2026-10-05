@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import CustomCursor from "@/components/CustomCursor";
 import FrozenBackground from "@/components/FrozenBackground";
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "记录小程序、网页、AI 工具、内容运营和实践经历。",
     type: "website",
-    locale: "es_ES",
+    locale: "zh_CN",
   },
   twitter: {
     card: "summary_large_image",
@@ -61,6 +62,7 @@ export default function RootLayout({
             {children}
             <CustomCursor />
             <MagneticTargets />
+            <Analytics />
           </SeasonProvider>
         </LanguageProvider>
       </body>

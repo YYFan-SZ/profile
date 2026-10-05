@@ -84,10 +84,10 @@ function label(value: string, lang: Lang) {
   return lang === "en" ? (EN_LABELS[value] ?? value) : value;
 }
 
-// Localised content lives in `{ es, en }` objects inside these arrays so the
+// Localised content lives in `{ zh, en }` objects inside these arrays so the
 // page can be a straightforward array.map() at render time. Tech names stay
 // as plain strings (they're brand names, not localised).
-type Localised = { es: string; en: string };
+type Localised = { zh: string; en: string };
 
 type Project = ProjectDetail & {
 };
@@ -95,27 +95,27 @@ type Project = ProjectDetail & {
 const projectCatalog: Project[] = [
   {
     num: "01",
-    name: { es: "五迷小记 · 微信小程序", en: "Mayday Fan Notes · WeChat Mini Program" },
+    name: { zh: "五迷小记 · 微信小程序", en: "Mayday Fan Notes · WeChat Mini Program" },
     stack: ["微信小程序", "3000+ 用户", "互动内容"],
     desc: {
-      es: "把五月天歌迷分散的听歌、测试、游戏与内容收藏，整理成一个可以持续探索的互动入口。",
+      zh: "把五月天歌迷分散的听歌、测试、游戏与内容收藏，整理成一个可以持续探索的互动入口。",
       en: "An interactive mini-program that brings together listening, quizzes, games and collecting for Mayday fans.",
     },
     details: {
-      es: "有真实用户和 3000+ 使用量，最能体现项目影响力。",
-      en: "A real product with 3,000+ users, showing how an idea can grow into a working community experience.",
+      zh: "有真实用户和 3000+ 使用量。",
+      en: "A real product with 3,000+ users.",
     },
     sections: {
       problem: {
-        es: "歌词挑战、演唱会回忆、趣味测试、每日考古和素材资源彼此分散，缺少一个能够持续记录兴趣与参与痕迹的小工具。",
+        zh: "歌词挑战、演唱会回忆、趣味测试、每日考古和素材资源彼此分散，缺少一个能够持续记录兴趣与参与痕迹的小工具。",
         en: "Lyrics challenges, concert memories, quizzes, daily archive content and resources were scattered across different places.",
       },
       made: {
-        es: "一个面向五月天歌迷的微信小程序，包含歌词填空、五迷画像、趣味测试、每日考古、小游戏、书单收藏、演唱会回忆录和资源包等功能。",
+        zh: "一个面向五月天歌迷的微信小程序，包含歌词填空、五迷画像、趣味测试、每日考古、小游戏、书单收藏、演唱会回忆录和资源包等功能。",
         en: "A WeChat mini-program with lyric challenges, fan profiles, quizzes, daily archive content, games, booklists, concert memories and resource packs.",
       },
       solved: {
-        es: "让用户可以在一个小程序内完成内容浏览、互动测试、日常签到、收藏记录和歌迷交流，获得更完整、更有参与感的五迷体验。",
+        zh: "让用户可以在一个小程序内完成内容浏览、互动测试、日常签到、收藏记录和歌迷交流，获得更完整、更有参与感的五迷体验。",
         en: "It gives fans one place to browse, play, check in, collect and connect with a stronger sense of participation.",
       },
       technical: "微信原生小程序 · 主包 / 分包模块化架构 · 微信云开发数据存储与云函数 · 本地缓存与数据持久化 · Canvas 动态证书生成",
@@ -128,33 +128,33 @@ const projectCatalog: Project[] = [
   },
   {
     num: "02",
-    name: { es: "途说 · 安卓 APP", en: "Tusuo · Android App" },
+    name: { zh: "途说 · 安卓 APP", en: "Tusuo · Android App" },
     stack: ["Android · Beta", "uni-app", "语音转写", "AI 文案"],
     desc: {
-      es: "为旅行创作者设计的移动端灵感采集工具，覆盖现场录音、语音转写、素材归类和内容草稿生成。",
+      zh: "为旅行创作者设计的移动端灵感采集工具，覆盖现场录音、语音转写、素材归类和内容草稿生成。",
       en: "A mobile idea-capture tool for travel creators, covering recording, transcription, sorting and draft generation.",
     },
     details: {
-      es: "体现移动端开发、语音转写和 AI 内容生成能力。",
+      zh: "体现移动端开发、语音转写和 AI 内容生成能力。",
       en: "A mobile product combining field recording, speech transcription and AI-assisted content generation.",
     },
     sections: {
       problem: {
-        es: "户外记录中的录音、途中见闻和即时灵感彼此分散，回程后还需要花大量时间查找和整理。",
+        zh: "户外记录中的录音、途中见闻和即时灵感彼此分散，回程后还需要花大量时间查找和整理。",
         en: "Recordings, observations and fleeting ideas were scattered, creating a heavy organisation task after each trip.",
       },
       made: {
-        es: "将“采集 → 转写 → 整理 → 成稿”串联成一条连续路径，让用户可以在移动端完成旅行素材的初步处理。",
+        zh: "将“采集 → 转写 → 整理 → 成稿”串联成一条连续路径，让用户可以在移动端完成旅行素材的初步处理。",
         en: "A mobile flow connecting capture, transcription, organisation and drafting for travel material.",
       },
       solved: {
-        es: "减少回程后翻找录音和二次整理的时间，让零散灵感更快转化为可继续编辑的内容。",
+        zh: "减少回程后翻找录音和二次整理的时间，让零散灵感更快转化为可继续编辑的内容。",
         en: "It reduces the time spent searching and reworking recordings, turning ideas into editable drafts faster.",
       },
       technical: "uni-app + Vue · 七牛云数据存储 · 火山引擎豆包语音 ASR · DeepSeek API 文案生成",
     },
     download: "/downloads/tusuo.apk",
-    downloadLabel: { es: "下载安装包", en: "Download APK" },
+    downloadLabel: { zh: "下载安装包", en: "Download APK" },
     media: ["/projects/zhengyifan/tusuo-demo.mp4"],
     mediaLayout: "portrait",
     mediaAspect: "9 / 20",
@@ -162,27 +162,27 @@ const projectCatalog: Project[] = [
   },
   {
     num: "03",
-    name: { es: "RegretReset · 网站", en: "RegretReset · Website" },
+    name: { zh: "RegretReset · 网站", en: "RegretReset · Website" },
     stack: ["Web · Beta", "AI 陪伴", "行动规划"],
     desc: {
-      es: "围绕后悔、纠结与反复回想的 AI 反思工具，帮助用户先看清问题，再找到能执行的下一步。",
+      zh: "围绕后悔、纠结与反复回想的 AI 反思工具，帮助用户先看清问题，再找到能执行的下一步。",
       en: "An AI reflection tool for regret and indecision, helping users understand the issue and find a next step.",
     },
     details: {
-      es: "AI 反思产品，体现方案设计、AI 能力和复杂产品逻辑。",
+      zh: "AI 反思产品，体现方案设计、AI 能力和复杂产品逻辑。",
       en: "An AI reflection product built around structured guidance and a more complex decision flow.",
     },
     sections: {
       problem: {
-        es: "人在后悔和纠结中容易反复回想，却很难分清事实、感受、真正重视的东西，以及现在可以采取的行动。",
+        zh: "人在后悔和纠结中容易反复回想，却很难分清事实、感受、真正重视的东西，以及现在可以采取的行动。",
         en: "People can get stuck replaying regret without separating facts, feelings, values and possible actions.",
       },
       made: {
-        es: "通过 CLARIFY 梳理事实与感受、CHOOSE 对齐价值和选择、ACT 生成下一步行动，把混乱的情绪转化为结构化的自我对话。",
+        zh: "通过 CLARIFY 梳理事实与感受、CHOOSE 对齐价值和选择、ACT 生成下一步行动，把混乱的情绪转化为结构化的自我对话。",
         en: "CLARIFY organises facts and feelings, CHOOSE aligns values and options, and ACT turns reflection into a structured dialogue.",
       },
       solved: {
-        es: "帮助用户从反复纠结中抽离出来，逐步看清问题，并找到具体、可执行的下一步。",
+        zh: "帮助用户从反复纠结中抽离出来，逐步看清问题，并找到具体、可执行的下一步。",
         en: "It helps users step out of rumination, understand the issue and identify a concrete next step.",
       },
       technical: "Next.js + React + TypeScript + Tailwind CSS · NextAuth 邮箱登录 · PostgreSQL + Drizzle ORM · DeepSeek API 方案生成 · Creem 支付与订阅",
@@ -199,27 +199,27 @@ const projectCatalog: Project[] = [
   },
   {
     num: "04",
-    name: { es: "梦小渡 · 鸿蒙 APP", en: "Meng Xiaodu · HarmonyOS App" },
+    name: { zh: "梦小渡 · 鸿蒙 APP", en: "Meng Xiaodu · HarmonyOS App" },
     stack: ["HarmonyOS", "DeepSeek AI", "Widget"],
     desc: {
-      es: "一款围绕噩梦安抚、梦境记录与情绪整理设计的鸿蒙 APP，帮助用户从情绪安抚走向持续记录。",
+      zh: "一款围绕噩梦安抚、梦境记录与情绪整理设计的鸿蒙 APP，帮助用户从情绪安抚走向持续记录。",
       en: "A HarmonyOS app for nightmare soothing, dream recording and emotional reflection — from immediate comfort to continued self-care.",
     },
     details: {
-      es: "以完整页面流程展示鸿蒙端应用开发、AI 梦境分析与端云协同能力。",
+      zh: "以完整页面流程展示鸿蒙端应用开发、AI 梦境分析与端云协同能力。",
       en: "A complete product flow showing HarmonyOS app development, AI dream analysis and cloud-device collaboration.",
     },
     sections: {
       problem: {
-        es: "噩梦发生后，用户需要先获得安抚，再记录梦境和理解情绪，但安抚、记录与分析通常彼此割裂，难以形成连续的自我照护流程。",
+        zh: "噩梦发生后，用户需要先获得安抚，再记录梦境和理解情绪，但安抚、记录与分析通常彼此割裂，难以形成连续的自我照护流程。",
         en: "After a nightmare, people need comfort first and reflection later, but soothing, recording and emotional analysis are often disconnected.",
       },
       made: {
-        es: "一个面向梦境记录与情绪安抚的鸿蒙 APP，覆盖桌面 Widget、邮箱登录、首页功能入口、四步噩梦安抚、音频播放、梦境记录、AI 梦境详情和个人资料管理。",
+        zh: "一个面向梦境记录与情绪安抚的鸿蒙 APP，覆盖桌面 Widget、邮箱登录、首页功能入口、四步噩梦安抚、音频播放、梦境记录、AI 梦境详情和个人资料管理。",
         en: "A HarmonyOS app covering a desktop Widget, email login, home modules, four-step nightmare soothing, audio playback, dream recording, AI dream insights and profile management.",
       },
       solved: {
-        es: "将从噩梦发生到情绪平复、梦境记录和复盘理解的过程串联起来，让用户在同一应用内完成安抚、记录与情绪整理。",
+        zh: "将从噩梦发生到情绪平复、梦境记录和复盘理解的过程串联起来，让用户在同一应用内完成安抚、记录与情绪整理。",
         en: "It connects the journey from a nightmare to calming down, recording and reflection, giving users one continuous place for emotional care.",
       },
       technical: "HarmonyOS · DeepSeek API 梦境分析 · 端云开发 · 邮箱登录认证 · Widget 卡片组件",
@@ -231,25 +231,25 @@ const projectCatalog: Project[] = [
   },
   {
     num: "05",
-    name: { es: "日常工具 · 微信小程序", en: "Everyday Utilities · WeChat Mini Program" },
+    name: { zh: "日常工具 · 微信小程序", en: "Everyday Utilities · WeChat Mini Program" },
     stack: ["微信小程序", "日常工具"],
     desc: {
-      es: "两个轻量的日常工具：记录重要日期，也帮助用户在出门前核对物品。",
+      zh: "两个轻量的日常工具：记录重要日期，也帮助用户在出门前核对物品。",
       en: "Two lightweight utilities for remembering important dates and checking items before leaving home.",
     },
     details: {
-      es: "把生日记录簿和出行防遗漏清单放在同一栏，分别展示两个简单、明确的日常使用场景。",
+      zh: "把生日记录簿和出行防遗漏清单放在同一栏，分别展示两个简单、明确的日常使用场景。",
       en: "Two small utilities grouped together, each focused on one clear everyday scenario.",
     },
     subprojects: [
       {
-        name: { es: "生日记录簿", en: "Birthday Notebook" },
-        desc: { es: "记录公历、农历生日和提醒时间，减少忘记重要日子的情况。", en: "Records solar and lunar birthdays with reminders, reducing the chance of forgetting important dates." },
+        name: { zh: "生日记录簿", en: "Birthday Notebook" },
+        desc: { zh: "记录公历、农历生日和提醒时间，减少忘记重要日子的情况。", en: "Records solar and lunar birthdays with reminders, reducing the chance of forgetting important dates." },
         qr: "/projects/zhengyifan/birthday-qr.jpg",
       },
       {
-        name: { es: "出行防遗漏清单", en: "Leaving-home Checklist" },
-        desc: { es: "按照不同出行场景整理物品，出门前逐项核对，减少物品遗漏。", en: "Organises items by travel scenario so users can check them one by one before leaving." },
+        name: { zh: "出行防遗漏清单", en: "Leaving-home Checklist" },
+        desc: { zh: "按照不同出行场景整理物品，出门前逐项核对，减少物品遗漏。", en: "Organises items by travel scenario so users can check them one by one before leaving." },
         qr: "/projects/zhengyifan/travel-qr.jpg",
       },
     ],
@@ -286,21 +286,21 @@ const experiences: Array<{
 }> = [
   {
     title: "SZPU 创业协会",
-    role: { es: "宣传部部长 / 核心骨干", en: "Publicity lead / core member" },
+    role: { zh: "宣传部部长 / 核心骨干", en: "Publicity lead / core member" },
     company: "校园组织",
-    period: { es: "实践 01", en: "Practice 01" },
-    location: { es: "深圳", en: "Shenzhen" },
+    period: { zh: "实践 01", en: "Practice 01" },
+    location: { zh: "深圳", en: "Shenzhen" },
     summary: {
-      es: "负责公众号选题与推文、活动海报、KT 板等物料的统筹，让活动信息形成统一表达。",
+      zh: "负责公众号选题与推文、活动海报、KT 板等物料的统筹，让活动信息形成统一表达。",
       en: "Coordinated public-account topics, posts, posters and event materials so campus activities had a consistent expression.",
     },
     bullets: [
       {
-        es: "独立完成多套活动海报、现场 KT 板和公众号推文。",
+        zh: "独立完成多套活动海报、现场 KT 板和公众号推文。",
         en: "Created event posters, on-site boards and public-account posts.",
       },
       {
-        es: "参与“科研新星”等活动的前期沟通、物料准备和现场执行。",
+        zh: "参与“科研新星”等活动的前期沟通、物料准备和现场执行。",
         en: "Supported communication, materials and on-site execution for campus events.",
       },
     ],
@@ -316,68 +316,68 @@ const experiences: Array<{
   },
   {
     title: "校团委科创部",
-    role: { es: "学生骨干", en: "Student leader" },
+    role: { zh: "学生骨干", en: "Student leader" },
     company: "校园实践",
-    period: { es: "实践 02", en: "Practice 02" },
-    location: { es: "深圳", en: "Shenzhen" },
+    period: { zh: "实践 02", en: "Practice 02" },
+    location: { zh: "深圳", en: "Shenzhen" },
     summary: {
-      es: "经历五轮面试进入科创部，参与挑战杯、创新工程等重点赛事的报名组织、资料流转与参赛团队服务。",
+      zh: "经历五轮面试进入科创部，参与挑战杯、创新工程等重点赛事的报名组织、资料流转与参赛团队服务。",
       en: "Joined the innovation department after five interview rounds and supported applications, document flow and team service for major competitions.",
     },
     bullets: [
-      { es: "负责资料审核、团队沟通和专家对接。", en: "Handled document review, team communication and expert coordination." },
-      { es: "在截止期明确、参与方众多的场景下推进任务并同步进度。", en: "Moved tasks forward and kept progress aligned across many participants." },
+      { zh: "负责资料审核、团队沟通和专家对接。", en: "Handled document review, team communication and expert coordination." },
+      { zh: "在截止期明确、参与方众多的场景下推进任务并同步进度。", en: "Moved tasks forward and kept progress aligned across many participants." },
     ],
     stack: ["赛事流程", "多方沟通", "任务管理"],
     image: "/practice/innovation-department.jpg",
   },
   {
     title: "全运会志愿服务",
-    role: { es: "媒体与转播现场", en: "Media and broadcast support" },
+    role: { zh: "媒体与转播现场", en: "Media and broadcast support" },
     company: "大型赛事",
-    period: { es: "实践 03", en: "Practice 03" },
-    location: { es: "赛事现场", en: "Event venue" },
+    period: { zh: "实践 03", en: "Practice 03" },
+    location: { zh: "赛事现场", en: "Event venue" },
     summary: {
-      es: "在第十五届全运会拳击赛事新媒体处协助电视转播、媒体签到及新闻发布厅等现场支持工作。",
+      zh: "在第十五届全运会拳击赛事新媒体处协助电视转播、媒体签到及新闻发布厅等现场支持工作。",
       en: "Supported TV broadcast, media check-in and the press room for the boxing event at the 15th National Games.",
     },
     bullets: [
-      { es: "面对高节奏的赛场排期完成媒体支持与现场沟通。", en: "Supported media operations and communication under a fast event schedule." },
-      { es: "在多点协同中强化应变、执行和抗压能力。", en: "Strengthened adaptability, execution and composure in a multi-team setting." },
+      { zh: "面对高节奏的赛场排期完成媒体支持与现场沟通。", en: "Supported media operations and communication under a fast event schedule." },
+      { zh: "在多点协同中强化应变、执行和抗压能力。", en: "Strengthened adaptability, execution and composure in a multi-team setting." },
     ],
     stack: ["转播辅助", "媒体接待", "现场协调"],
     image: "/practice/volunteer-certificate.jpg",
   },
   {
     title: "生财有术航海",
-    role: { es: "成长陪伴教练", en: "Growth coach" },
+    role: { zh: "成长陪伴教练", en: "Growth coach" },
     company: "社群运营",
-    period: { es: "实践 04", en: "Practice 04" },
-    location: { es: "线上协作", en: "Remote collaboration" },
+    period: { zh: "实践 04", en: "Practice 04" },
+    location: { zh: "线上协作", en: "Remote collaboration" },
     summary: {
-      es: "作为成长陪伴教练，持续服务 30+ 位圈友：跟进任务、梳理卡点，并和领队、志愿者协同营地节奏。",
+      zh: "作为成长陪伴教练，持续服务 30+ 位圈友：跟进任务、梳理卡点，并和领队、志愿者协同营地节奏。",
       en: "Served 30+ community members as a growth coach, following tasks, unpacking blockers and coordinating with leads and volunteers.",
     },
     bullets: [
-      { es: "通过每日沟通和关键节点提醒，帮助成员跨过启动与执行卡点。", en: "Used daily communication and milestone reminders to help members start and follow through." },
-      { es: "项目获得一次 A 评级并实现全员上岸。", en: "The project received an A rating and achieved full completion." },
+      { zh: "通过每日沟通和关键节点提醒，帮助成员跨过启动与执行卡点。", en: "Used daily communication and milestone reminders to help members start and follow through." },
+      { zh: "项目获得一次 A 评级并实现全员上岸。", en: "The project received an A rating and achieved full completion." },
     ],
     stack: ["社群陪伴", "问题拆解", "协作推进"],
     image: "/practice/shengcai.jpg",
   },
   {
     title: "校园荣誉与表达",
-    role: { es: "持续投入的记录", en: "A record of sustained effort" },
+    role: { zh: "持续投入的记录", en: "A record of sustained effort" },
     company: "学习成长",
-    period: { es: "实践 05", en: "Practice 05" },
-    location: { es: "校园经历", en: "Campus experience" },
+    period: { zh: "实践 05", en: "Practice 05" },
+    location: { zh: "校园经历", en: "Campus experience" },
     summary: {
-      es: "三次校级奖学金、提案征集、演讲与策划竞赛，是长期学习、表达和方案思考的持续积累。",
+      zh: "三次校级奖学金、提案征集、演讲与策划竞赛，是长期学习、表达和方案思考的持续积累。",
       en: "Three campus scholarships, proposal calls, speaking and planning competitions form a sustained record of learning and expression.",
     },
     bullets: [
-      { es: "通过演讲准备、提案撰写和项目复盘，训练结构化表达。", en: "Practised structured expression through speeches, proposals and project reviews." },
-      { es: "将零散想法整理成更有结构的观点与方案。", en: "Turned scattered ideas into clearer viewpoints and proposals." },
+      { zh: "通过演讲准备、提案撰写和项目复盘，训练结构化表达。", en: "Practised structured expression through speeches, proposals and project reviews." },
+      { zh: "将零散想法整理成更有结构的观点与方案。", en: "Turned scattered ideas into clearer viewpoints and proposals." },
     ],
     stack: ["公开表达", "方案策划", "复盘沉淀"],
     image: "/practice/speech.jpg",
@@ -386,28 +386,28 @@ const experiences: Array<{
 
 const abilityDetails: Array<{ label: Localised; detail: Localised }> = [
   {
-    label: { es: "产品开发", en: "Product development" },
-    detail: { es: "从具体需求和使用场景出发，梳理功能与交互流程，将想法实现为可体验、可持续迭代的产品。", en: "Starting from a real need and usage context, I map the feature and interaction flow and turn the idea into a product people can experience and improve." },
+    label: { zh: "产品开发", en: "Product development" },
+    detail: { zh: "从具体需求和使用场景出发，梳理功能与交互流程，将想法实现为可体验、可持续迭代的产品。", en: "Starting from a real need and usage context, I map the feature and interaction flow and turn the idea into a product people can experience and improve." },
   },
   {
-    label: { es: "内容运营", en: "Content operations" },
-    detail: { es: "围绕目标和主题进行选题、资料整理、文案组织与内容跟进，让信息更清晰、更有价值，也更适合传播。", en: "I shape topics, organise source material, structure copy and follow the content through so the message becomes clearer, more useful and easier to share." },
+    label: { zh: "内容运营", en: "Content operations" },
+    detail: { zh: "围绕目标和主题进行选题、资料整理、文案组织与内容跟进，让信息更清晰、更有价值，也更适合传播。", en: "I shape topics, organise source material, structure copy and follow the content through so the message becomes clearer, more useful and easier to share." },
   },
   {
-    label: { es: "流程自动化", en: "Workflow automation" },
-    detail: { es: "识别重复、分散的工作环节，借助工具将其串联成稳定、可复用的流程，减少重复操作和信息遗漏。", en: "I identify repetitive, scattered steps and connect them into a stable, reusable workflow that reduces manual work and missed information." },
+    label: { zh: "流程自动化", en: "Workflow automation" },
+    detail: { zh: "识别重复、分散的工作环节，借助工具将其串联成稳定、可复用的流程，减少重复操作和信息遗漏。", en: "I identify repetitive, scattered steps and connect them into a stable, reusable workflow that reduces manual work and missed information." },
   },
   {
-    label: { es: "视觉表达", en: "Visual communication" },
-    detail: { es: "通过版式、色彩和信息层级，将抽象内容转化为清晰、有吸引力且具有统一感的视觉表达。", en: "I use layout, colour and information hierarchy to turn abstract material into a clear, engaging and coherent visual language." },
+    label: { zh: "视觉表达", en: "Visual communication" },
+    detail: { zh: "通过版式、色彩和信息层级，将抽象内容转化为清晰、有吸引力且具有统一感的视觉表达。", en: "I use layout, colour and information hierarchy to turn abstract material into a clear, engaging and coherent visual language." },
   },
   {
-    label: { es: "沟通协作", en: "Communication & collaboration" },
-    detail: { es: "在多人协作和任务并行的环境中，主动同步信息、跟进关键节点、协调各方行动，推动事情顺利落地。", en: "In multi-person, parallel work, I keep information aligned, follow key milestones and coordinate the next actions that move the work forward." },
+    label: { zh: "沟通协作", en: "Communication & collaboration" },
+    detail: { zh: "在多人协作和任务并行的环境中，主动同步信息、跟进关键节点、协调各方行动，推动事情顺利落地。", en: "In multi-person, parallel work, I keep information aligned, follow key milestones and coordinate the next actions that move the work forward." },
   },
 ];
 
-function pick<T>(loc: { es: T; en: T }, lang: Lang): T {
+function pick<T>(loc: { zh: T; en: T }, lang: Lang): T {
   return loc[lang];
 }
 
@@ -533,7 +533,7 @@ function ProjectMedia({ project }: { project: Project }) {
             </div>
           )}
           {subQrItems.map((item) => (
-            <div className="project-detail-qr-item" key={item.name.es}>
+            <div className="project-detail-qr-item" key={item.name.zh}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={item.qr} alt={`${pick(item.name, lang)} QR code`} />
               <span>{pick(item.name, lang)} {lang === "en" ? "QR code" : "二维码"}</span>
@@ -794,11 +794,11 @@ export default function Home() {
   return (
     <SmoothScroll>
       <div className="infinite-exhibition relative">
-        {/* All screens get chapter backgrounds. Mobile keeps its interactive
-            piano in the content flow and uses a simpler fixed backdrop. */}
-        {!isMobile && <div className="keyboard-scene fixed inset-0 z-0">
-          <FrozenKeyboard exhibition />
-        </div>}
+        {/* Mobile keeps its touchable piano in the content flow while the
+            low-resolution world restores the moving sea and islands behind it. */}
+        <div className="keyboard-scene fixed inset-0 z-0">
+          <FrozenKeyboard exhibition mobile={isMobile} backgroundOnly={isMobile} />
+        </div>
 
         {/* Header */}
         <header className="fixed top-0 inset-x-0 z-50 px-6 sm:px-10 md:px-14 py-5 flex items-center justify-between pointer-events-none">
@@ -902,7 +902,7 @@ export default function Home() {
                   <span className="ability-sharp ability-sharp--d" aria-hidden="true" />
                   <span className="ability-sharp ability-sharp--f" aria-hidden="true" />
                   {abilityDetails.map((ability, index) => (
-                    <button key={ability.label.es} type="button"
+                    <button key={ability.label.zh} type="button"
                       className="ability-key"
                       aria-pressed={selectedAbilityIndex === index}
                       onClick={() => {
@@ -983,7 +983,7 @@ export default function Home() {
                     <span className="practice-detail__accent" aria-hidden />
                     <p className="text-sm sm:text-[15px] text-ice-200 leading-relaxed mb-4">{pick(practice.summary, lang)}</p>
                     <ul className="space-y-2 mb-4 text-xs sm:text-sm text-ice-300 leading-relaxed">
-                      {practice.bullets.map((bullet) => <li key={bullet.es}>· {pick(bullet, lang)}</li>)}
+                      {practice.bullets.map((bullet) => <li key={bullet.zh}>· {pick(bullet, lang)}</li>)}
                     </ul>
                     <div className="flex flex-wrap gap-x-4 gap-y-2">
                       {practice.stack.map((tag) => <span key={tag} className="font-mono text-[10px] tracking-[0.08em] text-ice-400">#{label(tag, lang)}</span>)}
@@ -1114,7 +1114,7 @@ export default function Home() {
                             {p.subprojects && (
                               <div className="project-detail__subprojects">
                                 {p.subprojects.map((subproject) => (
-                                  <div key={subproject.name.es}>
+                                  <div key={subproject.name.zh}>
                                     <h4>{pick(subproject.name, lang)}</h4>
                                     <p>{pick(subproject.desc, lang)}</p>
                                   </div>

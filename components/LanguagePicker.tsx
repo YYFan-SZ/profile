@@ -3,7 +3,7 @@
 import { LANGUAGES } from "@/lib/i18n";
 import { useLanguage } from "@/components/LanguageProvider";
 
-// Compact ES / EN segmented toggle, styled to match the season picker and
+// Compact ZH / EN segmented toggle, styled to match the season picker and
 // the GitHub button in the header. The chosen language is persisted in
 // localStorage via the provider.
 export default function LanguagePicker({

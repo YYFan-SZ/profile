@@ -6,7 +6,7 @@ import { useLanguage } from "@/components/LanguageProvider";
 import Carousel from "@/components/Carousel";
 import type { Lang } from "@/lib/i18n";
 
-type Localised = { es: string; en: string };
+type Localised = { zh: string; en: string };
 
 export type ProjectSection = {
   problem?: Localised;
@@ -57,7 +57,7 @@ type Props = {
   onClose: () => void;
 };
 
-function pick<T>(loc: { es: T; en: T }, lang: Lang): T {
+function pick<T>(loc: { zh: T; en: T }, lang: Lang): T {
   return loc[lang];
 }
 
@@ -203,7 +203,7 @@ export default function ProjectModal({ project, onClose }: Props) {
                 <div className="mb-7 space-y-4">
                   <p className="text-[11px] uppercase tracking-[0.25em] text-ice-400">同栏小项目</p>
                   {project.subprojects.map((item) => (
-                    <div key={item.name.es} className="grid gap-4 border-b border-ice-800/70 pb-4 sm:grid-cols-[1fr_108px]">
+                    <div key={item.name.zh} className="grid gap-4 border-b border-ice-800/70 pb-4 sm:grid-cols-[1fr_108px]">
                       <div>
                         <h4 className="text-base font-semibold text-ice-50">{pick(item.name, lang)}</h4>
                         <p className="mt-1 text-sm leading-relaxed text-ice-300">{pick(item.desc, lang)}</p>

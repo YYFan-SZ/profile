@@ -4,19 +4,19 @@ import { useCallback, useEffect, useRef, useState, type CSSProperties } from "re
 import { useLanguage } from "@/components/LanguageProvider";
 import { commerceChapters } from "@/components/ContentCommerceScroll";
 
-type Copy = { es: string; en: string };
+type Copy = { zh: string; en: string };
 
 const stations: Array<{ title: Copy; short: Copy; exhibitIndex: number }> = [
-  { title: { es: "电商实践成果", en: "E-commerce results" }, short: { es: "真实运营与成交", en: "Real operation and sales" }, exhibitIndex: 2 },
-  { title: { es: "小红书批量制作 Skill", en: "Xiaohongshu batch Skill" }, short: { es: "把资料变成发布包", en: "From material to posts" }, exhibitIndex: 1 },
-  { title: { es: "教师备课 Skill", en: "Teacher lesson Skill" }, short: { es: "一件已交付的产品", en: "A delivered product" }, exhibitIndex: 3 },
-  { title: { es: "内容商业化闭环", en: "Content commerce loop" }, short: { es: "从需求走到复盘", en: "From demand to review" }, exhibitIndex: 0 },
+  { title: { zh: "电商实践成果", en: "E-commerce results" }, short: { zh: "真实运营与成交", en: "Real operation and sales" }, exhibitIndex: 2 },
+  { title: { zh: "小红书批量制作 Skill", en: "Xiaohongshu batch Skill" }, short: { zh: "把资料变成发布包", en: "From material to posts" }, exhibitIndex: 1 },
+  { title: { zh: "教师备课 Skill", en: "Teacher lesson Skill" }, short: { zh: "一件已交付的产品", en: "A delivered product" }, exhibitIndex: 3 },
+  { title: { zh: "内容商业化闭环", en: "Content commerce loop" }, short: { zh: "从需求走到复盘", en: "From demand to review" }, exhibitIndex: 0 },
 ];
 
 const lessonStages: Array<{ title: Copy; body: Copy }> = [
-  { title: { es: "资料整理", en: "Organise" }, body: { es: "把讲义、试卷梳理为课堂可用的内容结构。", en: "Turn handouts and papers into a classroom-ready structure." } },
-  { title: { es: "题目展示", en: "Present" }, body: { es: "按教学顺序呈现题目，并处理页面排版。", en: "Present questions in teaching order with readable page layout." } },
-  { title: { es: "答案交互", en: "Interact" }, body: { es: "让答案按需展开，配合课堂讲解节奏。", en: "Reveal answers when needed to support the pace of teaching." } },
+  { title: { zh: "资料整理", en: "Organise" }, body: { zh: "把讲义、试卷梳理为课堂可用的内容结构。", en: "Turn handouts and papers into a classroom-ready structure." } },
+  { title: { zh: "题目展示", en: "Present" }, body: { zh: "按教学顺序呈现题目，并处理页面排版。", en: "Present questions in teaching order with readable page layout." } },
+  { title: { zh: "答案交互", en: "Interact" }, body: { zh: "让答案按需展开，配合课堂讲解节奏。", en: "Reveal answers when needed to support the pace of teaching." } },
 ];
 
 export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: () => void }) {
@@ -86,7 +86,7 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
       <div className="content-orbit__needle" aria-hidden="true"><span /></div>
       <nav className="content-orbit__stations" aria-label={lang === "en" ? "Four content themes" : "四个内容栏目"}>
         {stations.map((station, index) => <button
-          key={station.title.es}
+          key={station.title.zh}
           type="button"
           className={`content-orbit__station content-orbit__station--${index} ${active === index ? "is-active" : ""}`}
           aria-pressed={active === index}
@@ -103,7 +103,7 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
         <h2>{t("content.title")}</h2>
         <p>{t("content.subtitle")}</p>
         <nav className="content-orbit__mobile-index" aria-label={lang === "en" ? "Four content themes" : "四个内容栏目"}>
-          {stations.map((station, index) => <button type="button" key={station.title.es} onClick={() => selectStation(index)}>
+          {stations.map((station, index) => <button type="button" key={station.title.zh} onClick={() => selectStation(index)}>
             <span>{String(index + 1).padStart(2, "0")}</span>
             <strong>{read(station.title)}</strong>
             <small>{read(station.short)}</small>
@@ -123,7 +123,7 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
           <p>{chapter.body[lang]}</p>
           <p className="content-orbit__aside">{chapter.aside[lang]}</p>
           <div className="content-orbit__step-row" role="group" aria-label={lang === "en" ? "Choose a process step" : "选择商业化流程步骤"}>
-            {commerceChapters.map((step, index) => <button type="button" key={step.kicker.es} aria-label={step.kicker[lang]} aria-pressed={storyStep === index} onClick={() => setStoryStep(index)}>{String(index + 1).padStart(2, "0")}</button>)}
+            {commerceChapters.map((step, index) => <button type="button" key={step.kicker.zh} aria-label={step.kicker[lang]} aria-pressed={storyStep === index} onClick={() => setStoryStep(index)}>{String(index + 1).padStart(2, "0")}</button>)}
           </div>
           {storyStep === 2 && <div className="content-orbit__links">
             <button type="button" onClick={() => selectStation(1)}>{lang === "en" ? "See the batch Skill ↗" : "看小红书批量制作 Skill ↗"}</button>
@@ -160,7 +160,7 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
           <p>{lang === "en" ? "Built for English teachers: it turns handouts and exam papers into ready-to-use interactive HTML lessons, with structured classroom content, question presentation, answer interaction and page layout." : "面向英语教师备课场景开发的 Skill，可将讲义、试卷等资料整理并生成可直接使用的 HTML 互动课件，支持课堂内容结构化、题目展示、答案交互和页面排版。"}</p>
           <p className="content-orbit__aside">{lang === "en" ? "Productised delivery · dozens of sales · improved from real customer feedback" : "已售出数十份，并根据客户反馈持续优化课件结构、视觉呈现和交付体验。"}</p>
           <div className="content-orbit__step-row" role="group" aria-label={lang === "en" ? "Choose a lesson step" : "选择课件制作步骤"}>
-            {lessonStages.map((step, index) => <button type="button" key={step.title.es} aria-label={read(step.title)} aria-pressed={lessonStep === index} onClick={() => setLessonStep(index)}>{String(index + 1).padStart(2, "0")}</button>)}
+            {lessonStages.map((step, index) => <button type="button" key={step.title.zh} aria-label={read(step.title)} aria-pressed={lessonStep === index} onClick={() => setLessonStep(index)}>{String(index + 1).padStart(2, "0")}</button>)}
           </div>
           <p className="content-orbit__step-detail"><strong>{read(lessonStages[lessonStep].title)}</strong> · {read(lessonStages[lessonStep].body)}</p>
         </article>}

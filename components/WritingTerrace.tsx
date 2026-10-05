@@ -3,9 +3,9 @@
 import { useLanguage } from "@/components/LanguageProvider";
 import type { Lang } from "@/lib/i18n";
 
-type Localised = { es: string; en: string };
+type Localised = { zh: string; en: string };
 type Report = { date: Localised; entries: Array<{ title: Localised; items: Localised[] }> };
-const text = (es: string, en: string): Localised => ({ es, en });
+const text = (zh: string, en: string): Localised => ({ zh, en });
 
 const reports: Report[] = [
   { date: text("9 月 21 日—9 月 27 日", "September 21–27"), entries: [
@@ -70,9 +70,9 @@ export function WeeklyIsland() {
           <span className="weekly-island__count">{lang === "en" ? `Weekly notes · ${reports.length} issues` : `周报 · ${reports.length} 期`}</span>
         </header>
         <div className="weekly-island__reports">
-          {reports.map((report, index) => <details key={report.date.es} className="weekly-report" open={index === 0}>
+          {reports.map((report, index) => <details key={report.date.zh} className="weekly-report" open={index === 0}>
             <summary><span className="weekly-report__index">{String(index + 1).padStart(2, "0")}</span><span className="weekly-island__date">{pick(report.date, lang)}</span><span className="weekly-island__toggle" aria-hidden="true" /></summary>
-            <div className="weekly-report__body">{report.entries.map(entry => <article key={entry.title.es}><h3>{pick(entry.title, lang)}</h3><ul>{entry.items.map(item => <li key={item.es}>{pick(item, lang)}</li>)}</ul></article>)}</div>
+            <div className="weekly-report__body">{report.entries.map(entry => <article key={entry.title.zh}><h3>{pick(entry.title, lang)}</h3><ul>{entry.items.map(item => <li key={item.zh}>{pick(item, lang)}</li>)}</ul></article>)}</div>
           </details>)}
         </div>
       </div>
