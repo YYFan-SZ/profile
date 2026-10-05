@@ -27,7 +27,21 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
   const [storyStep, setStoryStep] = useState(0);
   const [resultView, setResultView] = useState(0);
   const [lessonStep, setLessonStep] = useState(0);
+  const [filmOpen, setFilmOpen] = useState(false);
+  const filmDialog = useRef<HTMLDialogElement>(null);
+  const filmVideo = useRef<HTMLVideoElement>(null);
   const read = (copy: Copy) => copy[lang];
+
+  useEffect(() => {
+    if (!filmOpen) return;
+    const dialog = filmDialog.current;
+    const video = filmVideo.current;
+    dialog?.showModal();
+    return () => {
+      video?.pause();
+      if (dialog?.open) dialog.close();
+    };
+  }, [filmOpen]);
 
   const selectStation = useCallback((index: number) => {
     let steps = index - activeRef.current;
@@ -159,6 +173,11 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
           <h3>{lang === "en" ? "Teacher lesson-planning Skill" : "教师备课 Skill｜HTML 课件生成工具"}</h3>
           <p>{lang === "en" ? "Built for English teachers: it turns handouts and exam papers into ready-to-use interactive HTML lessons, with structured classroom content, question presentation, answer interaction and page layout." : "面向英语教师备课场景开发的 Skill，可将讲义、试卷等资料整理并生成可直接使用的 HTML 互动课件，支持课堂内容结构化、题目展示、答案交互和页面排版。"}</p>
           <p className="content-orbit__aside">{lang === "en" ? "Productised delivery · dozens of sales · improved from real customer feedback" : "已售出数十份，并根据客户反馈持续优化课件结构、视觉呈现和交付体验。"}</p>
+          <button className="content-orbit__film-trigger" type="button" onClick={() => setFilmOpen(true)}>
+            <span className="content-orbit__film-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m9 6 9 6-9 6V6Z" fill="currentColor" /></svg></span>
+            <span>{lang === "en" ? "Watch the Codex-edited demo" : "观看 Codex 剪辑成片"}</span>
+            <small>01:57</small>
+          </button>
           <div className="content-orbit__step-row" role="group" aria-label={lang === "en" ? "Choose a lesson step" : "选择课件制作步骤"}>
             {lessonStages.map((step, index) => <button type="button" key={step.title.zh} aria-label={read(step.title)} aria-pressed={lessonStep === index} onClick={() => setLessonStep(index)}>{String(index + 1).padStart(2, "0")}</button>)}
           </div>
@@ -167,5 +186,41 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
       </div>
       </>}
     </div>
+    <dialog
+      ref={filmDialog}
+      className="content-orbit__film-dialog"
+      aria-labelledby="teacher-film-title"
+      aria-describedby="teacher-film-description"
+      onClose={() => setFilmOpen(false)}
+      onClick={event => { if (event.target === event.currentTarget) setFilmOpen(false); }}
+    >
+      <button className="content-orbit__film-close" type="button" onClick={() => setFilmOpen(false)} aria-label={lang === "en" ? "Close video" : "关闭视频"}>
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 5 19 19M19 5 5 19" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" /></svg>
+      </button>
+      <div className="content-orbit__film-layout">
+        <div className="content-orbit__film-media">
+          <video
+            ref={filmVideo}
+            src={filmOpen ? "/videos/teacher-skill-codex-demo.mp4" : undefined}
+            controls
+            playsInline
+            preload="metadata"
+            aria-label={lang === "en" ? "Teacher Skill product demonstration" : "教师备课 Skill 产品演示视频"}
+          >{lang === "en" ? "Your browser does not support video playback." : "当前浏览器不支持视频播放。"}</video>
+        </div>
+        <div className="content-orbit__film-copy">
+          <span className="content-orbit__film-label">{lang === "en" ? "PRODUCT FILM · 01:57" : "产品演示 · 01:57"}</span>
+          <h3 id="teacher-film-title">{lang === "en" ? "From screen recording to a finished film" : "从操作录屏到演示成片"}</h3>
+          <p id="teacher-film-description">{lang === "en"
+            ? "I gave Codex the original recording of the lesson-making workflow. It planned the on-screen copy and shot order, then edited the footage into a finished demonstration. The film keeps the real interface and shows how a test paper becomes an interactive HTML lesson."
+            : "我把课件制作的原始操作录屏交给 Codex，由它梳理演示重点、规划屏幕文字和分镜顺序，再自动剪辑成片。视频保留真实操作画面，展示一份试卷如何生成可直接使用的 HTML 互动课件。"}</p>
+          <div className="content-orbit__film-process" aria-label={lang === "en" ? "Video production process" : "视频制作流程"}>
+            <span>{lang === "en" ? "Screen recording" : "操作录屏"}</span>
+            <span>{lang === "en" ? "Story and captions" : "文字与分镜"}</span>
+            <span>{lang === "en" ? "Edited film" : "自动成片"}</span>
+          </div>
+        </div>
+      </div>
+    </dialog>
   </section>;
 }

@@ -9,9 +9,7 @@ import MagneticTargets from "@/components/MagneticTargets";
 import SeasonProvider, {
   SEASON_BOOT_SCRIPT,
 } from "@/components/SeasonProvider";
-import LanguageProvider, {
-  LANG_BOOT_SCRIPT,
-} from "@/components/LanguageProvider";
+import LanguageProvider from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
   title: "ZhengYifan · 个人作品集",
@@ -54,7 +52,6 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <Script id="season-boot" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: SEASON_BOOT_SCRIPT }} />
-        <Script id="language-boot" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: LANG_BOOT_SCRIPT }} />
         <LanguageProvider>
           <SeasonProvider>
             <FrozenBackground />

@@ -4,8 +4,7 @@ import { LANGUAGES } from "@/lib/i18n";
 import { useLanguage } from "@/components/LanguageProvider";
 
 // Compact ZH / EN segmented toggle, styled to match the season picker and
-// the GitHub button in the header. The chosen language is persisted in
-// localStorage via the provider.
+// the GitHub button in the header. New page loads start in Chinese.
 export default function LanguagePicker({
   className = "",
 }: {
