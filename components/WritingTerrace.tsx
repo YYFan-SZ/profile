@@ -8,6 +8,20 @@ type Report = { date: Localised; entries: Array<{ title: Localised; items: Local
 const text = (zh: string, en: string): Localised => ({ zh, en });
 
 const reports: Report[] = [
+  { date: text("9 月 28 日—10 月 4 日", "September 28–October 4"), entries: [
+    { title: text("生日祝福网站", "Birthday greeting website"), items: [
+      text("从零开始设计并制作 3D 生日祝福网站。", "Designed and built a 3D birthday greeting website from scratch."),
+      text("规划花园场景、礼物、花田、烟花等互动内容和整体体验路线。", "Planned the garden scenes, gifts, flower fields, fireworks and the overall experience route."),
+      text("设计管理员端与用户端，让管理员可以为不同的人编辑专属祝福。", "Designed admin and guest experiences so personalised greetings can be created for different people."),
+      text("梳理姓名缩写、专属链接、二维码和个性化祝福内容的实现方式。", "Mapped the implementation for initials, personalised links, QR codes and custom greeting content."),
+    ] },
+    { title: text("教师备课 Skill 全科化", "All-subject expansion for the teacher lesson-planning Skill"), items: [
+      text("将现有单科英语教师备课 Skill，向多学科、全科适用的方向扩展。", "Expanded the existing English-only teacher lesson-planning Skill toward multi-subject use."),
+      text("梳理不同学科在资料解析、题型处理和课件生成上的共性需求。", "Mapped the shared needs across subjects for source parsing, question-type handling and lesson generation."),
+      text("根据客户使用反馈，区分功能问题、使用问题和新增需求。", "Used customer feedback to separate feature issues, usability issues and new requirements."),
+      text("持续完善产品功能、优化使用流程，并推进版本迭代。", "Continued improving features, refining the workflow and advancing version iterations."),
+    ] },
+  ] },
   { date: text("9 月 21 日—9 月 27 日", "September 21–27"), entries: [
     { title: text("教师备课 Skill 与内容传播", "Teacher lesson-planning Skill & content publishing"), items: [
       text("整理阅读理解、完形填空相关 Skill。", "Organised Skills for reading comprehension and cloze exercises."),
