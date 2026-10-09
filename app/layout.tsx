@@ -12,6 +12,7 @@ import SeasonProvider, {
 import LanguageProvider from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://zhengyifan-profile.vercel.app"),
   title: "ZhengYifan · 个人作品集",
   description:
     "ZhengYifan 的个人作品集，记录小程序、网页、AI 工具、内容运营和实践经历。",
@@ -22,12 +23,19 @@ export const metadata: Metadata = {
       "记录小程序、网页、AI 工具、内容运营和实践经历。",
     type: "website",
     locale: "zh_CN",
+    images: [{
+      url: "/social-preview.png",
+      width: 2526,
+      height: 1294,
+      alt: "ZhengYifan 个人作品集首页",
+    }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ZhengYifan · 个人作品集",
     description:
       "记录小程序、网页、AI 工具、内容运营和实践经历。",
+    images: ["/social-preview.png"],
   },
 };
 
