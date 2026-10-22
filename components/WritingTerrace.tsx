@@ -8,6 +8,28 @@ type Report = { date: Localised; entries: Array<{ title: Localised; items: Local
 const text = (zh: string, en: string): Localised => ({ zh, en });
 
 const reports: Report[] = [
+  { date: text("10 月 12 日—10 月 18 日", "October 12–18"), entries: [
+    { title: text("面向教师的 AI 产品规划练习", "AI Product Planning Practice for Teachers"), items: [
+      text("围绕一线教师继续梳理可能值得付费的实际需求，并练习把需求转成产品方案。", "Continued exploring real needs among frontline teachers that may merit a paid solution, and practiced turning those needs into product concepts."),
+      text("完成一轮 PRD 练习，讨论目标用户、使用场景、产品指标和功能优先级；初步列出的 MVP 功能包括资料读取、AI 笔记生成、内容预览与修改。", "Completed a round of PRD practice covering target users, use cases, product metrics, and feature prioritisation. Initial MVP features include resource reading, AI note generation, and content preview and editing."),
+    ] },
+    { title: text("教师备课 Skill 客户反馈与版本迭代", "Teacher Lesson-Planning Skill: Customer Feedback & Iteration"), items: [
+      text("持续收集教师备课 Skill 的客户使用反馈，关注实际使用中遇到的问题和新的需求。", "Continued collecting feedback from users of the teacher lesson-planning Skill, focusing on issues encountered in practice and emerging needs."),
+      text("根据反馈继续完善产品与使用流程，推进版本迭代，让 Skill 更贴近教师备课和资料处理的真实场景。", "Used feedback to improve the product and workflow and advance iterations, bringing the Skill closer to teachers’ real lesson-planning and material-processing needs."),
+    ] },
+  ] },
+  { date: text("10 月 5 日—10 月 11 日", "October 5–11"), entries: [
+    { title: text("生财有术「重启人生沙盘」线下聚会", "Shengcai YouShu “Restart Life” Simulation Meetup"), items: [
+      text("参加生财有术「重启人生沙盘」线下聚会，通过沙盘体验和参与者交流。", "Joined the in-person Shengcai YouShu “Restart Life” simulation meetup, taking part in the activity and exchanging reflections with other participants."),
+      text("复盘过程中，我注意到一个很具体的感受：到了活动后半程，自己的精力资源已经所剩不多，和其他参与者相比明显偏少。回看过去，身体状况、家庭和关系经历带来的持续消耗，确实占用了自己不少精力。", "During the debrief, I noticed something concrete: by the later stages, I had very little energy left—noticeably less than other participants. Looking back, ongoing strain from health, family, and relationship experiences had taken a real toll on my energy."),
+      text("这次体验让我意识到，每个人经历不同、可支配的精力也不同，不能只用同一把尺子比较谁走得更快、做得更多。比起一味要求自己加速，更重要的是看清哪些事情在消耗自己、哪些关系值得投入，并为真正重视的目标留出精力。", "The experience reminded me that everyone’s circumstances and available energy are different; progress cannot be measured only by who moves faster or does more. Instead of constantly pushing myself to speed up, I need to notice what drains me, which relationships are worth investing in, and preserve energy for the goals I truly value."),
+      text("沙盘没有直接给出一个人生答案，但提供了一次重新观察自己的机会：接受自己的现实起点，也可以从更适合自己的节奏开始，逐步做选择、做调整。", "The simulation did not offer a ready-made answer to life, but it gave me a chance to observe myself anew: to accept my starting point and make choices and adjustments at a pace that works for me."),
+    ] },
+    { title: text("小红书与 AI 内容创作", "Xiaohongshu & AI Content Creation"), items: [
+      text("梳理小红书封面的四类常见呈现方式：大字标题、关键词高亮、结果展示和前后对比；围绕首图反复调整信息密度，尝试让主题更醒目，同时避免元素堆得太满。", "Organised four common Xiaohongshu cover formats—large headlines, highlighted keywords, outcome showcases, and before-and-after comparisons—and iterated on the first image’s information density to make the topic clear without overcrowding it."),
+      text("完成 AI 提效主题长文草稿，讨论 AI 提高内容产能之后可能出现的同质化问题，以及如何把控内容质量。在写作过程中进一步梳理人的价值：工具可以加快生产，但选题判断、内容取舍和最终质量把关仍需要人来完成。", "Drafted a long-form article on AI-driven productivity, examining the risk of homogenised content as output increases and how to maintain quality. The writing also clarified the human role: tools can speed up production, but topic selection, editorial judgment, and final quality control still depend on people."),
+    ] },
+  ] },
   { date: text("9 月 28 日—10 月 4 日", "September 28–October 4"), entries: [
     { title: text("生日祝福网站", "Birthday greeting website"), items: [
       text("从零开始设计并制作 3D 生日祝福网站。", "Designed and built a 3D birthday greeting website from scratch."),
