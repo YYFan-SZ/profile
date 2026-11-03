@@ -25,12 +25,15 @@ const securityHeaders = [
   },
 ];
 
+const isCloudflarePagesBuild = process.env.CF_PAGES === "1";
+
 const nextConfig: NextConfig = {
+  ...(isCloudflarePagesBuild ? { output: "export" as const } : {}),
   // The local preview is opened from 127.0.0.1 while Next serves the app
   // from localhost. Allow the dev HMR resource to connect in that setup.
   allowedDevOrigins: ["127.0.0.1"],
 
-  async headers() {
+  ...(!isCloudflarePagesBuild ? { async headers() {
     return [
       {
         // GLB, texture, image and audio files are content-addressed by the
@@ -47,7 +50,7 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
     ];
-  },
+  } } : {}),
 };
 
 export default nextConfig;
