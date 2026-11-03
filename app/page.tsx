@@ -153,7 +153,8 @@ const projectCatalog: Project[] = [
       },
       technical: "uni-app + Vue · 七牛云数据存储 · 火山引擎豆包语音 ASR · DeepSeek API 文案生成",
     },
-    download: "/downloads/tusuo.apk",
+    download:
+      "https://github.com/YYFan-SZ/profile/raw/refs/heads/codex/cloudflare-pages-static/downloads/tusuo.apk",
     downloadLabel: { zh: "下载安装包", en: "Download APK" },
     media: ["/projects/zhengyifan/tusuo-demo.mp4"],
     mediaLayout: "portrait",
