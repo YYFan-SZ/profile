@@ -8,83 +8,44 @@ type Report = { date: Localised; entries: Array<{ title: Localised; items: Local
 const text = (zh: string, en: string): Localised => ({ zh, en });
 
 const reports: Report[] = [
-  { date: text("10 月 12 日—10 月 18 日", "October 12–18"), entries: [
-    { title: text("面向教师的 AI 产品规划练习", "AI Product Planning Practice for Teachers"), items: [
-      text("围绕一线教师继续梳理可能值得付费的实际需求，并练习把需求转成产品方案。", "Continued exploring real needs among frontline teachers that may merit a paid solution, and practiced turning those needs into product concepts."),
-      text("完成一轮 PRD 练习，讨论目标用户、使用场景、产品指标和功能优先级；初步列出的 MVP 功能包括资料读取、AI 笔记生成、内容预览与修改。", "Completed a round of PRD practice covering target users, use cases, product metrics, and feature prioritisation. Initial MVP features include resource reading, AI note generation, and content preview and editing."),
-    ] },
-    { title: text("教师备课 Skill 客户反馈与版本迭代", "Teacher Lesson-Planning Skill: Customer Feedback & Iteration"), items: [
-      text("持续收集教师备课 Skill 的客户使用反馈，关注实际使用中遇到的问题和新的需求。", "Continued collecting feedback from users of the teacher lesson-planning Skill, focusing on issues encountered in practice and emerging needs."),
-      text("根据反馈继续完善产品与使用流程，推进版本迭代，让 Skill 更贴近教师备课和资料处理的真实场景。", "Used feedback to improve the product and workflow and advance iterations, bringing the Skill closer to teachers’ real lesson-planning and material-processing needs."),
-    ] },
-  ] },
-  { date: text("10 月 5 日—10 月 11 日", "October 5–11"), entries: [
-    { title: text("生财有术「重启人生沙盘」线下聚会", "Shengcai YouShu “Restart Life” Simulation Meetup"), items: [
-      text("参加生财有术「重启人生沙盘」线下聚会，通过沙盘体验和参与者交流。", "Joined the in-person Shengcai YouShu “Restart Life” simulation meetup, taking part in the activity and exchanging reflections with other participants."),
-      text("复盘过程中，我注意到一个很具体的感受：到了活动后半程，自己的精力资源已经所剩不多，和其他参与者相比明显偏少。回看过去，身体状况、家庭和关系经历带来的持续消耗，确实占用了自己不少精力。", "During the debrief, I noticed something concrete: by the later stages, I had very little energy left—noticeably less than other participants. Looking back, ongoing strain from health, family, and relationship experiences had taken a real toll on my energy."),
-      text("这次体验让我意识到，每个人经历不同、可支配的精力也不同，不能只用同一把尺子比较谁走得更快、做得更多。比起一味要求自己加速，更重要的是看清哪些事情在消耗自己、哪些关系值得投入，并为真正重视的目标留出精力。", "The experience reminded me that everyone’s circumstances and available energy are different; progress cannot be measured only by who moves faster or does more. Instead of constantly pushing myself to speed up, I need to notice what drains me, which relationships are worth investing in, and preserve energy for the goals I truly value."),
-      text("沙盘没有直接给出一个人生答案，但提供了一次重新观察自己的机会：接受自己的现实起点，也可以从更适合自己的节奏开始，逐步做选择、做调整。", "The simulation did not offer a ready-made answer to life, but it gave me a chance to observe myself anew: to accept my starting point and make choices and adjustments at a pace that works for me."),
-    ] },
-    { title: text("小红书与 AI 内容创作", "Xiaohongshu & AI Content Creation"), items: [
-      text("梳理小红书封面的四类常见呈现方式：大字标题、关键词高亮、结果展示和前后对比；围绕首图反复调整信息密度，尝试让主题更醒目，同时避免元素堆得太满。", "Organised four common Xiaohongshu cover formats—large headlines, highlighted keywords, outcome showcases, and before-and-after comparisons—and iterated on the first image’s information density to make the topic clear without overcrowding it."),
-      text("完成 AI 提效主题长文草稿，讨论 AI 提高内容产能之后可能出现的同质化问题，以及如何把控内容质量。在写作过程中进一步梳理人的价值：工具可以加快生产，但选题判断、内容取舍和最终质量把关仍需要人来完成。", "Drafted a long-form article on AI-driven productivity, examining the risk of homogenised content as output increases and how to maintain quality. The writing also clarified the human role: tools can speed up production, but topic selection, editorial judgment, and final quality control still depend on people."),
-    ] },
-  ] },
-  { date: text("9 月 28 日—10 月 4 日", "September 28–October 4"), entries: [
+  { date: text("10 月月报", "October 2026"), entries: [
     { title: text("生日祝福网站", "Birthday greeting website"), items: [
-      text("从零开始设计并制作 3D 生日祝福网站。", "Designed and built a 3D birthday greeting website from scratch."),
-      text("规划花园场景、礼物、花田、烟花等互动内容和整体体验路线。", "Planned the garden scenes, gifts, flower fields, fireworks and the overall experience route."),
-      text("设计管理员端与用户端，让管理员可以为不同的人编辑专属祝福。", "Designed admin and guest experiences so personalised greetings can be created for different people."),
-      text("梳理姓名缩写、专属链接、二维码和个性化祝福内容的实现方式。", "Mapped the implementation for initials, personalised links, QR codes and custom greeting content."),
+      text("从零开始设计和制作 3D 生日祝福网站，规划花园场景、礼物、花田、烟花和整体体验路线。", "Designed and built a 3D birthday greeting website from scratch, planning its garden scenes, gifts, flower fields, fireworks and overall experience route."),
+      text("梳理管理员端与用户端，让管理员能为不同收件人编辑专属祝福，并通过姓名缩写、专属链接或二维码进入对应内容。", "Mapped admin and guest experiences so personalised greetings can be prepared for different recipients and opened through initials, individual links or QR codes."),
     ] },
-    { title: text("教师备课 Skill 全科化", "All-subject expansion for the teacher lesson-planning Skill"), items: [
-      text("将现有单科英语教师备课 Skill，向多学科、全科适用的方向扩展。", "Expanded the existing English-only teacher lesson-planning Skill toward multi-subject use."),
-      text("梳理不同学科在资料解析、题型处理和课件生成上的共性需求。", "Mapped the shared needs across subjects for source parsing, question-type handling and lesson generation."),
-      text("根据客户使用反馈，区分功能问题、使用问题和新增需求。", "Used customer feedback to separate feature issues, usability issues and new requirements."),
-      text("持续完善产品功能、优化使用流程，并推进版本迭代。", "Continued improving features, refining the workflow and advancing version iterations."),
+    { title: text("教师备课 Skill 与教育产品", "Teacher lesson-planning Skill & education product"), items: [
+      text("持续收集教师备课 Skill 的客户反馈，关注使用中的问题和新需求，并据此完善产品与使用流程、推进版本迭代。", "Continued collecting customer feedback on the teacher lesson-planning Skill, improving the product and workflow and advancing iterations based on real issues and new needs."),
+      text("练习面向一线教师做 AI 产品规划，梳理目标用户、使用场景、产品指标和功能优先级；初步考虑资料读取、AI 笔记生成、内容预览与修改等功能。", "Practised planning an AI product for frontline teachers by defining users, use cases, product metrics and priorities. Initial MVP ideas included resource reading, AI-generated notes, and content preview and editing."),
+      text("将课件制作拓展到其他学科，制作英语、语文等课堂课件案例，并核对题目、答案、解析与原始资料的对应关系。", "Extended lesson creation to other subjects, producing English and Chinese classroom examples and checking that questions, answers and explanations matched the source material."),
     ] },
   ] },
-  { date: text("9 月 21 日—9 月 27 日", "September 21–27"), entries: [
-    { title: text("教师备课 Skill 与内容传播", "Teacher lesson-planning Skill & content publishing"), items: [
-      text("整理阅读理解、完形填空相关 Skill。", "Organised Skills for reading comprehension and cloze exercises."),
-      text("跟进教师 HTML 课堂课件 Skill 的更新版本。", "Worked with the updated version of the teacher HTML lesson Skill."),
-      text("根据 Skill 的功能和使用场景，规划并制作宣传视频、视频分镜和公众号文章。", "Planned promotional videos, storyboards and public-account articles around the Skill's real use cases."),
+  { date: text("9 月月报", "September 2026"), entries: [
+    { title: text("教师备课 Skill 与课堂课件", "Teacher lesson-planning Skill & classroom materials"), items: [
+      text("制作并持续完善教师备课 Skill，围绕英语课堂资料、阅读理解和完形填空等场景测试课件生成效果。", "Built and refined the teacher lesson-planning Skill, testing classroom materials for English, reading comprehension and cloze exercises."),
+      text("根据测试情况调整课件与原始资料的对应关系，重点检查题目顺序、答案解析和课堂呈现是否准确。", "Improved source alignment based on testing, with particular attention to question order, answer explanations and classroom presentation."),
+      text("逐步把教师备课和课件制作作为持续打磨的产品方向。", "Developed lesson planning and classroom materials into an ongoing product direction."),
     ] },
-    { title: text("AI 视觉审美与内容研究", "AI visual aesthetics & content research"), items: [
-      text("研究 AI 图片产生“AI 感”的常见原因，梳理画面构图、细节、材质和整体协调性等视觉判断标准。", "Studied why AI-generated images can feel artificial, focusing on composition, detail, material and overall coherence."),
-      text("使用 Browser Skill 查找两个平台的相关对标内容，整理案例和参考链接。", "Used Browser Skill to find comparable work on two platforms and organise examples and reference links."),
-      text("尝试将审美判断转化为可执行的画面创作规则，为后续 AI 图片制作和内容创作提供参考。", "Turned aesthetic observations into practical visual rules for future AI image and content work."),
+    { title: text("小红书内容流程与选题研究", "Xiaohongshu workflows & topic research"), items: [
+      text("研究小红书 MCP 和相关运营案例，探索资料整理、内容制作和发布准备之间更顺畅的工作流。", "Studied Xiaohongshu MCP options and operating examples, exploring a smoother workflow from source organisation through content production to publishing preparation."),
+      text("继续打磨 AI 自媒体选题和账号定位，学习视频画面呈现方式，思考如何提升 AI 内容的辨识度。", "Continued shaping AI creator topics and account positioning, studying video presentation styles and ways to make AI content more distinctive."),
     ] },
-  ] },
-  { date: text("9 月 7 日—9 月 13 日", "September 7–13"), entries: [
-    { title: text("百度网盘与闲鱼 MCP", "Baidu Netdisk & Xianyu MCP"), items: [text("梳理百度网盘资料与闲鱼商品制作的 MCP 流程。", "Mapped the MCP workflow for organising Baidu Netdisk material and creating Xianyu listings.")] },
-    { title: text("教师备课 Skill", "Teacher lesson-planning Skill"), items: [
-      text("制作教师资料的小红书图文包。", "Created Xiaohongshu image-note packages from teacher materials."),
-      text("完成资料处理、封面、内容页、标题、正文和标签制作。", "Handled source processing, covers, content pages, titles, copy and tags."),
-      text("Skill 已用于小红书上架，并产生订单。", "Used the Skill to publish on Xiaohongshu and generate orders."),
-    ] },
-    { title: text("AI 自媒体选题", "AI creator topics"), items: [text("继续规划 AI 产品、AI 应用和 AI 副业相关选题。", "Continued planning topics around AI products, applications and AI-assisted side projects.")] },
-  ] },
-  { date: text("8 月 31 日—9 月 6 日", "August 31–September 6"), entries: [
-    { title: text("小红书批量制作 Skill", "Xiaohongshu batch-production Skill"), items: [
-      text("完善标题、正文和标签的差异化规则。", "Refined differentiation rules for titles, copy and tags."),
-      text("减少模板化、重复内容和平台违规风险。", "Reduced templated repetition and platform-compliance risks."),
-    ] },
-    { title: text("Video Shotcraft Skill", "Video Shotcraft Skill"), items: [
-      text("学习镜头配方、Gallery 和 Remotion。", "Studied shot recipes, Gallery and Remotion."),
-      text("梳理使用 Codex 制作产品宣传片的视频流程。", "Mapped a Codex workflow for producing product-promo videos."),
+    { title: text("MCP 工作流研究", "MCP workflow research"), items: [
+      text("梳理百度网盘资料与闲鱼商品制作相关的 MCP 流程。", "Mapped MCP workflows for organising Baidu Netdisk materials and preparing Xianyu listings."),
     ] },
   ] },
-  { date: text("8 月 24 日—8 月 30 日", "August 24–30"), entries: [
-    { title: text("3D 个人房间", "3D personal room"), items: [text("制作个人网站 3D 房间。", "Built a 3D room for the personal website."), text("完善模型加载、互动和照片展示功能。", "Improved model loading, interactions and photo presentation.")] },
-    { title: text("视频号传统文化账号", "Traditional-culture video account"), items: [text("从传统文化资料中筛选视频号选题。", "Selected video topics from traditional-culture material."), text("完善传统文化类带货视频制作工作流。", "Improved the production workflow for traditional-culture commerce videos.")] },
-    { title: text("小红书 AI 自媒体", "AI creator account on Xiaohongshu"), items: [text("梳理旧账号内容，确定保留和隐藏方向。", "Reviewed the old account and decided what to keep or hide."), text("初步确定 AI 产品、AI 应用和 AI 副业三个内容方向。", "Set three initial directions: AI products, AI applications and AI-assisted side projects.")] },
-    { title: text("小红书千帆复盘", "Xiaohongshu Qianfan review"), items: [text("复盘经营、笔记、搜索词、客服和售后数据。", "Reviewed store, note, search-term, customer-service and after-sales data."), text("生成日报和周报，并封装成可复用 Skill。", "Generated daily and weekly reports and packaged the process as a reusable Skill.")] },
-    { title: text("短视频文案二创", "Short-video copy adaptation"), items: [text("学习保留原意和原框架的文案改写方法。", "Studied how to rewrite copy while preserving its original meaning and structure."), text("优化开头钩子、口语化表达和 AI 味。", "Improved opening hooks, spoken phrasing and the overall feel of AI-assisted copy.")] },
-  ] },
-  { date: text("8 月 17 日—8 月 23 日", "August 17–23"), entries: [
-    { title: text("视频号人物志带货视频工作流", "Video-account profile-commerce workflow"), items: [text("研究人物志、文化类口播和读书带货视频的制作流程。", "Studied production workflows for profile stories, cultural narration and book-commerce videos."), text("梳理配音、字幕、图片、运镜、BGM 和分段渲染等技术。", "Mapped voice-over, subtitles, images, camera movement, BGM and segmented rendering.")] },
-    { title: text("小红书 SEO Skill", "Xiaohongshu SEO Skill"), items: [text("研究关键词、埋词位置和内容矩阵。", "Studied keywords, placement and content-matrix structure."), text("完成小红书 SEO 方案与文案 Skill。", "Completed the Xiaohongshu SEO plan and copywriting Skill.")] },
+  { date: text("8 月月报", "August 2026"), entries: [
+    { title: text("小红书运营与内容电商", "Xiaohongshu operations & content commerce"), items: [
+      text("梳理小红书 SEO、关键词布局和内容矩阵，制作并完善批量笔记制作 Skill，减少选题、封面、正文和标签制作中的重复劳动。", "Developed Xiaohongshu SEO, keyword placement and content-matrix practices, and refined a batch note-production Skill to reduce repetitive work across topics, covers, copy and tags."),
+      text("研究虚拟学习资料和实物商品的详情页结构，探索把资料整理、内容制作和商品交付串成可复用流程。", "Studied detail-page structures for digital learning materials and physical goods, exploring a reusable process from source organisation to content production and delivery."),
+      text("复盘小红书店铺经营、笔记、搜索词、客服和售后数据。", "Reviewed Xiaohongshu store operations, notes, search terms, customer service and after-sales data."),
+    ] },
+    { title: text("视频制作与 AI 内容", "Video production & AI content"), items: [
+      text("研究人物志、传统文化类视频号图书带货视频的制作方式，梳理口播稿、配音、字幕、配图、运镜、BGM 和分段渲染流程。", "Studied book-commerce videos for profile stories and traditional culture, mapping scripts, voice-over, subtitles, images, camera movement, BGM and segmented rendering."),
+      text("学习镜头配方、Gallery 和 Remotion，梳理使用 Codex 制作产品宣传片的流程；同时练习口播文案改写和图文内容规划。", "Studied shot recipes, Gallery and Remotion, mapped a Codex workflow for product videos, and practised spoken-script adaptation and image-note planning."),
+    ] },
+    { title: text("个人网站", "Personal website"), items: [
+      text("制作 3D 个人房间网页，完善模型加载、互动和照片展示，探索用更具体验感的方式呈现个人经历与作品。", "Built a 3D personal-room webpage, improving model loading, interactions and photo displays to present personal experience and work in a more immersive way."),
+    ] },
   ] },
 ];
 
@@ -98,12 +59,12 @@ export function StairApproach() {
 export function WeeklyIsland() {
   const { lang } = useLanguage();
   return (
-    <section data-kb-section="weekly" className="weekly-island-section" aria-label={lang === "en" ? "Weekly notes" : "周报岛"}>
+    <section data-kb-section="weekly" className="weekly-island-section" aria-label={lang === "en" ? "Monthly reports" : "月报"}>
       <div className="weekly-island pointer-events-auto">
         <header className="weekly-island__heading">
           <h2>{lang === "en" ? "What I have been working on" : "最近在做什么"}</h2>
-          <p>{lang === "en" ? "Alongside the work and practice archive, I keep a record of what moved forward each week." : "作品和实践之外，也把每一周正在推进的事情留在这里。按时间翻阅我的周报。"}</p>
-          <span className="weekly-island__count">{lang === "en" ? `Weekly notes · ${reports.length} issues` : `周报 · ${reports.length} 期`}</span>
+          <p>{lang === "en" ? "Alongside the work and practice archive, I keep a monthly record of what moved forward." : "作品和实践之外，也按月记录正在推进的事情。"}</p>
+          <span className="weekly-island__count">{lang === "en" ? `Monthly reports · ${reports.length} issues` : `月报 · ${reports.length} 期`}</span>
         </header>
         <div className="weekly-island__reports">
           {reports.map((report, index) => <details key={report.date.zh} className="weekly-report" open={index === 0}>

@@ -162,7 +162,7 @@ export default function RooftopLab({ onOpenBatchSkill }: { onOpenBatchSkill: () 
             <div className="rooftop-lab__commerce-main">
               <h3>{t("content.storeTitle")}</h3>
               <p>{t("content.storeMeta")}</p>
-              <div className="rooftop-lab__figure"><strong>&gt;50K</strong><span>{lang === "en" ? "cumulative GMV" : "累计成交额"}</span></div>
+              <div className="rooftop-lab__figure"><strong>100K</strong><span>{lang === "en" ? "cumulative GMV" : "累计成交额"}</span></div>
               <p className="rooftop-lab__commerce-body">{t("content.storeBody")}</p>
             </div>
             <div className="rooftop-lab__commerce-side">
@@ -178,7 +178,7 @@ export default function RooftopLab({ onOpenBatchSkill }: { onOpenBatchSkill: () 
             <div className="rooftop-lab__teacher-copy">
               <h3>{lang === "en" ? "Teacher lesson-planning Skill" : "教师备课 Skill｜HTML 课件生成工具"}</h3>
               <p>{lang === "en" ? "Built for English teachers: it turns handouts and exam papers into ready-to-use interactive HTML lessons, with structured classroom content, question presentation, answer interaction and page layout." : "面向英语教师备课场景开发的 Skill，可将讲义、试卷等资料整理并生成可直接使用的 HTML 互动课件，支持课堂内容结构化、题目展示、答案交互和页面排版。"}</p>
-              <p className="rooftop-lab__teacher-proof">{lang === "en" ? "Productised delivery · dozens of sales · improved from real customer feedback" : "已售出数十份，并根据客户反馈持续优化课件结构、视觉呈现和交付体验。"}</p>
+              <p className="rooftop-lab__teacher-proof">{lang === "en" ? "Latest digital product · hundreds of copies sold · refined through real customer feedback" : "最新虚拟产品 · 教师备课 Skill 已售数百份 · 根据真实客户反馈持续优化课件结构、视觉呈现和交付体验。"}</p>
             </div>
             <div className="rooftop-lab__lesson" aria-label={lang === "en" ? "Lesson workflow" : "课件制作流程"}>
               <div className="rooftop-lab__lesson-orbit" role="group" aria-label={lang === "en" ? "Select a workflow step" : "选择流程步骤"}>

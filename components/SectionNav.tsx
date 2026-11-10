@@ -21,7 +21,7 @@ export default function SectionNav() {
     { id: "content", label: t("nav.content") },
     { id: "projects", label: t("nav.project") },
     { id: "experience", label: t("nav.experience") },
-    { id: "weekly", label: lang === "en" ? "Weekly notes" : "周报" },
+    { id: "weekly", label: lang === "en" ? "Monthly reports" : "月报" },
     { id: "contact", label: t("nav.contact") },
   ];
 

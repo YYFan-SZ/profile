@@ -27,7 +27,7 @@ export const commerceChapters: Array<{ kicker: Copy; title: Copy; body: Copy; as
   {
     kicker: { zh: "04 / 带着反馈再出发", en: "04 / Learn and repeat" },
     title: { zh: "交付之后，下一轮才真正开始。", en: "Delivery starts the next round." },
-    body: { zh: "点击和咨询说明内容有没有被看见；成交与售后说明它有没有帮上忙。教师备课 Skill 已售出数十份，也在根据真实反馈持续改版。", en: "Clicks and enquiries show what gets noticed. Sales and feedback show what helps. Dozens of teacher Skill sales inform each new version." },
+    body: { zh: "点击和咨询说明内容有没有被看见；成交与售后说明它有没有帮上忙。最新虚拟产品教师备课 Skill 已售数百份，并根据真实反馈持续改版。", en: "Clicks and enquiries show what gets noticed. Sales and feedback show what helps. The latest digital product, the teacher lesson-planning Skill, has sold hundreds of copies and keeps evolving through real feedback." },
     aside: { zh: "看见 → 使用 → 成交 → 改版", en: "Discovery → use → sales → revision" },
   },
 ];

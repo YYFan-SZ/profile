@@ -124,8 +124,8 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
           </button>)}
         </nav>
         <div className="content-orbit__evidence">
-          <span><strong>&gt;50K</strong>{lang === "en" ? "cumulative GMV" : "累计成交额"}</span>
-          <span><strong>{lang === "en" ? "Dozens" : "数十份"}</strong>{lang === "en" ? "teacher Skill sales" : "教师备课 Skill 已售"}</span>
+          <span><strong>100K</strong>{lang === "en" ? "cumulative GMV" : "累计成交额"}</span>
+          <span><strong>{lang === "en" ? "Hundreds" : "数百份"}</strong>{lang === "en" ? "teacher Skill copies sold" : "教师备课 Skill 已售"}</span>
         </div>
         <p className="content-orbit__hint">{lang === "en" ? "Choose a chapter on the ring" : "点击圆环上的栏目，展开内容"}</p>
       </div> : <>
@@ -156,7 +156,7 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
           {resultView === 0 ? <>
             <h3>{t("content.storeTitle")}</h3>
             <p className="content-orbit__aside">{t("content.storeMeta")}</p>
-            <div className="content-orbit__metric"><strong>&gt;50K</strong><span>{lang === "en" ? "cumulative GMV" : "累计成交额"}</span></div>
+            <div className="content-orbit__metric"><strong>100K</strong><span>{lang === "en" ? "cumulative GMV" : "累计成交额"}</span></div>
             <p>{t("content.storeBody")}</p>
           </> : <>
             <h3>{t("content.mediaTitle")}</h3>
@@ -172,7 +172,7 @@ export default function ContentOrbit({ onOpenBatchSkill }: { onOpenBatchSkill: (
         {active === 2 && <article>
           <h3>{lang === "en" ? "Teacher lesson-planning Skill" : "教师备课 Skill｜HTML 课件生成工具"}</h3>
           <p>{lang === "en" ? "Built for English teachers: it turns handouts and exam papers into ready-to-use interactive HTML lessons, with structured classroom content, question presentation, answer interaction and page layout." : "面向英语教师备课场景开发的 Skill，可将讲义、试卷等资料整理并生成可直接使用的 HTML 互动课件，支持课堂内容结构化、题目展示、答案交互和页面排版。"}</p>
-          <p className="content-orbit__aside">{lang === "en" ? "Productised delivery · dozens of sales · improved from real customer feedback" : "已售出数十份，并根据客户反馈持续优化课件结构、视觉呈现和交付体验。"}</p>
+          <p className="content-orbit__aside">{lang === "en" ? "Latest digital product · hundreds of copies sold · refined through real customer feedback" : "最新虚拟产品 · 教师备课 Skill 已售数百份 · 根据真实客户反馈持续优化课件结构、视觉呈现和交付体验。"}</p>
           <button className="content-orbit__film-trigger" type="button" onClick={() => setFilmOpen(true)}>
             <span className="content-orbit__film-play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m9 6 9 6-9 6V6Z" fill="currentColor" /></svg></span>
             <span>{lang === "en" ? "Watch the Codex-edited demo" : "观看 Codex 剪辑成片"}</span>
